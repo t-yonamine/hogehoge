@@ -18,8 +18,15 @@
 
 #### 2. パッケージのインストール
 
+Docker を起動後
+
 ```bash
-% composer install
+$ docker run --rm \
+    -u "$(id -u):$(id -g)" \
+    -v $(pwd):/var/www/html \
+    -w /var/www/html \
+    laravelsail/php81-composer:latest \
+    composer install --ignore-platform-reqs
 ```
 
 #### 3. .env 作成
@@ -28,18 +35,17 @@
 % cp .env.example .env
 ```
 
-Docker を起動後
-
 ```bash
 # sail 起動
-% sail up -d
+% ./vendor/bin/sail up -d
 
 # APP_KEY 作成
-% sail artisan key:generate
+% ./vendor/bin/sail artisan key:generate
 
    INFO  Application key set successfully.  
 
-% sail artisan config:cache
+# キャッシュ 削除
+% ./vendor/bin/sail artisan config:cache
 
    INFO  Configuration cached successfully.  
 ```
@@ -47,7 +53,7 @@ Docker を起動後
 #### 4. データベース作成
 
 ```bash
-% mysql -h 127.0.0.1 -P 13306 -u root -p
+% ./vendor/bin/sail exec mysql mysql -u root -p
 Enter password: #パスワードなし
 Welcome to the MySQL monitor.  Commands end with ; or \g.
 Your MySQL connection id is 8
@@ -72,7 +78,7 @@ Bye
 #### 5. テーブル作成
 
 ```bash
-$ sail artisan migrate
+$ ./vendor/bin/sail artisan migrate
 ```
 
 #### 6. ブラウザから確認
