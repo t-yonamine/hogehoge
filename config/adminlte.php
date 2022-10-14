@@ -14,7 +14,7 @@ return [
     |
     */
 
-    'title' => 'AdminLTE 3',
+    'title' => 'GENBO',
     'title_prefix' => '',
     'title_postfix' => '',
 
@@ -63,7 +63,7 @@ return [
     |
     */
 
-    'logo' => '<b>Admin</b>LTE',
+    'logo' => '<b>GENBO</b>',
     'logo_img' => 'vendor/adminlte/dist/img/AdminLTELogo.png',
     'logo_img_class' => 'brand-image img-circle elevation-3',
     'logo_img_xl' => null,
@@ -186,7 +186,7 @@ return [
     |
     */
 
-    'classes_body' => '',
+    'classes_body' => 'text-sm',
     'classes_brand' => '',
     'classes_brand_text' => '',
     'classes_content_wrapper' => '',
@@ -290,98 +290,74 @@ return [
     */
 
     'menu' => [
-        // Navbar items:
+        // 
+        ['header' => '教習所メニュー'],
         [
-            'type'         => 'navbar-search',
-            'text'         => 'search',
-            'topnav_right' => true,
+            'text' => '教習生',
+            'url'  => '#',
+            'icon' => 'fas fa-fw fa-circle',
         ],
         [
-            'type'         => 'fullscreen-widget',
-            'topnav_right' => true,
-        ],
-
-        // Sidebar items:
-        [
-            'type' => 'sidebar-menu-search',
-            'text' => 'search',
+            'text' => '検定',
+            'url'  => '#',
+            'icon' => 'fas fa-fw fa-circle',
         ],
         [
-            'text' => 'blog',
-            'url'  => 'admin/blog',
-            'can'  => 'manage-blog',
+            'text' => '承認',
+            'url'  => '#',
+            'icon' => 'fas fa-fw fa-circle',
         ],
         [
-            'text'        => 'pages',
-            'url'         => 'admin/pages',
-            'icon'        => 'far fa-fw fa-file',
-            'label'       => 4,
-            'label_color' => 'success',
-        ],
-        ['header' => 'account_settings'],
-        [
-            'text' => 'profile',
-            'url'  => 'admin/settings',
-            'icon' => 'fas fa-fw fa-user',
+            'text' => 'スタッフ',
+            'url'  => '#',
+            'icon' => 'fas fa-fw fa-circle',
         ],
         [
-            'text' => 'change_password',
-            'url'  => 'admin/settings',
-            'icon' => 'fas fa-fw fa-lock',
+            'text' => 'オンデマンド結果登録',
+            'url'  => '#',
+            'icon' => 'fas fa-fw fa-circle',
         ],
         [
-            'text'    => 'multilevel',
-            'icon'    => 'fas fa-fw fa-share',
-            'submenu' => [
-                [
-                    'text' => 'level_one',
-                    'url'  => '#',
-                ],
-                [
-                    'text'    => 'level_one',
-                    'url'     => '#',
-                    'submenu' => [
-                        [
-                            'text' => 'level_two',
-                            'url'  => '#',
-                        ],
-                        [
-                            'text'    => 'level_two',
-                            'url'     => '#',
-                            'submenu' => [
-                                [
-                                    'text' => 'level_three',
-                                    'url'  => '#',
-                                ],
-                                [
-                                    'text' => 'level_three',
-                                    'url'  => '#',
-                                ],
-                            ],
-                        ],
-                    ],
-                ],
-                [
-                    'text' => 'level_one',
-                    'url'  => '#',
-                ],
-            ],
-        ],
-        ['header' => 'labels'],
-        [
-            'text'       => 'important',
-            'icon_color' => 'red',
-            'url'        => '#',
+            'text' => 'オンデマンド結果インポート',
+            'url'  => '#',
+            'icon' => 'fas fa-fw fa-circle',
         ],
         [
-            'text'       => 'warning',
-            'icon_color' => 'yellow',
-            'url'        => '#',
+            'text' => '効果測定結果インポート',
+            'url'  => '#',
+            'icon' => 'fas fa-fw fa-circle',
         ],
         [
-            'text'       => 'information',
-            'icon_color' => 'cyan',
-            'url'        => '#',
+            'text' => '運転適性検査インポート',
+            'url'  => '#',
+            'icon' => 'fas fa-fw fa-circle',
+        ],
+        [
+            'text' => 'ログ',
+            'url'  => '#',
+            'icon' => 'fas fa-fw fa-circle',
+        ],
+        // 運営
+        ['header' => '運営メニュー'],
+        [
+            'text' => '教習所',
+            'url'  => '#',
+            'icon' => 'fas fa-fw fa-circle',
+        ],
+        [
+            'text' => '教習所アカウント',
+            'url'  => '#',
+            'icon' => 'fas fa-fw fa-circle',
+        ],
+        [
+            'text' => 'お知らせ',
+            'url'  => '#',
+            'icon' => 'fas fa-fw fa-circle',
+        ],
+        [
+            'text' => 'マスタ',
+            'url'  => '#',
+            'icon' => 'fas fa-fw fa-circle',
         ],
     ],
 
