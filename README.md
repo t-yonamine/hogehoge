@@ -62,7 +62,7 @@ owners.
 Type 'help;' or '\h' for help. Type '\c' to clear the current input statement.
 
 mysql> 
-mysql> CREATE DATABASE genbo;
+mysql> CREATE DATABASE ledgerdb;
 Query OK, 1 row affected (0.00 sec)
 mysql> exit;
 Bye
