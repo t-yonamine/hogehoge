@@ -309,7 +309,7 @@ return [
         ],
         [
             'text' => 'スタッフ',
-            'url'  => '#',
+            'url'  => 'staff',
             'icon' => 'fas fa-fw fa-circle',
         ],
         [
@@ -396,6 +396,16 @@ return [
     */
 
     'plugins' => [
+        'AppBase' => [
+            'active' => true,
+            'files' => [
+                [
+                    'type' => 'css',
+                    'asset' => false,
+                    'location' => '/css/base.css',
+                ],
+            ],
+        ],
         'Datatables' => [
             'active' => false,
             'files' => [
