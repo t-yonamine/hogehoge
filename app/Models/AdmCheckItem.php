@@ -58,6 +58,4 @@ class AdmCheckItem extends Model
         'created_at' => 'datetime',
         'created_user_id' => 'int',
     ];
-
-
 }
