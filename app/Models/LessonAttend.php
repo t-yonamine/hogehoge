@@ -12,4 +12,13 @@ class LessonAttend extends Model
 
     protected $table = 'glesson_attends';
 
+    protected $casts = [
+        'period_date' => 'datetime:Y-m-d',
+        'period_from' => 'datetime:h:i',
+    ];
+
+    public function gschoolStaff(){
+        return $this->hasOne(SchoolStaff::class, 'id', 'school_staff_id');
+    }
+
 }

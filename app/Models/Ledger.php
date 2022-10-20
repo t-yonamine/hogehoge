@@ -12,4 +12,11 @@ class Ledger extends Model
 
     protected $table = 'gledgers';
 
+    public function gadmCheckItems(){
+        return $this->hasOne(AdmCheckItem::class, 'ledger_id', 'id');
+    }
+
+    public function glessonAttends(){
+        return $this->hasMany(LessonAttend::class, 'ledger_id', 'id');
+    }
 }
