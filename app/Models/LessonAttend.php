@@ -38,8 +38,8 @@ class LessonAttend extends Model
         'school_staff_id' => 'int',
         'target_license_names' => 'string',
         'period_date' => 'datetime:Y-m-d',
-        'period_from' => 'string',
-        'period_to' => 'string',
+        'period_from' => 'datetime:h:i',
+        'period_to' => 'datetime:h:i',
         'score' => 'int',
         'result' => 'int',
         'question_num' => 'int',
@@ -53,7 +53,7 @@ class LessonAttend extends Model
         'status' => LessonAttendStatus::PENDING
     ];
 
-    public static function handleSave(array $data, Ledger $ledger, LessonAttend $model = null) 
+    public static function handleSave(array $data, Ledger $ledger, LessonAttend $model = null)
     {
         try {
             $model = $model ?: new static;
@@ -74,8 +74,13 @@ class LessonAttend extends Model
                     $ledger->save();
                 }
             });
-        } catch(Exception $e) {
+        } catch (Exception $e) {
             throw $e;
         }
+    }
+
+    public function schoolStaff()
+    {
+        return $this->hasOne(SchoolStaff::class, 'id', 'school_staff_id');
     }
 }

@@ -34,15 +34,20 @@ Route::group(
             // Route::post('/store', \App\Http\Action\Back\Staff\StaffStoreAction::class)->name('staff.store');
             // Route::post('/update', \App\Http\Action\Back\Staff\StaffUpdateAction::class)->name('staff.update');
         });
-        
-        // 効果測定管理
-        Route::prefix('effect-measurement')->name('effect-measurement.')->group(function () {
-            Route::controller(EffectMeasurementController::class)->group(function () {
-                Route::get('/create/{ledger_id}', 'create')->name('create');
-                Route::post('/create', 'store')->name('store');
-            });
+
+        Route::controller(EffectMeasurementController::class)->prefix('effect-measurement')->name('effect-measurement.')->group(function () {
+            Route::get('/{ledger_id}', 'index')->name('index');
+            Route::delete('{ledger_id}', 'delete')->name('delete');
+            Route::get('/create/{ledger_id}', 'create')->name('create');
+            Route::post('/create', 'store')->name('store');
         });
+
+        // school driving
+        Route::controller(App\Http\Controllers\back\SchoolDrivingController::class)
+            ->prefix('school-driving')->name('school-driving.')->group(function () {
+                Route::get('/', 'index')->name('index');
+                Route::delete('/{id}', 'delete')->name('delete');
+            });
     }
 );
-
 require __DIR__ . '/auth.php';

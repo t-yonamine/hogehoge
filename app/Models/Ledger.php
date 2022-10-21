@@ -38,6 +38,6 @@ class Ledger extends Model
 
     public function lessonAttend()
     {
-        return $this->hasOne(LessonAttend::class);
+        return $this->hasMany(LessonAttend::class);
     }
 }

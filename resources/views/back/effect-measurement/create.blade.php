@@ -150,15 +150,3 @@ $laTypeText = $laType > 2211 ? '卒検前' : '仮免前';
         </div>
     </div>
 @stop
-
-@section('css')
-    {{-- ページごとCSSの指定
-    <link rel="stylesheet" href="/css/xxx.css">
-    --}}
-@stop
-
-@section('js')
-    <script>
-        console.log('ページごとJSの記述');
-    </script>
-@stop
