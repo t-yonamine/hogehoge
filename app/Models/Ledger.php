@@ -12,11 +12,32 @@ class Ledger extends Model
 
     protected $table = 'gledgers';
 
-    public function gadmCheckItems(){
-        return $this->hasOne(AdmCheckItem::class, 'ledger_id', 'id');
+    protected $fillable = [
+        'id',
+        'school_id',
+        'student_no',
+        'target_license_cd',
+        'admission_date',
+        'lesson_sts',
+        'lec1st_omit',
+        'lec1st_date',
+        'effect_meas1_date',
+        'ascertain1_date',
+        'compltst_date',
+        'pl_test_date',
+        'effect_meas2_date',
+        'ascertain2_date',
+        'gradtst_date',
+        'status',
+    ];
+
+    public function admCheckItem()
+    {
+        return $this->hasOne(AdmCheckItem::class);
     }
 
-    public function glessonAttends(){
-        return $this->hasMany(LessonAttend::class, 'ledger_id', 'id');
+    public function lessonAttend()
+    {
+        return $this->hasMany(LessonAttend::class);
     }
 }

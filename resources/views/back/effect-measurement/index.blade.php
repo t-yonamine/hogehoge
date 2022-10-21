@@ -29,7 +29,7 @@
                             <tr>
                                 <th class="w-20">氏名</th>
                                 <td>
-                                    <input type="text" class="form-control" value="{{ $data->gadmCheckItems->name }}"
+                                    <input type="text" class="form-control" value="{{ $data->admCheckItem->name }}"
                                         disabled="true">
                                 </td>
                             </tr>
@@ -63,12 +63,12 @@
                                         </tr>
                                     </thead>
                                     <tbody>
-                                        @if ($glesson_attends->isEmpty())
+                                        @if ($lesson_attends->isEmpty())
                                             <tr>
                                                 <td colspan="100%" class="text-center">データがありません。</td>
                                             </tr>
                                         @else
-                                            @foreach ($glesson_attends as $item)
+                                            @foreach ($lesson_attends as $item)
                                                 <tr>
                                                     <td>
                                                         @if ($item->la_type === 2210 || $item->la_type === 2211)
@@ -79,7 +79,7 @@
                                                     </td>
                                                     <td>{{ $item->period_date?->format('Y/m/d') }}</td>
                                                     <td>{{ $item->period_from?->format('h:i') }}</td>
-                                                    <td>{{ $item->gschoolStaff->name }}</td>
+                                                    <td>{{ $item->schoolStaff?->name }}</td>
                                                     <td>{{ $item->question_num }}</td>
                                                     <td>{{ $item->score }}</td>
                                                     <td>

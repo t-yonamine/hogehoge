@@ -11,4 +11,12 @@ class Staff extends Model
     use HasFactory, SoftDeletes;
 
     protected $table = 'gstaffs';
+
+    protected $fillable = [
+        'id',
+        'staff_no',
+        'name',
+        'role',
+        'status',
+    ];
 }
