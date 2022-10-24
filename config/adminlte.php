@@ -290,7 +290,7 @@ return [
     */
 
     'menu' => [
-        // 
+        //
         ['header' => '教習所メニュー'],
         [
             'text' => '教習生',
@@ -341,7 +341,7 @@ return [
         ['header' => '運営メニュー'],
         [
             'text' => '教習所',
-            'url'  => '#',
+            'url'  => '/school-driving',
             'icon' => 'fas fa-fw fa-circle',
         ],
         [

@@ -7,13 +7,7 @@
 @stop
 
 @section('content')
-    @if (session('error'))
-        <x-alert :message="session('error')" :type="__('error')" />
-    @endif
-
-    @if (session('msg'))
-        <x-alert :message="session('msg')" :type="__('success')" />
-    @endif
+    <x-alert/>
     <div class="row">
         <div class="col-12">
             <div class="card">
