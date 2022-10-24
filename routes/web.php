@@ -43,7 +43,7 @@ Route::group(
         });
 
         // school driving
-        Route::controller(App\Http\Controllers\back\SchoolDrivingController::class)
+        Route::controller(App\Http\Controllers\operation\SchoolDrivingController::class)
             ->prefix('school-driving')->name('school-driving.')->group(function () {
                 Route::get('/', 'index')->name('index');
                 Route::delete('/{id}', 'delete')->name('delete');

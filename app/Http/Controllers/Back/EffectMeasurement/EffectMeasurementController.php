@@ -46,13 +46,13 @@ class EffectMeasurementController extends Controller
             abort(403, 'Forbidden.');
         }
 
-        //   B. param/ledger_id 遷移元から渡された教習原簿ID																										
-        //   C. param/la_type 受講区分。遷移元で指定。仮免新規:2211、卒検新規:2221																										
+        //   B. param/ledger_id 遷移元から渡された教習原簿ID
+        //   C. param/la_type 受講区分。遷移元で指定。仮免新規:2211、卒検新規:2221
         if (!isset($ledger_id) || !isset($request->la_type) || ($request->la_type != 2221 && $request->la_type != 2211)) {
             abort(404);
         }
-        // 2. 存在チェック																										
-        //   A. 教習原簿IDの存在チェック 共通ロジック/存在チェック#3																										
+        // 2. 存在チェック
+        //   A. 教習原簿IDの存在チェック 共通ロジック/存在チェック#3
         $data = Ledger::with('admCheckItem')->where('id', $ledger_id)->first();
 
         if (!isset($data)) {
@@ -89,8 +89,8 @@ class EffectMeasurementController extends Controller
             return abort(403, 'Forbidden.');
         }
 
-        // 2.存在チェック																										
-        //    A. 教習原簿IDの存在チェック 共通ロジック/存在チェック#3																										
+        // 2.存在チェック
+        //    A. 教習原簿IDの存在チェック 共通ロジック/存在チェック#3
         $ledger = Ledger::find($request->ledger_id);
         if (!$ledger) {
             return abort(404);
@@ -115,13 +115,13 @@ class EffectMeasurementController extends Controller
     }
 
     /**
-     * 入力パラメータ																										
-     *    A. セッション情報 共通ロジック/セッション情報#1-3																										
+     * 入力パラメータ
+     *    A. セッション情報 共通ロジック/セッション情報#1-3
      *    B. param/ledger_id 遷移元から渡された教習原簿ID
      */
     public function index($id)
     {
-        // 教習原簿IDの存在チェック 共通ロジック/存在チェック#3	
+        // 教習原簿IDの存在チェック 共通ロジック/存在チェック#3
         $existLedge = Ledger::where('id', $id)->first();
         if (empty($existLedge)) {
             abort(404);
@@ -152,6 +152,6 @@ class EffectMeasurementController extends Controller
         }
         //ボタン処理
         $lessonAttend->delete();
-        return back()->with('msg', '削除しました。');
+        return back()->with('success', '削除しました。');
     }
 }

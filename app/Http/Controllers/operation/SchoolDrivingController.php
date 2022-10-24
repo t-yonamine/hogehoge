@@ -1,7 +1,9 @@
 <?php
 
-namespace App\Http\Controllers\back;
+namespace App\Http\Controllers\operation;
 
+use App\Enums\Role;
+use App\Enums\Status;
 use App\Http\Controllers\Controller;
 use App\Models\School;
 use App\Models\Staff;
@@ -12,15 +14,12 @@ use Illuminate\Support\Facades\Auth;
 class SchoolDrivingController extends Controller
 {
 
-    const ROLE_ADMIN = 1;
-    const SCHOOL_STATUS_DISABLE = 0;
-
     public function __construct()
     {
         $this->middleware(function (Request $request, Closure $next) {
             $user = Auth::user();
-            $exitStaff = Staff::where('staff_no', $user->login_id)->first();
-            if (!$exitStaff || $exitStaff->role != self::ROLE_ADMIN) {
+            $exitStaff = Staff::where('id', $user->id)->first();
+            if (!(!$user->school_id && $exitStaff->role == Role::SYS_ADMINISTRATOR)) {
                 abort(403);
             }
 
@@ -33,8 +32,9 @@ class SchoolDrivingController extends Controller
      */
     public function index(Request $request)
     {
-        $models = School::buildQuery($request->input())->where('status', '!=', self::SCHOOL_STATUS_DISABLE)->orderBy('id')->paginate();
-        return view('back.school-driving.index', ['models' => $models]);
+        $models = School::buildQuery($request->input())->where('status', '!=', Status::DISABLE)
+            ->orderBy('school_cd')->paginate();
+        return view('operation.school-driving.index', ['models' => $models]);
     }
 
     /**
@@ -44,11 +44,9 @@ class SchoolDrivingController extends Controller
     {
         $model = School::where('id', $id)->first();
         if (!$model) {
-            abort(404);
+            return redirect()->route('school-driving.index')->with('error', 'データは削除されました。または存在していません。');
         } else {
-            $model->status = self::SCHOOL_STATUS_DISABLE;
-            $model->deleted_user_id = Auth::id();
-            $model->deleted_user_id = Auth::id();
+            $model->status = Status::DISABLE;
             $model->save();
         }
         return redirect()->route('school-driving.index')->with('success', 'データを削除しました。');
