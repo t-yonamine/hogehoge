@@ -9,6 +9,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\RateLimiter;
 use Illuminate\Support\Str;
 use Illuminate\Validation\ValidationException;
+use App\Enums\Status;
 
 class LoginRequest extends FormRequest
 {
@@ -30,7 +31,7 @@ class LoginRequest extends FormRequest
     public function rules()
     {
         return [
-            'school_cd' => ['required', 'string', 'max:4'],
+            'school_cd' => ['nullable', 'string', 'max:4'],
             'login_id' => ['required', 'string', 'max:4'],
             'password' => ['required', 'string', 'max:8'],
         ];
@@ -47,12 +48,24 @@ class LoginRequest extends FormRequest
     {
         $this->ensureIsNotRateLimited();
 
-        $school = School::where('school_cd', $this->school_cd)->first();
+        $query = ['school_id' => null, 'status' => Status::ENABLE];
+        if ($this->school_cd) {
+            $existsSchool = School::where('school_cd', $this->school_cd)->first();
+            if (!$existsSchool) {
+                RateLimiter::hit($this->throttleKey());
 
-        if (!$school || !Auth::attempt(
-            array_merge($this->only('login_id', 'password'), ['school_id' => $school->id,]),
+                throw ValidationException::withMessages([
+                    'login_id' => 'ログインに失敗しました',
+                ]);
+            }
+            $query['school_id'] = $existsSchool->id;
+        }
+
+        if (!Auth::attempt(
+            array_merge($this->only('login_id', 'password'), $query),
             $this->boolean('remember')
         )) {
+
             RateLimiter::hit($this->throttleKey());
 
             throw ValidationException::withMessages([
@@ -96,5 +109,19 @@ class LoginRequest extends FormRequest
     public function throttleKey()
     {
         return Str::transliterate(Str::lower($this->input('login_id')) . '|' . $this->ip());
+    }
+
+    /**
+     * Get custom attributes for validator errors.
+     *
+     * @return array
+     */
+    public function attributes()
+    {
+        return [
+            'login_id' => 'ユーザー名',
+            'password' => 'パスワード',
+            'school_cd' => '教習所コード',
+        ];
     }
 }
