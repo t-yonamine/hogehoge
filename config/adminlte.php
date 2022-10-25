@@ -356,7 +356,7 @@ return [
         ],
         [
             'text' => '教習所',
-            'url'  => '/school-driving',
+            'route'  => 'school-driving.index', 
             'icon' => 'fas fa-fw fa-circle',
             'can'  => ['admin'],
         ],
