@@ -46,6 +46,7 @@ class User extends Authenticatable
      */
     protected $casts = [
         'status' => 'int',
+        'password' => 'string'
     ];
 
     public function schoolStaff()
