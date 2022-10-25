@@ -15,7 +15,7 @@ class AuthenticatedSessionController extends Controller
      *
      * @return \Illuminate\View\View
      */
-    public function create($school_cd)
+    public function create($school_cd = null)
     {
         return view('auth.login', ['schoolCd' => $school_cd]);
     }
@@ -31,6 +31,12 @@ class AuthenticatedSessionController extends Controller
         $request->authenticate();
 
         $request->session()->regenerate();
+
+        if (Auth::user()?->school_id) {
+            $request->session()->put('school_cd', $request->school_cd);
+            $request->session()->put('school_id', Auth::user()->school_id);
+            $request->session()->put('school_staff_id', Auth::user()->schoolStaff->id);
+        }
 
         return redirect()->intended(RouteServiceProvider::HOME);
     }

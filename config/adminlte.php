@@ -14,7 +14,7 @@ return [
     |
     */
 
-    'title' => 'GENBO',
+    'title' => 'N-RECO',
     'title_prefix' => '',
     'title_postfix' => '',
 
@@ -63,7 +63,7 @@ return [
     |
     */
 
-    'logo' => '<b>GENBO</b>',
+    'logo' => '<b>N-RECO</b>',
     'logo_img' => 'vendor/adminlte/dist/img/AdminLTELogo.png',
     'logo_img_class' => 'brand-image img-circle elevation-3',
     'logo_img_xl' => null,
@@ -291,73 +291,92 @@ return [
 
     'menu' => [
         //
-        ['header' => '教習所メニュー'],
+        [
+            'header' => '教習所メニュー',
+            'can'  => ['staff'],
+        ],
         [
             'text' => '教習生',
             'url'  => '#',
             'icon' => 'fas fa-fw fa-circle',
+            'can'  => ['staff'],
         ],
         [
             'text' => '検定',
             'url'  => '#',
             'icon' => 'fas fa-fw fa-circle',
+            'can'  => ['staff'],
         ],
         [
             'text' => '承認',
             'url'  => '#',
             'icon' => 'fas fa-fw fa-circle',
+            'can'  => ['staff'],
         ],
         [
             'text' => 'スタッフ',
             'url'  => 'staff',
             'icon' => 'fas fa-fw fa-circle',
+            'can'  => ['staff'],
         ],
         [
             'text' => 'オンデマンド結果登録',
             'url'  => '#',
             'icon' => 'fas fa-fw fa-circle',
+            'can'  => ['staff'],
         ],
         [
             'text' => 'オンデマンド結果インポート',
             'url'  => '#',
             'icon' => 'fas fa-fw fa-circle',
+            'can'  => ['staff'],
         ],
         [
             'text' => '効果測定結果インポート',
             'url'  => '#',
             'icon' => 'fas fa-fw fa-circle',
+            'can'  => ['staff'],
         ],
         [
             'text' => '運転適性検査インポート',
             'url'  => '#',
             'icon' => 'fas fa-fw fa-circle',
+            'can'  => ['staff'],
         ],
         [
             'text' => 'ログ',
             'url'  => '#',
             'icon' => 'fas fa-fw fa-circle',
+            'can'  => ['staff'],
         ],
         // 運営
-        ['header' => '運営メニュー'],
+        [
+            'header' => '運営メニュー',
+            'can'  => ['admin'],
+        ],
         [
             'text' => '教習所',
             'url'  => '/school-driving',
             'icon' => 'fas fa-fw fa-circle',
+            'can'  => ['admin'],
         ],
         [
             'text' => '教習所アカウント',
             'url'  => '#',
             'icon' => 'fas fa-fw fa-circle',
+            'can'  => ['admin'],
         ],
         [
             'text' => 'お知らせ',
             'url'  => '#',
             'icon' => 'fas fa-fw fa-circle',
+            'can'  => ['admin'],
         ],
         [
             'text' => 'マスタ',
             'url'  => '#',
             'icon' => 'fas fa-fw fa-circle',
+            'can'  => ['admin'],
         ],
     ],
 

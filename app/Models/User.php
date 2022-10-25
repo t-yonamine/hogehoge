@@ -7,6 +7,7 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Laravel\Sanctum\HasApiTokens;
+use Illuminate\Support\Facades\Auth;
 
 class User extends Authenticatable
 {
@@ -46,4 +47,25 @@ class User extends Authenticatable
     protected $casts = [
         'status' => 'int',
     ];
+
+    public function schoolStaff()
+    {
+        return $this->hasOne(SchoolStaff::class, 'id', 'id');
+    }
+
+    public function staff()
+    {
+        return $this->hasOne(Staff::class, 'id', 'id');
+    }
+
+    public function getName()
+    {
+        $user = Auth::user();
+        if (!$user->school_id) {
+            return  $this->staff->name;
+        } else {
+            return  $this->schoolStaff->name;
+        }
+    }
+
 }
