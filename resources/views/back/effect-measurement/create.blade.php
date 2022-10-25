@@ -7,9 +7,9 @@
         効果測定登録</h1>
 @stop
 
-<?php
-$laTypeText = $laType > 2211 ? '卒検前' : '仮免前';
-?>
+@php
+    $laTypeText = old('la_type', $laType) > App\Enums\LaType::PRE_EXAMINATION ? '卒検前' : '仮免前';
+@endphp
 @section('content')
 
     <div class="row">
@@ -44,7 +44,7 @@ $laTypeText = $laType > 2211 ? '卒検前' : '仮免前';
                                 <tr>
                                     <th class="w-20">テスト区分</th>
                                     <td><input name="la_type" type="text" class="form-control" placeholder=""
-                                            value="{{ old('la_type', $laTypeText) }}" disabled></td>
+                                            value="{{ $laTypeText }}" disabled></td>
                                 </tr>
                                 <tr>
                                     <th class="w-20">実施日付
@@ -141,8 +141,11 @@ $laTypeText = $laType > 2211 ? '卒検前' : '仮免前';
                     </div>
                     <div class="card-footer">
                         <div class="col text-center">
-                            <button class="btn btn-sm btn-secondary" type="button"> キャンセルボタン</button>
-                            <button class="btn btn-sm btn-primary" type="submit"> 保存ボタン</button>
+                            <a href="{{ route('effect-measurement.index', [$data->id]) }}"
+                                class="btn btn-sm btn-secondary">
+                                キャンセル
+                            </a>
+                            <button class="btn btn-sm btn-primary" type="submit">保存</button>
                         </div>
                     </div>
                 </form>
