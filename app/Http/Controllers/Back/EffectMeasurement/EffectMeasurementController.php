@@ -38,7 +38,7 @@ class EffectMeasurementController extends Controller
         $school_id =  $request->session()->get('school_id');
         $school_cd =  $request->session()->get('school_cd');
         if (empty($school_staff_id) || empty($school_id) || empty($school_cd)) {
-            abort(403, 'Forbidden.');
+            abort(403);
         }
 
         //   B. param/ledger_id 遷移元から渡された教習原簿ID
@@ -57,13 +57,13 @@ class EffectMeasurementController extends Controller
         // 3.権限チェック
         //   A. 教習原簿とセッションの教習所一致確認 共通ロジック
         if ($school_id != $data->school_id) {
-            return abort(403, 'Forbidden.');
+            return abort(403);
         }
 
         //   B. ログインした人の役割チェック。事務員2以上が操作可能。
         $schoolStaff = SchoolStaff::find($school_staff_id);
         if (!isset($schoolStaff) || $schoolStaff->role < Role::CLERK_2) {
-            return abort(403, 'Forbidden.');
+            return abort(403);
         }
 
         return view('back.effect-measurement.create', ['data' => $data, 'laType' => $request->la_type, 'resultInit' => true]);
@@ -76,12 +76,12 @@ class EffectMeasurementController extends Controller
         $school_staff_id =  $request->session()->get('school_staff_id');
         $school_id =  $request->session()->get('school_id');
         if (empty($school_id)) {
-            abort(403, 'Forbidden.');
+            abort(403);
         }
 
         $schoolStaff = SchoolStaff::where('id', $school_staff_id)->first();
         if (!$schoolStaff) {
-            abort(403, 'Forbidden.');
+            abort(403);
         }
 
         // 2.存在チェック
@@ -103,7 +103,7 @@ class EffectMeasurementController extends Controller
 
             LessonAttend::handleSave($data, $ledger, null);
         } catch (\Throwable $th) {
-            abort(500);
+            throw $th;
         }
 
         return redirect()->route('effect-measurement.index', ['ledger_id' => $ledger->id])->with(['success' => 'success']);
@@ -123,7 +123,7 @@ class EffectMeasurementController extends Controller
         };
         // 教習原簿とセッションの教習所一致確認 共通ロジック/権限チェック#2
         if ($existLedge->school_id != Auth::user()->school_id) {
-            abort(403, 'Forbidden.');
+            abort(403);
         };
         // 対象教習原簿の効果測定の一覧を求めて表示。
         $data = Ledger::with(['admCheckItem', 'lessonAttend' => function ($q) {

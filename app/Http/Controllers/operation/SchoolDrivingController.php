@@ -8,12 +8,10 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\SchoolDriving\SchoolDrivingRequest;
 use App\Models\School;
 use App\Models\SchoolStaff;
-use App\Models\Staff;
 use App\Models\User;
 use Closure;
 use Exception;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
 
 class SchoolDrivingController extends Controller
 {
@@ -111,7 +109,7 @@ class SchoolDrivingController extends Controller
         try {
             School::handleSave($request->input(), $user, $schoolStaff, $schoolModel);
         } catch (\Throwable $th) {
-            abort(500);
+            throw $th;
         }
 
         return redirect()->route('school-driving.index')->with(['success' => '編集しました。']);
