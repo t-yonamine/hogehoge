@@ -20,11 +20,13 @@ class SystemAdmin
     public function handle($request, Closure $next)
     {
         $user = Auth::user();
-        $exitStaff = Staff::where('id', $user->id)->first();
-        if ($user->school_id || $exitStaff->role != Role::SYS_ADMINISTRATOR) {
-            Log::error("403 Error. Forbidden.");
-            abort(403);
+        if (!$user->school_id) {
+            $role = $user->staff->role;
+            if ($role == Role::SYS_ADMINISTRATOR || $role == Role::STAFF_MANAGER || $role == (Role::SYS_ADMINISTRATOR + Role::STAFF_MANAGER)) {
+                return $next($request);
+            }
         }
-        return $next($request);
+        Log::error("403 Error. Forbidden.");
+        abort(403);
     }
 }
