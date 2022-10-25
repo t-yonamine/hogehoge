@@ -7,6 +7,7 @@ use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 
@@ -59,10 +60,12 @@ class School extends Model
             $model = $model ?: new static;
             DB::transaction(function () use ($data, $user, $schoolStaff, $model) {
                 // ・教習所テーブル（gschools）に変更内容をUPDATEを行う。
+                $userId =  Auth::id();
                 $schoolFill = [
                     'school_cd' => $data['school_cd'],
                     'name' => $data['name'],
                     'name_kana' => $data['name_kana'],
+                    'updated_user_id' => $userId,
                 ];
                 $model->fill($schoolFill);
                 $model->save();
@@ -72,13 +75,15 @@ class School extends Model
                 if ($data['password']) {
                     $user->fill([
                         'password' => Hash::make($data['password']),
+                        'updated_user_id' => $userId,
                     ])->save();
                 }
 
                 // ・教習所システム管理者の更新
                 $schoolStaff->fill([
                     'school_staff_no' => $data['school_staff_no'],
-                    'name' => $data['school_staff_name']
+                    'name' => $data['school_staff_name'],
+                    'updated_user_id' => $userId,
                 ])->save();
             });
         } catch (Exception $e) {
