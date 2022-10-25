@@ -7,7 +7,7 @@
 @stop
 
 @section('content')
-    <x-alert/>
+    <x-alert />
     <div class="row">
         <div class="col-12">
             <div class="card">
@@ -34,8 +34,14 @@
             <div class="card">
                 <div class="card-header">
                     <div class="float-left card-tools">
-                        <a class="btn btn-sm btn-secondary">仮免新規ボタン</a>
-                        <a class="btn btn-sm btn-secondary">卒検新規ボタン</a>
+                        <a href="{{ route('effect-measurement.create', [$data->id, 'la_type' => \App\Enums\Latype::PRE_EXAMINATION]) }}"
+                            class="btn btn-sm btn-secondary">
+                            仮免新規ボタン
+                        </a>
+                        <a href="{{ route('effect-measurement.create', [$data->id, 'la_type' => \App\Enums\Latype::GRADUATION]) }}"
+                            class="btn btn-sm btn-secondary">
+                            卒検新規ボタン
+                        </a>
                     </div>
                 </div>
                 <div class="card-body">
