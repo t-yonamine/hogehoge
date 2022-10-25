@@ -32,11 +32,6 @@ class EffectMeasurementController extends Controller
 
     public function create(Request $request, $ledger_id)
     {
-        // set default data to check
-        // $request->session()->put('school_staff_id', 2);
-        // $request->session()->put('school_id', 1);
-        // $request->session()->put('school_cd', 9901);
-
         // 1. 入力パラメータ
         //   A. セッション情報 共通ロジック/セッション情報#1-3
         $school_staff_id =  $request->session()->get('school_staff_id');
@@ -86,14 +81,14 @@ class EffectMeasurementController extends Controller
 
         $schoolStaff = SchoolStaff::where('id', $school_staff_id)->first();
         if (!$schoolStaff) {
-            return abort(403, 'Forbidden.');
+            abort(403, 'Forbidden.');
         }
 
         // 2.存在チェック
         //    A. 教習原簿IDの存在チェック 共通ロジック/存在チェック#3
         $ledger = Ledger::find($request->ledger_id);
         if (!$ledger) {
-            return abort(404);
+            abort(404);
         }
 
         try {
@@ -108,7 +103,7 @@ class EffectMeasurementController extends Controller
 
             LessonAttend::handleSave($data, $ledger, null);
         } catch (\Throwable $th) {
-            throw new Exception($th->getMessage());
+            abort(500);
         }
 
         return redirect()->route('effect-measurement.index', ['ledger_id' => $ledger->id])->with(['success' => 'success']);
@@ -128,7 +123,7 @@ class EffectMeasurementController extends Controller
         };
         // 教習原簿とセッションの教習所一致確認 共通ロジック/権限チェック#2
         if ($existLedge->school_id != Auth::user()->school_id) {
-            abort(403);
+            abort(403, 'Forbidden.');
         };
         // 対象教習原簿の効果測定の一覧を求めて表示。
         $data = Ledger::with(['admCheckItem', 'lessonAttend' => function ($q) {

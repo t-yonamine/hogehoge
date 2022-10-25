@@ -58,12 +58,12 @@ class SchoolDrivingController extends Controller
         // get info システム管理者
         $schoolStaff = SchoolStaff::where('school_id', $school->id)->where('role', Role::SYS_ADMINISTRATOR)->first();
         if (!$schoolStaff) {
-            abort(403);
+            abort(404);
         }
 
         $user = User::where('id', $schoolStaff->id)->first();
         if (!$user) {
-            abort(403);
+            abort(404);
         }
 
         $modelResponse = [
@@ -99,19 +99,19 @@ class SchoolDrivingController extends Controller
         // get info システム管理者 for gusers
         $user = User::where('id', $request->user_id)->first();
         if (!$user) {
-            abort(403);
+            abort(404);
         }
 
         // get info システム管理者 for gschool_staff
         $schoolStaff = SchoolStaff::where('id', $request->user_id)->first();
         if (!$schoolStaff) {
-            abort(403);
+            abort(404);
         }
 
         try {
             School::handleSave($request->input(), $user, $schoolStaff, $schoolModel);
         } catch (\Throwable $th) {
-            return back()->withErrors(['error' => $th->getMessage()]);
+            abort(500);
         }
 
         return redirect()->route('school-driving.index')->with(['success' => '編集しました。']);

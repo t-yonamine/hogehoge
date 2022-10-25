@@ -44,8 +44,7 @@ Route::group(
     }
 );
 
-Route::group(
-    ['middleware' => 'sys-admin'],
+Route::middleware(['auth', 'sys-admin'])->group(
     function () {
         // school driving
         Route::controller(App\Http\Controllers\operation\SchoolDrivingController::class)
