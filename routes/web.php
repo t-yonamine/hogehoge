@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\Back\EffectMeasurement\EffectMeasurementController;
 use App\Http\Controllers\operation\SchoolDrivingController;
+use App\Http\Controllers\operation\AccountsController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -54,7 +55,11 @@ Route::middleware(['auth', 'sys-admin'])->group(
                 Route::delete('/{id}', 'delete')->name('delete');
                 Route::get('/{id}', 'detail')->name('detail');
                 Route::put('/', 'edit')->name('edit');
-            });    
+            });
+        Route::controller(AccountsController::class)->prefix('accounts')->name('accounts.')->group(function () {
+            Route::get('/{id}', 'show')->name('show');
+            Route::post('/{id}', 'update')->name('update');
+        });
     }
 );
 require __DIR__ . '/auth.php';
