@@ -33,9 +33,9 @@ class EffectMeasurementController extends Controller
     public function create(Request $request, $ledger_id)
     {
         // set default data to check
-        $request->session()->put('school_staff_id', 2);
-        $request->session()->put('school_id', 1);
-        $request->session()->put('school_cd', 9901);
+        // $request->session()->put('school_staff_id', 2);
+        // $request->session()->put('school_id', 1);
+        // $request->session()->put('school_cd', 9901);
 
         // 1. 入力パラメータ
         //   A. セッション情報 共通ロジック/セッション情報#1-3

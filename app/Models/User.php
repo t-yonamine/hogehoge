@@ -45,5 +45,6 @@ class User extends Authenticatable
      */
     protected $casts = [
         'status' => 'int',
+        'password' => 'string'
     ];
 }

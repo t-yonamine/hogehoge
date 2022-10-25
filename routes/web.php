@@ -41,12 +41,19 @@ Route::group(
             Route::get('/create/{ledger_id}', 'create')->name('create');
             Route::post('/create', 'store')->name('store');
         });
+    }
+);
 
+Route::group(
+    ['middleware' => 'sys-admin'],
+    function () {
         // school driving
         Route::controller(App\Http\Controllers\operation\SchoolDrivingController::class)
             ->prefix('school-driving')->name('school-driving.')->group(function () {
                 Route::get('/', 'index')->name('index');
                 Route::delete('/{id}', 'delete')->name('delete');
+                Route::get('/{id}', 'detail')->name('detail');
+                Route::put('/', 'edit')->name('edit');
             });
     }
 );
