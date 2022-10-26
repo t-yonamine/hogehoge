@@ -75,14 +75,8 @@
                                                         <td>{{ $model->name }}</td>
                                                         <td>{{ $model->name_kana }}</td>
                                                         <td class="text-center d-flex justify-content-center">
-                                                            <form id='formSub'
-                                                                action="{{ route('school-driving.detail', ['id' => $model->id]) }}"
-                                                                method="POST">
-                                                                @method('get')
-                                                                @csrf
-                                                                <button type="submit"
-                                                                    class="btn btn-sm btn-secondary">詳細</button>
-                                                            </form>
+                                                            <a href="{{ route('school-driving.detail', ['id' => $model->id]) }}"
+                                                                class="btn btn-sm btn-secondary">詳細</a>
                                                             <button type="button"
                                                                 class="btn btn-sm btn-secondary delete-button ml-1"
                                                                 data-action="{{ route('school-driving.delete', ['id' => $model->id]) }}"

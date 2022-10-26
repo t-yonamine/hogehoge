@@ -9,8 +9,6 @@ use App\Http\Requests\SchoolDriving\SchoolDrivingRequest;
 use App\Models\School;
 use App\Models\SchoolStaff;
 use App\Models\User;
-use Closure;
-use Exception;
 use Illuminate\Http\Request;
 
 class SchoolDrivingController extends Controller
@@ -22,7 +20,7 @@ class SchoolDrivingController extends Controller
      */
     public function index(Request $request)
     {
-        $models = School::buildQuery($request->input())->where('status', '!=', Status::DISABLE)
+        $models = School::buildQuery($request->input())->where('status', Status::ENABLE)
             ->orderBy('school_cd')->paginate();
         return view('operation.school-driving.index', ['models' => $models]);
     }
