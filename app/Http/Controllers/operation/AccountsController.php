@@ -72,4 +72,29 @@ class AccountsController extends Controller
         }
         return back()->with('success', '編集しました。');
     }
+    /**
+     * @Route('/accounts', method: 'GET', name: 'accounts.index')
+     *　データ取得
+     *　DBアクセスイメージ	
+     */
+    public function index()
+    {
+        $data = Staff::with(['user'])->where('status', Status::ENABLE)
+            ->where('role', Role::STAFF_MANAGER)->orderBy('staff_no')->paginate();
+        return view('operation.accounts.index', ['data' => $data]);
+    }
+
+    /**
+     * @Route('/accounts/{$id}', method: 'DELETE', name: 'accounts.delete', parameters: {$id})
+     */
+    public function delete($id)
+    {
+        $model = Staff::with(['user'])->where('id', $id)->first();
+        if (!$model || !$model->user) {
+            return redirect()->route('accounts.index')->with('error', '見つけることができませんでした');
+        } else {
+            Staff::handleDelete($model);
+        }
+        return redirect()->route('accounts.index')->with('success', '削除しました。');
+    }
 }

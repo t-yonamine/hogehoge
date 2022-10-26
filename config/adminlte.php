@@ -362,7 +362,7 @@ return [
         ],
         [
             'text' => '教習所アカウント',
-            'url'  => '#',
+            'route'  => 'accounts.index', 
             'icon' => 'fas fa-fw fa-circle',
             'can'  => ['admin'],
         ],

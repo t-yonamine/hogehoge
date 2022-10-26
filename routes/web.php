@@ -59,6 +59,8 @@ Route::middleware(['auth', 'sys-admin'])->group(
         Route::controller(AccountsController::class)->prefix('accounts')->name('accounts.')->group(function () {
             Route::get('/{id}', 'show')->name('show');
             Route::post('/{id}', 'update')->name('update');
+            Route::get('/', 'index')->name('index');
+            Route::delete('/{id}', 'delete')->name('delete');
         });
     }
 );

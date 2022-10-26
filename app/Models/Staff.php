@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Enums\Status;
 use Exception;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -14,6 +15,7 @@ class Staff extends Model
     use HasFactory, SoftDeletes;
 
     protected $table = 'gstaffs';
+    protected $perPage = 20;
 
     protected $fillable = [
         'id',
@@ -22,7 +24,7 @@ class Staff extends Model
         'role',
         'status',
     ];
-    
+
     public static function handleSave(array $data, int $id, int $user_id)
     {
         try {
@@ -47,5 +49,27 @@ class Staff extends Model
         } catch (Exception $e) {
             throw $e;
         }
+    }
+
+    public static function handleDelete(Staff $model)
+    {
+        try {
+            DB::transaction(function () use ($model) {
+                //　選択されたユーザーを無効にする
+                //　　gusers.status = {無効} で更新
+                $model->status = Status::DISABLE;
+                //　　gstaffs.status = {無効} で更新
+                $model->user->status = Status::DISABLE;
+                $model->save();
+                $model->user->save();
+            });
+        } catch (Exception $e) {
+            throw $e;
+        }
+    }
+
+    public function user()
+    {
+        return $this->hasOne(User::class, 'id', 'id');
     }
 }
