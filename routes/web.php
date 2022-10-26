@@ -45,8 +45,8 @@ Route::group(
         });
     }
 );
-
-Route::middleware(['auth', 'sys-admin'])->group(
+// admin : ログインユーザーが運営側ユーザーである && 役割がシステム管理者、または担当者を含むことを確認
+Route::middleware(['auth', 'admin'])->group(
     function () {
         // school driving
         Route::controller(SchoolDrivingController::class)
@@ -56,6 +56,11 @@ Route::middleware(['auth', 'sys-admin'])->group(
                 Route::get('/{id}', 'detail')->name('detail');
                 Route::put('/', 'edit')->name('edit');
             });
+    }
+);
+// sys-admin: ログインユーザーが運営システム管理者であることを確認運営システム管理者でない場合、
+Route::middleware(['auth', 'sys-admin'])->group(
+    function () {
         Route::controller(AccountsController::class)->prefix('accounts')->name('accounts.')->group(function () {
             Route::get('/{id}', 'show')->name('show');
             Route::post('/{id}', 'update')->name('update');
