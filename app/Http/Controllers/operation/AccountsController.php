@@ -14,23 +14,6 @@ use Illuminate\Support\Facades\Auth;
 
 class AccountsController extends Controller
 {
-
-    public function __construct()
-    {
-        //　権限チェック
-        //　　ログインユーザーが運営システム管理者であることを確認
-        //　　運営システム管理者でない場合、403 Error. Forbden
-        //　　if ({ログインユーザー.school_id == null &&  {ログインユーザ.role} == {システム管理者}) ? OK : エラー!;
-        $this->middleware(function (Request $request, Closure $next) {
-            $user = Auth::user();
-            if ($user->shool_id || !$user->staff || $user->staff->role != Role::SYS_ADMINISTRATOR) {
-                abort(403);
-            }
-            return $next($request)
-                ->header('Cache-Control', 'no-store, must-revalidate');
-        });
-    }
-
     /**
      * Display the specified resource.
      *
