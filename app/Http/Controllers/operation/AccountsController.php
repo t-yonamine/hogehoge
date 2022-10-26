@@ -58,13 +58,13 @@ class AccountsController extends Controller
                 ->where('login_id', $request->login_id)
                 ->where('id', '!=', $id)->first();
             if ($existUserLogin) {
-                return back()->withErrors('staff_no', '担当者番号が存在する。');
+                return back()->withErrors(['staff_no' => '担当者番号が存在する。']);
             }
             //　　運営側に選択ユーザー以外に同じ担当者番号が存在する場合はエラー
             $existStaff = Staff::where('staff_no', $request->staff_no)
                 ->where('id', '!=', $id)->first();
             if ($existStaff) {
-                return back()->withErrors('staff_no', '担当者番号が存在する。');
+                return back()->withErrors(['staff_no' => '担当者番号が存在する。']);
             }
             Staff::handleSave($request->input(), $id, $user->id);
         } catch (\Throwable $th) {
