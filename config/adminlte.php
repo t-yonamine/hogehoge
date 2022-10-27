@@ -361,7 +361,7 @@ return [
             'can'  => ['admin'],
         ],
         [
-            'text' => '教習所アカウント',
+            'text' => '運営アカウント一覧',
             'route'  => 'accounts.index', 
             'icon' => 'fas fa-fw fa-circle',
             'can'  => ['admin'],

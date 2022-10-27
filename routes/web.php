@@ -1,6 +1,6 @@
 <?php
 
-use App\Http\Controllers\Back\EffectMeasurement\EffectMeasurementController;
+use App\Http\Controllers\Back\EffectMeasurementController;
 use App\Http\Controllers\operation\SchoolDrivingController;
 use App\Http\Controllers\operation\AccountsController;
 use Illuminate\Support\Facades\Route;

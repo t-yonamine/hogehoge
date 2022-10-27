@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Controllers\Back\EffectMeasurement;
+namespace App\Http\Controllers\Back;
 
 use App\Enums\LaType;
 use App\Enums\ResultType;
@@ -17,8 +17,6 @@ use Illuminate\Support\Facades\Auth;
 
 class EffectMeasurementController extends Controller
 {
-    const EFF_MEAS_MIN = 2200;
-    const EFF_MEAS_MAX = 2299;
     /**
      * Handle the incoming request.
      *
@@ -128,8 +126,8 @@ class EffectMeasurementController extends Controller
         };
         // 対象教習原簿の効果測定の一覧を求めて表示。
         $data = Ledger::with(['admCheckItem', 'lessonAttend' => function ($q) {
-            $q->with('schoolStaff')->where('la_type', '>=', self::EFF_MEAS_MIN)
-                ->where('la_type', '<=', self::EFF_MEAS_MAX)
+            $q->with('schoolStaff')->where('la_type', '>=', LaType::EFF_MEAS_MIN)
+                ->where('la_type', '<=', LaType::EFF_MEAS_MAX)
                 ->orderBy('period_date');
         }])->where('id', $id)->first();
         if (empty($data) || empty($data->admCheckItem)) {
