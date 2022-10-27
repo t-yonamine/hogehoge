@@ -109,10 +109,12 @@
                                     <td>
                                         <div class="d-flex">
                                             <input name="result" class="" id="OK" type="radio"
-                                                class="form-control" placeholder="" value="1" checked>
+                                                class="form-control" placeholder="" value="{{ App\Enums\ResultType::OK }}"
+                                                @if (old('result', $result) == App\Enums\ResultType::OK) checked @endif>
                                             <span class="mb-0 ml-1 mr-3" for="OK">合格</span>
                                             <input name="result" class="" id="NG" type="radio"
-                                                class="form-control" placeholder="" value="0">
+                                                class="form-control" placeholder="" value="{{ App\Enums\ResultType::NG }}"
+                                                @if (old('result', $result ?? 0) == App\Enums\ResultType::NG) checked @endif>
                                             <span class="m-0 mx-1" for="NG">不合格</span>
                                         </div>
                                         @error('result')

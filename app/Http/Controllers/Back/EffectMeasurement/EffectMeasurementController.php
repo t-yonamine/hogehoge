@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Back\EffectMeasurement;
 
 use App\Enums\LaType;
+use App\Enums\ResultType;
 use App\Enums\Role;
 use App\Enums\StageType;
 use App\Http\Controllers\Controller;
@@ -43,7 +44,7 @@ class EffectMeasurementController extends Controller
 
         //   B. param/ledger_id 遷移元から渡された教習原簿ID
         //   C. param/la_type 受講区分。遷移元で指定。仮免新規:2211、卒検新規:2221
-        if (!isset($ledger_id) || !isset($request->la_type) || ($request->la_type != 2221 && $request->la_type != 2211)) {
+        if (!isset($ledger_id) || !isset($request->la_type) || ($request->la_type != LaType::GRADUATION && $request->la_type != LaType::PRE_EXAMINATION)) {
             abort(404);
         }
         // 2. 存在チェック
@@ -66,7 +67,7 @@ class EffectMeasurementController extends Controller
             return abort(403);
         }
 
-        return view('back.effect-measurement.create', ['data' => $data, 'laType' => $request->la_type, 'resultInit' => true]);
+        return view('back.effect-measurement.create', ['data' => $data, 'laType' => $request->la_type, 'result' => ResultType::OK]);
     }
 
     public function store(EffectMeasurementRequest $request)
@@ -75,7 +76,7 @@ class EffectMeasurementController extends Controller
         //   A. セッション情報 共通ロジック/セッション情報#1-3
         $school_staff_id =  $request->session()->get('school_staff_id');
         $school_id =  $request->session()->get('school_id');
-        if (empty($school_id)) {
+        if (empty($school_id) || empty($school_staff_id)) {
             abort(403);
         }
 
@@ -106,7 +107,7 @@ class EffectMeasurementController extends Controller
             throw $th;
         }
 
-        return redirect()->route('effect-measurement.index', ['ledger_id' => $ledger->id])->with(['success' => 'success']);
+        return redirect()->route('effect-measurement.index', ['ledger_id' => $ledger->id])->with(['success' => '削除しました。']);
     }
 
     /**
