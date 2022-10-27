@@ -23,6 +23,16 @@ class Staff extends Model
         'name',
         'role',
         'status',
+        'created_user_id'
+    ];
+
+    /**
+     * The attributes that should be cast.
+     *
+     * @var array<string, string>
+     */
+    protected $casts = [
+        'created_user_id' => 'int',
     ];
 
     public static function handleSave(array $data, int $id, int $user_id)
@@ -71,5 +81,24 @@ class Staff extends Model
     public function user()
     {
         return $this->hasOne(User::class, 'id', 'id');
+    }
+
+    public static function handleCreate(array $dataUser, array $dataStaff, User $user = null, Staff $staff = null)
+    {
+        try {
+            $user = new User();
+            $staff = $staff ?: new static;
+            DB::transaction(function () use ($dataUser, $user, $dataStaff, $staff) {
+                //ユーザー登録
+                $user->fill($dataUser);
+                $user->save();
+                //担当者登録(gstaffs)                
+                $dataStaff['id'] = $user->id;
+                $staff->fill($dataStaff);
+                $staff->save();
+            });
+        } catch (Exception $e) {
+            throw $e;
+        }
     }
 }

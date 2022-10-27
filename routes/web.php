@@ -66,6 +66,8 @@ Route::middleware(['auth', 'sys-admin'])->group(
             Route::post('/{id}', 'update')->name('update');
             Route::get('/', 'index')->name('index');
             Route::delete('/{id}', 'delete')->name('delete');
+            Route::get('/create/management', 'create')->name('create');
+            Route::post('/create/management', 'store')->name('store');
         });
     }
 );
