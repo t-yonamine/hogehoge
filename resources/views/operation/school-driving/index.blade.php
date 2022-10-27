@@ -67,7 +67,9 @@
                                                 </tr>
                                             </thead>
                                             @if ($models->isEmpty())
-                                                <div class="text-center">データがありません</div>
+                                                <tr>
+                                                    <td colspan="100%" class="text-center">データがありません。</td>
+                                                </tr>
                                             @else
                                                 @foreach ($models as $model)
                                                     <tr>

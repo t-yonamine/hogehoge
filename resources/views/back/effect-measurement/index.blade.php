@@ -71,9 +71,9 @@
                                             @foreach ($lesson_attends as $item)
                                                 <tr>
                                                     <td>
-                                                        @if ($item->la_type === 2210 || $item->la_type === 2211)
+                                                        @if ($item->la_type === App\Enums\LaType::EFF_MEAS_1 || $item->la_type === App\Enums\LaType::PRE_EXAMINATION)
                                                             仮免前
-                                                        @elseif ($item->la_type === 2220 || $item->la_type === 2221)
+                                                        @elseif ($item->la_type === App\Enums\LaType::EFF_MEAS_2 || $item->la_type === App\Enums\LaType::GRADUATION)
                                                             卒検前
                                                         @endif
                                                     </td>
@@ -83,10 +83,10 @@
                                                     <td>{{ $item->question_num }}</td>
                                                     <td>{{ $item->score }}</td>
                                                     <td>
-                                                        @if ($item->result == 0)
-                                                            合格
-                                                        @elseif($item->result == 1)
+                                                        @if ($item->result == App\Enums\ResultType::NG)
                                                             不合格
+                                                        @elseif($item->result == App\Enums\ResultType::OK)
+                                                            合格
                                                         @else
                                                         @endif
                                                     </td>
