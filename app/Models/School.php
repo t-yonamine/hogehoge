@@ -92,6 +92,23 @@ class School extends Model
             throw $e;
         }
     }
+
+    public static function handleDelete(School $model)
+    {
+        try {
+            DB::transaction(function () use ($model) {
+                $userId = Auth::id();
+                $model->status = Status::DISABLE;
+                $model->deleted_at = now();
+                $model->deleted_user_id = $userId;
+                $model->save();
+            });
+        } catch (Exception $e) {
+            throw $e;
+        }
+    }
+
+
     public static function handleCreate(array $data)
     {
         try {

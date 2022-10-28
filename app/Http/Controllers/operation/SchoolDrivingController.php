@@ -35,8 +35,11 @@ class SchoolDrivingController extends Controller
         if (!$model) {
             return redirect()->route('school-driving.index')->with('error', 'データは削除されました。または存在していません。');
         } else {
-            $model->status = Status::DISABLE;
-            $model->save();
+            try {
+                School::handleDelete($model);
+            } catch (\Throwable $th) {
+                throw $th;
+            }
         }
         return redirect()->route('school-driving.index')->with('success', 'データを削除しました。');
     }

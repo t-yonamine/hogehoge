@@ -7,6 +7,7 @@ use Exception;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 
@@ -65,11 +66,19 @@ class Staff extends Model
     {
         try {
             DB::transaction(function () use ($model) {
+                $userId = Auth::id();
                 //　選択されたユーザーを無効にする
+
                 //　　gusers.status = {無効} で更新
                 $model->status = Status::DISABLE;
+                $model->deleted_at = now();
+                $model->deleted_user_id = $userId;
+
                 //　　gstaffs.status = {無効} で更新
                 $model->user->status = Status::DISABLE;
+                $model->user->deleted_at = now();
+                $model->user->deleted_user_id = $userId;
+
                 $model->save();
                 $model->user->save();
             });
@@ -92,7 +101,7 @@ class Staff extends Model
                 //ユーザー登録
                 $user->fill($dataUser);
                 $user->save();
-                //担当者登録(gstaffs)                
+                //担当者登録(gstaffs)
                 $dataStaff['id'] = $user->id;
                 $staff->fill($dataStaff);
                 $staff->save();
