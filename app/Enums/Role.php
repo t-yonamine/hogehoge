@@ -14,4 +14,5 @@ class Role extends Enum
     const EXAMINER = 32;
     const SUB_ADMINISTRATOR = 64;
     const ADMINISTRATOR = 128;
+    const STAFF_MANAGER = 2;
 }

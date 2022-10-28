@@ -7,9 +7,9 @@
         効果測定登録</h1>
 @stop
 
-<?php
-$laTypeText = $laType > 2211 ? '卒検前' : '仮免前';
-?>
+@php
+    $laTypeText = old('la_type', $laType) > App\Enums\LaType::PRE_EXAMINATION ? '卒検前' : '仮免前';
+@endphp
 @section('content')
 
     <div class="row">
@@ -44,7 +44,7 @@ $laTypeText = $laType > 2211 ? '卒検前' : '仮免前';
                                 <tr>
                                     <th class="w-20">テスト区分</th>
                                     <td><input name="la_type" type="text" class="form-control" placeholder=""
-                                            value="{{ old('la_type', $laTypeText) }}" disabled></td>
+                                            value="{{ $laTypeText }}" disabled></td>
                                 </tr>
                                 <tr>
                                     <th class="w-20">実施日付
@@ -109,10 +109,12 @@ $laTypeText = $laType > 2211 ? '卒検前' : '仮免前';
                                     <td>
                                         <div class="d-flex">
                                             <input name="result" class="" id="OK" type="radio"
-                                                class="form-control" placeholder="" value="1" checked>
+                                                class="form-control" placeholder="" value="{{ App\Enums\ResultType::OK }}"
+                                                @if (old('result', $result) == App\Enums\ResultType::OK) checked @endif>
                                             <span class="mb-0 ml-1 mr-3" for="OK">合格</span>
                                             <input name="result" class="" id="NG" type="radio"
-                                                class="form-control" placeholder="" value="0">
+                                                class="form-control" placeholder="" value="{{ App\Enums\ResultType::NG }}"
+                                                @if (old('result', $result ?? 0) == App\Enums\ResultType::NG) checked @endif>
                                             <span class="m-0 mx-1" for="NG">不合格</span>
                                         </div>
                                         @error('result')
@@ -141,8 +143,11 @@ $laTypeText = $laType > 2211 ? '卒検前' : '仮免前';
                     </div>
                     <div class="card-footer">
                         <div class="col text-center">
-                            <button class="btn btn-sm btn-secondary" type="button"> キャンセルボタン</button>
-                            <button class="btn btn-sm btn-primary" type="submit"> 保存ボタン</button>
+                            <a href="{{ route('effect-measurement.index', [$data->id]) }}"
+                                class="btn btn-sm btn-secondary">
+                                キャンセル
+                            </a>
+                            <button class="btn btn-sm btn-primary" type="submit">保存</button>
                         </div>
                     </div>
                 </form>

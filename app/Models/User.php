@@ -27,6 +27,7 @@ class User extends Authenticatable
         'password',
         'remember_token',
         'status',
+        'created_user_id'
     ];
 
     /**
@@ -46,7 +47,8 @@ class User extends Authenticatable
      */
     protected $casts = [
         'status' => 'int',
-        'password' => 'string'
+        'password' => 'string',
+        'created_user_id' => 'int'
     ];
 
     public function schoolStaff()
@@ -68,5 +70,4 @@ class User extends Authenticatable
             return  $this->schoolStaff->name;
         }
     }
-
 }

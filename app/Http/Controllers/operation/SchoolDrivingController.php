@@ -6,11 +6,10 @@ use App\Enums\Role;
 use App\Enums\Status;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\SchoolDriving\SchoolDrivingRequest;
+use App\Http\Requests\SchoolDriving\SchoolDrivingCreateRequest;
 use App\Models\School;
 use App\Models\SchoolStaff;
 use App\Models\User;
-use Closure;
-use Exception;
 use Illuminate\Http\Request;
 
 class SchoolDrivingController extends Controller
@@ -22,7 +21,7 @@ class SchoolDrivingController extends Controller
      */
     public function index(Request $request)
     {
-        $models = School::buildQuery($request->input())->where('status', '!=', Status::DISABLE)
+        $models = School::buildQuery($request->input())->where('status', Status::ENABLE)
             ->orderBy('school_cd')->paginate();
         return view('operation.school-driving.index', ['models' => $models]);
     }
@@ -48,7 +47,7 @@ class SchoolDrivingController extends Controller
     public function detail($id)
     {
         // ・教習所情報取得
-        $school = School::where('id', $id)->first();
+        $school = School::where('id', $id)->where('status', Status::ENABLE)->first();
         if (!$school) {
             abort(404);
         }
@@ -87,7 +86,7 @@ class SchoolDrivingController extends Controller
         // ・教習所情報取得
         $school = School::where('id', '<>', $request->id)->where('school_cd', $request->school_cd)->first();
         if ($school) {
-            return back()->withErrors(['school_cd' => '同じ教習所CDが存在する。']);
+            return back()->withErrors(['school_cd' => '同じ教習所CDは既に存在します。']);
         }
         $schoolModel = School::where('id', $request->id)->first();
         if (!$schoolModel) {
@@ -113,5 +112,43 @@ class SchoolDrivingController extends Controller
         }
 
         return redirect()->route('school-driving.index')->with(['success' => '編集しました。']);
+    }
+    /**
+     * @Route('/school-driving/create', method: 'GET', name: 'school-driving.create')
+     */
+    public function create()
+    {
+        $modelResponse = [
+            'id' =>  null,
+            'school_cd' =>  null,
+            'name' =>  null,
+            'name_kana' =>  null,
+            'user_id' =>  null,
+            'login_id' =>  null,
+            'password' => null,
+            'school_staff_no' => null,
+            'school_staff_name' => null
+        ];
+        return view('operation.school-driving.create', ['model' => $modelResponse]);
+    }
+
+    /**
+     * @Route('/school-driving/store', method: 'POST', name: 'school-driving.store')
+     */
+    public function store(SchoolDrivingCreateRequest $request)
+    {
+        // ・存在チェック
+        $school = School::where('school_cd', $request->school_cd)->first();
+        if ($school) {
+            return back()->withErrors(['school_cd' => '教習所CDは既に存在します。']);
+        }
+
+        try {
+            School::handleCreate($request->input());
+        } catch (\Throwable $th) {
+            throw $th;
+        }
+
+        return redirect()->route('school-driving.index')->with(['success' => '登録しました。']);
     }
 }
