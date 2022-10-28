@@ -92,7 +92,6 @@
                         @endif
                     </th>
                     <td>
-                        {{ old('password', $model['password']) }}
                         <input name="password" type="password"
                             class="form-control @error('password') is-invalid @enderror" placeholder="" maxlength="8"
                             value="{{ old('password', $model['password']) }}">

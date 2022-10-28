@@ -47,7 +47,7 @@ class SchoolDrivingController extends Controller
     public function detail($id)
     {
         // ・教習所情報取得
-        $school = School::where('id', $id)->first();
+        $school = School::where('id', $id)->where('status', Status::ENABLE)->first();
         if (!$school) {
             abort(404);
         }
@@ -86,7 +86,7 @@ class SchoolDrivingController extends Controller
         // ・教習所情報取得
         $school = School::where('id', '<>', $request->id)->where('school_cd', $request->school_cd)->first();
         if ($school) {
-            return back()->withErrors(['school_cd' => '同じ教習所CDが存在する。']);
+            return back()->withErrors(['school_cd' => '同じ教習所CDは既に存在します。']);
         }
         $schoolModel = School::where('id', $request->id)->first();
         if (!$schoolModel) {

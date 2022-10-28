@@ -64,6 +64,8 @@ Route::middleware(['auth', 'admin'])->group(
 Route::middleware(['auth', 'sys-admin'])->group(
     function () {
         Route::controller(AccountsController::class)->prefix('accounts')->name('accounts.')->group(function () {
+            Route::get('/create', 'create')->name('create');
+            Route::post('/create', 'store')->name('store');
             Route::get('/{id}', 'show')->name('show');
             Route::post('/{id}', 'update')->name('update');
             Route::get('/', 'index')->name('index');

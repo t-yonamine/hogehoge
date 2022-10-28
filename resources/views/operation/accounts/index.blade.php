@@ -14,7 +14,8 @@
                 <div class="card-header">
                     <div class="card-tools">
                         {{-- 教習所アカウント登録画面へ遷移 --}}
-                        <a href="#" class="btn btn-sm btn-secondary"><i class="fa fa-btn fa-plus-circle"></i> 新規登録</a>
+                        <a href="{{ route('accounts.create') }}" class="btn btn-sm btn-secondary"><i
+                                class="fa fa-btn fa-plus-circle"></i> 新規登録</a>
                     </div>
                 </div>
                 <div class="card-body">
@@ -44,7 +45,8 @@
                                                         <td>{{ $item->user->login_id }}</td>
                                                         <td class="text-center d-flex justify-content-center">
                                                             {{-- 教習所アカウント詳細画面へ遷移 --}}
-                                                            <a href="{{ route('accounts.update', ['id' => $item->id]) }}" class="btn btn-sm btn-secondary mr-1">詳細</a>
+                                                            <a href="{{ route('accounts.update', ['id' => $item->id]) }}"
+                                                                class="btn btn-sm btn-secondary mr-1">詳細</a>
                                                             {{-- 削除確認モーダルを表示する。「削除しますか？」 --}}
                                                             <button type="submit"
                                                                 class='btn btn-sm btn-secondary delete-button'
