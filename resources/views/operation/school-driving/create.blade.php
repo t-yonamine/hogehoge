@@ -1,9 +1,9 @@
 @extends('adminlte::page')
 
-@section('title', '教習所詳細')
+@section('title', '教習所登録')
 
 @section('content_header')
-    <h1>教習所詳細</h1>
+    <h1>教習所登録</h1>
 @stop
 
 @section('content')
@@ -11,7 +11,7 @@
     <div class="row">
         <div class="col-12">
             <div class="card">
-                <x-forms.school-driving :isCreate="false" :model="$model" method='PUT' route="{{ route('school-driving.edit') }}">
+                <x-forms.school-driving :isCreate="true"  :model="$model" method='POST' route="{{ route('school-driving.store') }}">
                 </x-forms.school-driving>
             </div>
         </div>
