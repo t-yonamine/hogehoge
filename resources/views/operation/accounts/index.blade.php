@@ -45,20 +45,15 @@
                                                         <td>{{ $item->user->login_id }}</td>
                                                         <td class="text-center d-flex justify-content-center">
                                                             {{-- 教習所アカウント詳細画面へ遷移 --}}
-                                                            <<<<<<< HEAD <a
-                                                                href="{{ route('accounts.update', ['id' => $item->id]) }}"
+                                                            <a href="{{ route('accounts.update', ['id' => $item->id]) }}"
                                                                 class="btn btn-sm btn-secondary mr-1">詳細</a>
-                                                                =======
-                                                                <a href="{{ route('accounts.update', ['id' => $item->id]) }}"
-                                                                    class="btn btn-sm btn-secondary mr-1">詳細</a>
-                                                                >>>>>>> 4e871f75ace16f5f35d3166afda09d46eb06c6f7
-                                                                {{-- 削除確認モーダルを表示する。「削除しますか？」 --}}
-                                                                <button type="submit"
-                                                                    class='btn btn-sm btn-secondary delete-button'
-                                                                    data-action='{{ route('accounts.delete', [$item]) }}'
-                                                                    data-id='{{ $item->id }}'>
-                                                                    削除
-                                                                </button>
+                                                            {{-- 削除確認モーダルを表示する。「削除しますか？」 --}}
+                                                            <button type="submit"
+                                                                class='btn btn-sm btn-secondary delete-button'
+                                                                data-action='{{ route('accounts.delete', [$item]) }}'
+                                                                data-id='{{ $item->id }}'>
+                                                                削除
+                                                            </button>
                                                         </td>
                                                     </tr>
                                                 @endforeach
