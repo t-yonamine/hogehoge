@@ -11,8 +11,10 @@
     <div class="row">
         <div class="col-12">
             <div class="card">
-                <x-forms.school-driving :isCreate="false" :model="$model" method='PUT' route="{{ route('school-driving.edit') }}">
+                <x-forms.school-driving :isCreate="false" :model="$model" method='PUT'
+                    route="{{ route('school-driving.edit') }}">
                 </x-forms.school-driving>
             </div>
         </div>
-    @stop
+    </div>
+@stop
