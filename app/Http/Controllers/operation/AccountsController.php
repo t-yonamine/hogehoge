@@ -63,7 +63,7 @@ class AccountsController extends Controller
         } catch (\Throwable $th) {
             throw $th;
         }
-        return redirect()->route('accounts.index')->with(['success' => '編集しました。']);
+        return redirect()->route('accounts.index')->with(['success' => '登録しました。']);
     }
 
 
