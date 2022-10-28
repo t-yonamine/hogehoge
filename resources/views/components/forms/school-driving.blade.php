@@ -1,6 +1,6 @@
 {{-- define common form for school-driving  --}}
-<form class="flex flex-col w-full" method="POST" id="form-search" action="{{ $route }}" autocomplete="off">
-    @method('PUT')
+<form class="flex flex-col w-full" method="POST" id="form-create-update" action="{{ $route }}" autocomplete="off">
+    @method($method)
     @csrf
     <input type="hidden" name="id" value="{{ old('id', $model['id']) }}">
     {{-- Driving school information --}}
@@ -57,19 +57,40 @@
     </div>
 
     {{-- School system administrator --}}
-    <input type="hidden" name="user_id" value="{{ old('user_id', $model['user_id']) }}">
-    <input type="hidden" name="login_id" value="{{ old('login_id', $model['login_id']) }}">
+    @if (!$isCreate)
+        <input type="hidden" name="user_id" value="{{ old('user_id', $model['user_id']) }}">
+        <input type="hidden" name="login_id" value="{{ old('login_id', $model['login_id']) }}">
+    @endif
     <div class="card-body">
         <table class="table table-bordered table-view">
             <tbody>
                 <tr>教習所システム管理者</tr>
                 <tr>
-                    <th class="w-20">ログインID</th>
-                    <td><input name="login_id" type="text" class="form-control" placeholder="" maxlength="10"
-                            disabled value="{{ old('login_id', $model['login_id']) }}"></td>
+                    <th class="w-20">ログインID
+                        @if ($isCreate)
+                            <x-text-required />
+                        @endif
+                    </th>
+                    <td>
+                        <input name="login_id" type="text"
+                            class="form-control @error('login_id') is-invalid @enderror" placeholder="" maxlength="4"
+                            @unless($isCreate) disabled @endunless()
+                            value="{{ old('login_id', $model['login_id']) }}">
+                        @if ($isCreate)
+                            @error('login_id')
+                                <span class="invalid-feedback" role="alert">
+                                    <strong>{{ $message }}</strong>
+                                </span>
+                            @enderror
+                        @endif
+                    </td>
                 </tr>
                 <tr>
-                    <th class="w-20">パスワード</th>
+                    <th class="w-20">パスワード
+                        @if ($isCreate)
+                            <x-text-required />
+                        @endif
+                    </th>
                     <td>
                         <input name="password" type="password"
                             class="form-control @error('password') is-invalid @enderror" placeholder="" maxlength="8"

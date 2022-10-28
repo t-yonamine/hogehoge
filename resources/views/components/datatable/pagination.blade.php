@@ -41,4 +41,6 @@
             </nav>
         </div>
     </div>
+@else
+{{$slot}}
 @endif

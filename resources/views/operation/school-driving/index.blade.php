@@ -45,7 +45,7 @@
             <div class="card">
                 <div class="card-header">
                     <div class="card-tools">
-                        <a href="#" class="btn btn-sm btn-secondary"><i class="fa fa-btn fa-plus-circle"></i> 新規登録</a>
+                        <a href="{{ route('school-driving.create') }}" class="btn btn-sm btn-secondary"><i class="fa fa-btn fa-plus-circle"></i> 新規登録</a>
                     </div>
                 </div>
                 <div class="card-body">
@@ -67,7 +67,9 @@
                                                 </tr>
                                             </thead>
                                             @if ($models->isEmpty())
-                                                <div class="text-center">データがありません</div>
+                                                <tr>
+                                                    <td colspan="100%" class="text-center">データがありません。</td>
+                                                </tr>
                                             @else
                                                 @foreach ($models as $model)
                                                     <tr>
@@ -94,37 +96,6 @@
                 </div>
             </div>
         </div>
-        <div>
-
-            <!-- Modal -->
-            <div class="modal fade" id="modelDelete" tabindex="-1" role="dialog" aria-labelledby="modelDeleteTitle"
-                aria-hidden="true">
-                <div class="modal-dialog" role="document">
-                    <div class="modal-content">
-                        <div class="modal-header">
-                            <h5 class="modal-title" id="exampleModalLabel">消去</h5>
-                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                                <span aria-hidden="true">&times;</span>
-                            </button>
-                        </div>
-                        <div class="modal-body">
-                            削除しますか？
-                        </div>
-                        <div class="modal-footer">
-                            <form id='formSub' action="" method="POST">
-                                @method('DELETE')
-                                @csrf
-                                <button type="button" class="btn btn-secondary" data-dismiss="modal">キャンセル</button>
-                                <button type="submit" class="btn btn-primary">はい</button>
-                            </form>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-        </div>
     </div>
+    <x-modal.delete />
 @stop
-@section('js')
-    <script src="{{ asset('/js/tem-script.js') }}" type="text/javascript"></script>
-@endsection

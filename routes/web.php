@@ -1,6 +1,6 @@
 <?php
 
-use App\Http\Controllers\Back\EffectMeasurement\EffectMeasurementController;
+use App\Http\Controllers\Back\EffectMeasurementController;
 use App\Http\Controllers\operation\SchoolDrivingController;
 use App\Http\Controllers\operation\AccountsController;
 use Illuminate\Support\Facades\Route;
@@ -52,6 +52,8 @@ Route::middleware(['auth', 'admin'])->group(
         Route::controller(SchoolDrivingController::class)
             ->prefix('school-driving')->name('school-driving.')->group(function () {
                 Route::get('/', 'index')->name('index');
+                Route::get('/create', 'create')->name('create');
+                Route::post('/create', 'store')->name('store');
                 Route::delete('/{id}', 'delete')->name('delete');
                 Route::get('/{id}', 'detail')->name('detail');
                 Route::put('/', 'edit')->name('edit');

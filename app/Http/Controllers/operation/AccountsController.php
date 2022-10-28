@@ -84,6 +84,9 @@ class AccountsController extends Controller
         return  view('operation.accounts.update', ['dataStaff' => $user->staff, 'dataUser' => $user]);
     }
 
+    /**
+     * @Route('/accounts/{id}', method: 'POST', name: 'accounts.update')
+     */
     public function update(AccountsUpdateRequest $request, $id)
     {
         try {
