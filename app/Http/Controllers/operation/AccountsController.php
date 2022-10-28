@@ -38,13 +38,13 @@ class AccountsController extends Controller
         $existUserLogin = User::whereNull('school_id')
             ->where('login_id', $request->login_id)->first();
         if ($existUserLogin) {
-            return back()->withErrors(['login_id' => 'ログインID存在する。']);
+            return back()->withErrors(['login_id' => 'ログインIDは既に存在します。']);
         }
 
         // 運営側に同じ担当者番号が存在する場合はエラー
         $existStaff = Staff::where('staff_no', $request->staff_no)->first();
         if ($existStaff) {
-            return back()->withErrors(['staff_no' => '担当者番号が存在する。']);
+            return back()->withErrors(['staff_no' => '担当者番号は既に存在します。']);
         }
 
         try {
@@ -94,13 +94,13 @@ class AccountsController extends Controller
                 ->where('login_id', $request->login_id)
                 ->where('id', '!=', $id)->first();
             if ($existUserLogin) {
-                return back()->withErrors(['login_id' => 'ログインID存在する。']);
+                return back()->withErrors(['login_id' => 'ログインIDは既に存在します。']);
             }
             //　　運営側に選択ユーザー以外に同じ担当者番号が存在する場合はエラー
             $existStaff = Staff::where('staff_no', $request->staff_no)
                 ->where('id', '!=', $id)->first();
             if ($existStaff) {
-                return back()->withErrors(['staff_no' => '担当者番号が存在する。']);
+                return back()->withErrors(['staff_no' => '担当者番号は既に存在します。']);
             }
             Staff::handleSave($request->input(), $id, $user->id);
         } catch (\Throwable $th) {
