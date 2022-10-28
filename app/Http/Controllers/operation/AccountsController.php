@@ -17,7 +17,7 @@ class AccountsController extends Controller
     const PASSWORD_DEFAULT = '';
 
     /**
-     * @Route('/accounts/create/management', method: 'GET', name: 'accounts.create')
+     * @Route('/accounts/create', method: 'GET', name: 'accounts.create')
      */
     public function create()
     {
@@ -28,7 +28,7 @@ class AccountsController extends Controller
     }
 
     /**
-     * @Route('/accounts/create/management', method: 'POST', name: 'accounts.store')
+     * @Route('/accounts/create', method: 'POST', name: 'accounts.store')
      */
     public function store(AccountsCreateRequest $request)
     {
