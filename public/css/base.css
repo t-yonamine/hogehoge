@@ -11169,11 +11169,16 @@ a.text-darkgray:focus {
     background-color: #fff;
     height: 100vh;
     width: 100%;
-    transition: height 200ms linear;
+    transition: unset !important;
     position: fixed;
     left: 0;
     top: 0;
     z-index: 9999;
+}
+
+.preloader>img {
+    position: relative;
+    top: -20px;
 }
 
 .dark-mode .preloader {
@@ -53117,7 +53122,7 @@ table.table.table-index tr th {
     padding: 7px 0;
 }
 
-.table thead th{
+.table thead th {
     font-weight: normal;
     background: #f9f9f9 !important;
 }
