@@ -38,7 +38,7 @@ class SchoolDrivingController extends Controller
             $model->status = Status::DISABLE;
             $model->save();
         }
-        return redirect()->route('school-driving.index')->with('success', 'データを削除しました。');
+        return redirect()->route('school-driving.index')->with('success', '削除しました。');
     }
 
     /**

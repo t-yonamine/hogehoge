@@ -142,7 +142,7 @@ class EffectMeasurementController extends Controller
         // 教習原簿IDの存在チェック
         $lessonAttend = LessonAttend::where('id', $id)->first();
         if (empty($lessonAttend)) {
-            return back()->with('error', '見つけることができませんでした');
+            return back()->with('error', 'データは削除されました。または存在していません。');
         }
         //ボタン処理
         $lessonAttend->delete();
