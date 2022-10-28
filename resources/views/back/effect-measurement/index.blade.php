@@ -78,7 +78,7 @@
                                                         @endif
                                                     </td>
                                                     <td>{{ $item->period_date?->format('Y/m/d') }}</td>
-                                                    <td>{{ $item->period_from?->format('h:i') }}</td>
+                                                    <td>{{ $item->period_from?->format('H:i') }}</td>
                                                     <td>{{ $item->schoolStaff?->name }}</td>
                                                     <td>{{ $item->question_num }}</td>
                                                     <td>{{ $item->score }}</td>
