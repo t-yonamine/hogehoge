@@ -10,4 +10,5 @@ return [
     'MSE00001' => ':label already exists.',
     'MSE00002' => 'Data has been removed. or does not exist.',
     'MSE00003' => 'I failed to login.',
+    'MSE00004' => 'Please specify the correct format for :label.',
 ];

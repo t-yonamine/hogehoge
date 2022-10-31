@@ -30,7 +30,7 @@ class SchoolStaffController extends Controller
                 'school_staff_no' => 'nullable|regex:/^[a-zA-Z0-9]+$/'
             ],
             [
-                'school_staff_no' => Lang::get('messages.MSE00002')
+                'school_staff_no' => Lang::get('messages.MSE00004')
             ]
         );
 
