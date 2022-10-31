@@ -25,7 +25,7 @@ class AccountsUpdateRequest extends FormRequest
     public function rules()
     {
         return [
-            'password' => 'nullable|string|regex:/^[a-zA-Z0-9]+$/|max:8|min:6',
+            'password' => 'nullable|string|regex:/^[a-zA-Z0-9]+$/|max:20|min:6',
             'staff_no' => 'required|string|regex:/^[a-zA-Z0-9]+$/|max:10',
             'name' => 'required|string|max:128',
         ];

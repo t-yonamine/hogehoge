@@ -32,8 +32,8 @@ class LoginRequest extends FormRequest
     {
         return [
             'school_cd' => ['nullable', 'string', 'max:4'],
-            'login_id' => ['required', 'string', 'max:4'],
-            'password' => ['required', 'string', 'max:8'],
+            'login_id' => ['required', 'string', 'max:16'],
+            'password' => ['required', 'string', 'max:20'],
         ];
     }
 

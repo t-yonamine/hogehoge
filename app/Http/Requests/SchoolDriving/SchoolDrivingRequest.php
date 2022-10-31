@@ -31,7 +31,7 @@ class SchoolDrivingRequest extends FormRequest
             'name_kana' => 'required|string|max:64',
             'user_id' =>  'required|int',
             'login_id' =>  'required|string',
-            'password' => 'nullable|string|regex:/^[a-zA-Z0-9]+$/|min:6|max:8',
+            'password' => 'nullable|string|regex:/^[a-zA-Z0-9]+$/|min:6|max:20',
             'school_staff_no' => 'required|string|regex:/^[a-zA-Z0-9]+$/|max:10',
             'school_staff_name' => 'required|string|max:128',
         ];
