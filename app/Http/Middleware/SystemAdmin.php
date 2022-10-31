@@ -2,11 +2,9 @@
 
 namespace App\Http\Middleware;
 
-use App\Enums\Role;
-use App\Models\Staff;
+use App\Enums\StaffRole;
 use Closure;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Log;
 
 class SystemAdmin
 {
@@ -20,8 +18,8 @@ class SystemAdmin
     public function handle($request, Closure $next)
     {
         $user = Auth::user();
-        $role = $user->staff->role;
-        if (!$user->school_id && ($role == Role::SYS_ADMINISTRATOR || $role == (Role::SYS_ADMINISTRATOR + Role::STAFF_MANAGER))) {
+        $role = $user->staff?->role;
+        if (!$user->school_id && ($role == StaffRole::SYS_ADMINISTRATOR() || $role->value == (StaffRole::SYS_ADMINISTRATOR + StaffRole::MANAGER))) {
             return $next($request);
         }
         abort(403);

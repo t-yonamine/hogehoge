@@ -2,11 +2,11 @@
 
 namespace App\Http\Controllers\operation;
 
-use App\Enums\Role;
+use App\Enums\SchoolStaffRole;
 use App\Enums\Status;
 use App\Http\Controllers\Controller;
-use App\Http\Requests\SchoolDriving\SchoolDrivingRequest;
 use App\Http\Requests\SchoolDriving\SchoolDrivingCreateRequest;
+use App\Http\Requests\SchoolDriving\SchoolDrivingRequest;
 use App\Models\School;
 use App\Models\SchoolStaff;
 use App\Models\User;
@@ -22,8 +22,9 @@ class SchoolDrivingController extends Controller
      */
     public function index(Request $request)
     {
-        $models = School::buildQuery($request->input())->where('status', Status::ENABLE)
+        $models = School::buildQuery($request->input())->where('status', Status::ENABLED())
             ->orderBy('school_cd')->paginate();
+
         return view('operation.school-driving.index', ['models' => $models]);
     }
 
@@ -51,13 +52,13 @@ class SchoolDrivingController extends Controller
     public function detail($id)
     {
         // ・教習所情報取得
-        $school = School::where('id', $id)->where('status', Status::ENABLE)->first();
+        $school = School::where('id', $id)->where('status', Status::ENABLED())->first();
         if (!$school) {
             abort(404);
         }
 
         // get info システム管理者
-        $schoolStaff = SchoolStaff::where('school_id', $school->id)->where('role', Role::SYS_ADMINISTRATOR)->first();
+        $schoolStaff = SchoolStaff::where('school_id', $school->id)->where('role', SchoolStaffRole::SYS_ADMINISTRATOR())->first();
         if (!$schoolStaff) {
             abort(404);
         }

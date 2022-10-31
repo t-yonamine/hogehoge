@@ -5,13 +5,13 @@ namespace App\Enums;
 use BenSampo\Enum\Enum;
 
 /**
- * @method static static DISABLED()
- * @method static static ENABLED()
+ * @method static static SYS_ADMINISTRATOR()
+ * @method static static MANAGER()
  */
-final class Status extends Enum
+final class StaffRole extends Enum
 {
-    const DISABLED = 0;
-    const ENABLED = 1;
+    const SYS_ADMINISTRATOR = 1;
+    const MANAGER = 2;
 
     /**
      * Get the description for an enum value
@@ -22,8 +22,8 @@ final class Status extends Enum
     public static function getDescription($value): string
     {
         return match ($value) {
-            self::DISABLED => "無効",
-            self::ENABLED => "有効",
+            self::SYS_ADMINISTRATOR => "システム管理者",
+            self::MANAGER => "担当者",
         };
     }
 }

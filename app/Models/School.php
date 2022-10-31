@@ -2,7 +2,7 @@
 
 namespace App\Models;
 
-use App\Enums\Role;
+use App\Enums\SchoolStaffRole;
 use Exception;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -29,7 +29,7 @@ class School extends Model
         'school_cd' => 'string',
         'name' => 'string',
         'name_kana' => 'string',
-        'status' => 'int',
+        'status' => Status::class,
         'created_at' => 'datetime',
         'created_user_id' => 'int',
         'updated_at' => 'datetime',
@@ -98,7 +98,7 @@ class School extends Model
         try {
             DB::transaction(function () use ($model) {
                 $userId = Auth::id();
-                $model->status = Status::DISABLE;
+                $model->status = Status::DISABLED();
                 $model->deleted_at = now();
                 $model->deleted_user_id = $userId;
                 $model->save();
@@ -119,7 +119,7 @@ class School extends Model
                 $schoolModel['school_cd'] = $data['school_cd'];
                 $schoolModel['name'] = $data['name'];
                 $schoolModel['name_kana'] = $data['name_kana'];
-                $schoolModel['status'] = Status::ENABLE;
+                $schoolModel['status'] = Status::ENABLED();
                 $schoolModel['created_user_id'] = $userId;
                 $schoolModel['updated_user_id'] = $userId;
                 $schoolModel->save();
@@ -129,7 +129,7 @@ class School extends Model
                 $userModel['school_id'] = $schoolModel->id;
                 $userModel['login_id'] = $data['login_id'];
                 $userModel['password'] = Hash::make($data['password']);
-                $userModel['status'] = Status::ENABLE;
+                $userModel['status'] = Status::ENABLED();
                 $userModel->save();
 
                 // 教習所システム管理者の登録
@@ -138,8 +138,8 @@ class School extends Model
                 $schoolStaffModel['school_id'] = $schoolModel->id;
                 $schoolStaffModel['school_staff_no'] = $data['school_staff_no'];
                 $schoolStaffModel['name'] = $data['school_staff_name'];
-                $schoolStaffModel['role'] = Role::SYS_ADMINISTRATOR;
-                $schoolStaffModel['status'] = Status::ENABLE;
+                $schoolStaffModel['role'] = SchoolStaffRole::SYS_ADMINISTRATOR();
+                $schoolStaffModel['status'] = Status::ENABLED();
                 $schoolStaffModel->save();
             });
         } catch (Exception $e) {

@@ -8,6 +8,7 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 
 class AdmCheckItem extends Model
 {
+
     use HasFactory, SoftDeletes;
 
     protected $table = 'gadm_check_items';

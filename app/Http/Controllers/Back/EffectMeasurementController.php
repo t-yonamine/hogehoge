@@ -4,14 +4,13 @@ namespace App\Http\Controllers\Back;
 
 use App\Enums\LaType;
 use App\Enums\ResultType;
-use App\Enums\Role;
+use App\Enums\SchoolStaffRole;
 use App\Enums\StageType;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\EffectMeasurements\EffectMeasurementRequest;
 use App\Models\Ledger;
 use App\Models\LessonAttend;
 use App\Models\SchoolStaff;
-use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Lang;
@@ -26,7 +25,6 @@ class EffectMeasurementController extends Controller
      */
     public function __invoke()
     {
-        //
         return  view('back.effect-measurement.index');
     }
 
@@ -46,7 +44,7 @@ class EffectMeasurementController extends Controller
 
         //   B. param/ledger_id 遷移元から渡された教習原簿ID
         //   C. param/la_type 受講区分。遷移元で指定。仮免新規:2211、卒検新規:2221
-        if (!isset($ledger_id) || !isset($request->la_type) || ($request->la_type != LaType::GRADUATION && $request->la_type != LaType::PRE_EXAMINATION)) {
+        if (!isset($ledger_id) || !isset($request->la_type) || ($request->la_type != LaType::EFF_MEAS_1N && $request->la_type != LaType::EFF_MEAS_2N)) {
             abort(404);
         }
         // 2. 存在チェック
@@ -65,11 +63,11 @@ class EffectMeasurementController extends Controller
 
         //   B. ログインした人の役割チェック。事務員2以上が操作可能。
         $schoolStaff = SchoolStaff::find($school_staff_id);
-        if (!isset($schoolStaff) || $schoolStaff->role < Role::CLERK_2) {
+        if (!isset($schoolStaff) || $schoolStaff->role < SchoolStaffRole::CLERK_TWO) {
             return abort(403);
         }
 
-        return view('back.effect-measurement.create', ['data' => $data, 'laType' => $request->la_type, 'result' => ResultType::OK]);
+        return view('back.effect-measurement.create', ['data' => $data, 'laType' => $request->la_type, 'result' => ResultType::OK()->value]);
     }
     /**
      * @Route('/effect-measurement/create', method: 'POST', name: 'effect-measurement.store')
@@ -99,7 +97,7 @@ class EffectMeasurementController extends Controller
         try {
             $data = $request->input();
             $data['school_id'] = $school_id;
-            $data['stage'] = $request->la_type > LaType::PRE_EXAMINATION ? StageType::STAGE_2 : StageType::STAGE_1;
+            $data['stage'] = $request->la_type > LaType::EFF_MEAS_1N ? StageType::STAGE_2() : StageType::STAGE_1();
             $data['school_staff_id'] = $schoolStaff->id;
             $data['period_to'] = $request->period_from;
             $data['school_id'] = $school_id;
@@ -135,8 +133,8 @@ class EffectMeasurementController extends Controller
         };
         // 対象教習原簿の効果測定の一覧を求めて表示。
         $data = Ledger::with(['admCheckItem', 'lessonAttend' => function ($q) {
-            $q->with('schoolStaff')->where('la_type', '>=', LaType::EFF_MEAS_MIN)
-                ->where('la_type', '<=', LaType::EFF_MEAS_MAX)
+            $q->with('schoolStaff')->where('la_type', '>=', LaType::EFF_MEAS_MIN())
+                ->where('la_type', '<=', LaType::EFF_MEAS_MAX())
                 ->orderBy('period_date');
         }])->where('id', $id)->first();
         if (empty($data) || empty($data->admCheckItem)) {

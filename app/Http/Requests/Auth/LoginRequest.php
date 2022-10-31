@@ -49,7 +49,7 @@ class LoginRequest extends FormRequest
     {
         $this->ensureIsNotRateLimited();
 
-        $query = ['school_id' => null, 'status' => Status::ENABLE];
+        $query = ['school_id' => null, 'status' => Status::ENABLED];
         if ($this->school_cd) {
             $existsSchool = School::where('school_cd', $this->school_cd)->first();
             if (!$existsSchool) {

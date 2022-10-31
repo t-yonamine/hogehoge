@@ -34,11 +34,11 @@
             <div class="card">
                 <div class="card-header">
                     <div class="float-left card-tools">
-                        <a href="{{ route('effect-measurement.create', [$data->id, 'la_type' => \App\Enums\Latype::PRE_EXAMINATION]) }}"
+                        <a href="{{ route('effect-measurement.create', [$data->id, 'la_type' => \App\Enums\Latype::EFF_MEAS_1N]) }}"
                             class="btn btn-sm btn-secondary">
                             仮免新規ボタン
                         </a>
-                        <a href="{{ route('effect-measurement.create', [$data->id, 'la_type' => \App\Enums\Latype::GRADUATION]) }}"
+                        <a href="{{ route('effect-measurement.create', [$data->id, 'la_type' => \App\Enums\Latype::EFF_MEAS_2N]) }}"
                             class="btn btn-sm btn-secondary">
                             卒検新規ボタン
                         </a>
@@ -71,11 +71,7 @@
                                             @foreach ($lesson_attends as $item)
                                                 <tr>
                                                     <td>
-                                                        @if ($item->la_type === App\Enums\LaType::EFF_MEAS_1 || $item->la_type === App\Enums\LaType::PRE_EXAMINATION)
-                                                            仮免前
-                                                        @elseif ($item->la_type === App\Enums\LaType::EFF_MEAS_2 || $item->la_type === App\Enums\LaType::GRADUATION)
-                                                            卒検前
-                                                        @endif
+                                                        {{ $item->la_type->description }}
                                                     </td>
                                                     <td>{{ $item->period_date?->format('Y/m/d') }}</td>
                                                     <td>{{ $item->period_from?->format('H:i') }}</td>
@@ -83,12 +79,7 @@
                                                     <td>{{ $item->question_num }}</td>
                                                     <td>{{ $item->score }}</td>
                                                     <td>
-                                                        @if ($item->result == App\Enums\ResultType::NG)
-                                                            不合格
-                                                        @elseif($item->result == App\Enums\ResultType::OK)
-                                                            合格
-                                                        @else
-                                                        @endif
+                                                        {{ $item->result->description }}
                                                     </td>
                                                     <td>{{ $item->remarks }}</td>
                                                     <td class="text-center">

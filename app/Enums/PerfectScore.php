@@ -2,9 +2,13 @@
 
 namespace App\Enums;
 
-use Illuminate\Validation\Rules\Enum;
+use BenSampo\Enum\Enum;
 
-class PerfectScore extends Enum
+/**
+ * @method static static ONE_HUNDRED()
+ * @method static static FIFTY()
+ */
+final class PerfectScore extends Enum
 {
     const ONE_HUNDRED = 100;
     const FIFTY = 50;

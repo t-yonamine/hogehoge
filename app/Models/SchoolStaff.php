@@ -4,6 +4,7 @@ namespace App\Models;
 
 use App\Enums\Status;
 use Exception;
+use App\Enums\SchoolStaffRole;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
@@ -16,6 +17,16 @@ class SchoolStaff extends Model
 
     protected $table = "gschool_staffs";
     protected $perPage = 20;
+
+    /**
+     * The attributes that should be cast.
+     *
+     * @var array<string, string>
+     */
+    protected $casts = [
+        'role' => 'int',
+        'status' => Status::class,
+    ];
 
     protected $fillable = [
         'id',
@@ -43,11 +54,11 @@ class SchoolStaff extends Model
     {
         try {
             DB::transaction(function () use ($model, $user, $authUser) {
-                $model->status = Status::DISABLE;
+                $model->status = Status::DISABLED();
                 $model->deleted_user_id = $authUser->id;
                 $model->deleted_at = now();
                 $user->deleted_user_id = $authUser->id;
-                $user->status = Status::DISABLE;
+                $user->status = Status::DISABLED();
                 $user->deleted_at = now();
                 $user->save();
                 $model->save();
