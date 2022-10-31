@@ -130,7 +130,7 @@ class AccountsController extends Controller
     {
         $model = Staff::with(['user'])->where('id', $id)->first();
         if (!$model || !$model->user) {
-            return redirect()->route('accounts.index')->with('error', '見つけることができませんでした');
+            return redirect()->route('accounts.index')->with('error', 'データは削除されました。または存在していません。');
         } else {
             Staff::handleDelete($model);
         }

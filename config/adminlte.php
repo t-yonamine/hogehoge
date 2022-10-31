@@ -314,8 +314,8 @@ return [
             'can'  => ['staff'],
         ],
         [
-            'text' => 'スタッフ',
-            'url'  => 'staff',
+            'text' => 'スタッフ一覧',
+            'url'  => 'school-staff',
             'icon' => 'fas fa-fw fa-circle',
             'can'  => ['staff'],
         ],

@@ -65,9 +65,9 @@ class User extends Authenticatable
     {
         $user = Auth::user();
         if (!$user->school_id) {
-            return  $this->staff->name;
+            return  $this->staff?->name;
         } else {
-            return  $this->schoolStaff->name;
+            return  $this->schoolStaff?->name;
         }
     }
 }

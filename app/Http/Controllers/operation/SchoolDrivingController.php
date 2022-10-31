@@ -41,7 +41,7 @@ class SchoolDrivingController extends Controller
                 throw $th;
             }
         }
-        return redirect()->route('school-driving.index')->with('success', 'データを削除しました。');
+        return redirect()->route('school-driving.index')->with('success', '削除しました。');
     }
 
     /**
