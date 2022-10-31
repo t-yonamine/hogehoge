@@ -51,10 +51,16 @@ class AuthenticatedSessionController extends Controller
     {
         Auth::guard('web')->logout();
 
+        $school_cd = $request->session()->get('school_cd');
+
         $request->session()->invalidate();
 
         $request->session()->regenerateToken();
 
-        return redirect('/');
+        if ($school_cd) {
+            return redirect()->route('login', $school_cd);
+        } else {
+            return  redirect()->route('login');
+        }
     }
 }
