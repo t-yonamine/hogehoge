@@ -10,6 +10,7 @@ use Illuminate\Support\Facades\RateLimiter;
 use Illuminate\Support\Str;
 use Illuminate\Validation\ValidationException;
 use App\Enums\Status;
+use Illuminate\Support\Facades\Lang;
 
 class LoginRequest extends FormRequest
 {
@@ -55,7 +56,7 @@ class LoginRequest extends FormRequest
                 RateLimiter::hit($this->throttleKey());
 
                 throw ValidationException::withMessages([
-                    'login_id' => 'ログインに失敗しました',
+                    'login_id' => Lang::get('messages.MSE00003'),
                 ]);
             }
             $query['school_id'] = $existsSchool->id;
@@ -69,7 +70,7 @@ class LoginRequest extends FormRequest
             RateLimiter::hit($this->throttleKey());
 
             throw ValidationException::withMessages([
-                'login_id' => 'ログインに失敗しました',
+                'login_id' => Lang::get('messages.MSE00003'),
             ]);
         }
 
