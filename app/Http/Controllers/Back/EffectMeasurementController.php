@@ -29,6 +29,9 @@ class EffectMeasurementController extends Controller
         return  view('back.effect-measurement.index');
     }
 
+    /**
+     * @Route('/effect-measurement/create/{ledger_id}', method: 'GET', name: 'effect-measurement.create')
+     */
     public function create(Request $request, $ledger_id)
     {
         // 1. 入力パラメータ
@@ -67,7 +70,9 @@ class EffectMeasurementController extends Controller
 
         return view('back.effect-measurement.create', ['data' => $data, 'laType' => $request->la_type, 'result' => ResultType::OK]);
     }
-
+    /**
+     * @Route('/effect-measurement/create', method: 'POST', name: 'effect-measurement.store')
+     */
     public function store(EffectMeasurementRequest $request)
     {
         // 1. 入力パラメータ
@@ -112,7 +117,10 @@ class EffectMeasurementController extends Controller
      * 入力パラメータ
      *    A. セッション情報 共通ロジック/セッション情報#1-3
      *    B. param/ledger_id 遷移元から渡された教習原簿ID
+     * @Route('/effect-measurement/{ledger_id}', method: 'GET', name: 'effect-measurement.index')
+     *
      */
+
     public function index($id)
     {
         // 教習原簿IDの存在チェック 共通ロジック/存在チェック#3
@@ -136,6 +144,9 @@ class EffectMeasurementController extends Controller
         return view('back.effect-measurement.index', ['data' => $data, 'lesson_attends' => $data->lessonAttend]);
     }
 
+    /**
+     * @Route('/effect-measurement/{ledger_id}', method: 'DELETE', name: 'effect-measurement.delete')
+     */
     // 削除ボタン処理
     public function delete($id)
     {
@@ -145,7 +156,11 @@ class EffectMeasurementController extends Controller
             return back()->with('error', '見つけることができませんでした');
         }
         //ボタン処理
-        $lessonAttend->delete();
+        try {
+            LessonAttend::handleDelete($lessonAttend);
+        } catch (\Throwable $th) {
+            throw $th;
+        }
         return back()->with('success', '削除しました。');
     }
 }

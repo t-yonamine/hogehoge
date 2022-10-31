@@ -10,8 +10,9 @@ use Exception;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
-
+use App\Enums\Status;
 class LessonAttend extends Model
 {
     use HasFactory, SoftDeletes;
@@ -82,5 +83,20 @@ class LessonAttend extends Model
     public function schoolStaff()
     {
         return $this->hasOne(SchoolStaff::class, 'id', 'school_staff_id');
+    }
+
+    public static function handleDelete(LessonAttend $model)
+    {
+        try {
+            DB::transaction(function () use ($model) {
+                $userId = Auth::id();
+                $model->status = Status::DISABLE;
+                $model->deleted_at = now();
+                $model->deleted_user_id = $userId;
+                $model->save();
+            });
+        } catch (Exception $e) {
+            throw $e;
+        }
     }
 }
