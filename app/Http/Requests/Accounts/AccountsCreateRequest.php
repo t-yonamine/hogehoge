@@ -25,8 +25,8 @@ class AccountsCreateRequest extends FormRequest
     public function rules()
     {
         return [
-            'login_id' => 'required|regex:/^[a-zA-Z0-9]+$/|string|min:4|max:4',
-            'password' => 'required|string|regex:/^[a-zA-Z0-9]+$/|max:8|min:6',
+            'login_id' => 'required|regex:/^[a-zA-Z0-9]+$/|string|min:1|max:16',
+            'password' => 'required|string|regex:/^[a-zA-Z0-9]+$/|max:20|min:6',
             'staff_no' => 'required|string|regex:/^[a-zA-Z0-9]+$/|max:10',
             'name' => 'required|string|max:128',
         ];

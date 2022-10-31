@@ -24,7 +24,7 @@
                                         </th>
                                         <td><input name="login_id" type="text"
                                                 class="form-control @error('login_id') is-invalid @enderror" placeholder=""
-                                                value="{{ old('login_id') }}" maxlength="4" autocomplete="off">
+                                                value="{{ old('login_id') }}" maxlength="16" autocomplete="off">
                                             @error('login_id')
                                                 <span class="invalid-feedback" role="alert">
                                                     <strong>{{ $message }}</strong>
@@ -39,7 +39,7 @@
                                         <td>
                                             <input name="password" type="password"
                                                 class="form-control  @error('password') is-invalid @enderror" placeholder=""
-                                                maxlength="8" autocomplete="off"
+                                                maxlength="20" autocomplete="off"
                                                 value="{{ old('password', $data['password']) }}">
                                             @error('password')
                                                 <span class="invalid-feedback" role="alert">

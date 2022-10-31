@@ -28,8 +28,8 @@ class SchoolDrivingCreateRequest extends FormRequest
             'school_cd' => 'required|string|regex:/^[0-9]+$/|min:4|max:4',
             'name' => 'required|string|max:32',
             'name_kana' => 'required|string|max:64',
-            'login_id' => 'required|string|regex:/^[a-zA-Z0-9]+$/|min:4|max:4',
-            'password' => 'required|string|regex:/^[a-zA-Z0-9]+$/|min:6|max:8',
+            'login_id' => 'required|string|regex:/^[a-zA-Z0-9]+$/|min:1|max:16',
+            'password' => 'required|string|regex:/^[a-zA-Z0-9]+$/|min:6|max:20',
             'school_staff_no' => 'required|string|regex:/^[a-zA-Z0-9]+$/|max:10',
             'school_staff_name' => 'required|string|max:128',
         ];

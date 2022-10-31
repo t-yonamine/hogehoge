@@ -73,7 +73,7 @@
                     </th>
                     <td>
                         <input name="login_id" type="text"
-                            class="form-control @error('login_id') is-invalid @enderror" placeholder="" maxlength="4"
+                            class="form-control @error('login_id') is-invalid @enderror" placeholder="" maxlength="16"
                             @unless($isCreate) disabled @endunless()
                             value="{{ old('login_id', $model['login_id']) }}">
                         @if ($isCreate)
@@ -93,7 +93,7 @@
                     </th>
                     <td>
                         <input name="password" type="password"
-                            class="form-control @error('password') is-invalid @enderror" placeholder="" maxlength="8"
+                            class="form-control @error('password') is-invalid @enderror" placeholder="" maxlength="20"
                             value="{{ old('password', $model['password']) }}">
                         @error('password')
                             <span class="invalid-feedback" role="alert">

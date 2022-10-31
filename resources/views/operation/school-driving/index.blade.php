@@ -45,7 +45,8 @@
             <div class="card">
                 <div class="card-header">
                     <div class="card-tools">
-                        <a href="{{ route('school-driving.create') }}" class="btn btn-sm btn-secondary"><i class="fa fa-btn fa-plus-circle"></i> 新規登録</a>
+                        <a href="{{ route('school-driving.create') }}" class="btn btn-sm btn-secondary"><i
+                                class="fa fa-btn fa-plus-circle"></i> 新規登録</a>
                     </div>
                 </div>
                 <div class="card-body">

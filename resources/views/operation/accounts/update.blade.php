@@ -28,7 +28,7 @@
                                         <td>
                                             <input name="password" type="password"
                                                 class="form-control  @error('password') is-invalid @enderror" placeholder=""
-                                                maxlength="8" autocomplete="off">
+                                                maxlength="20" autocomplete="off">
                                             @error('password')
                                                 <span class="invalid-feedback" role="alert">
                                                     <strong>{{ $message }}</strong>
