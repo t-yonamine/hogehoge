@@ -2,7 +2,7 @@
 
 namespace App\Http\Middleware;
 
-use App\Enums\Role;
+use App\Enums\StaffRole;
 use Closure;
 use Illuminate\Support\Facades\Auth;
 
@@ -18,8 +18,9 @@ class Admin
     public function handle($request, Closure $next)
     {
         $user = Auth::user();
-        $role = $user->staff->role;
-        if (!$user->school_id && ($role == Role::SYS_ADMINISTRATOR || $role == Role::STAFF_MANAGER || $role == (Role::SYS_ADMINISTRATOR + Role::STAFF_MANAGER))) {
+        $StaffRole = $user->staff?->role;
+        if (!$user->school_id && ($StaffRole == StaffRole::SYS_ADMINISTRATOR() || $StaffRole == StaffRole::MANAGER() 
+            || $StaffRole->value == (StaffRole::SYS_ADMINISTRATOR + StaffRole::MANAGER))) {
             return $next($request);
         }
         abort(403);

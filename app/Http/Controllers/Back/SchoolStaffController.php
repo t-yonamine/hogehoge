@@ -41,7 +41,8 @@ class SchoolStaffController extends Controller
         $user = Auth::user();
         Helper::checkRole($user->schoolStaff->role);
 
-        $data = SchoolStaff::buildQuery($request->input())->where('school_id', $school_id)->where('status', Status::ENABLE)->orderBy('school_staff_no', 'ASC')->paginate();
+        $data = SchoolStaff::buildQuery($request->input())->where('school_id', $school_id)->where('status', Status::ENABLED())
+            ->orderBy('school_staff_no', 'ASC')->paginate();
 
         return  view('back.school-staff.index', ['data' => $data]);
     }

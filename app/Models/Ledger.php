@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Enums\Status;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
@@ -11,6 +12,27 @@ class Ledger extends Model
     use HasFactory, SoftDeletes;
 
     protected $table = 'gledgers';
+
+    /**
+     * The attributes that should be cast.
+     *
+     * @var array<string, string>
+     */
+    protected $casts = [
+        'id' => 'int',
+        'school_id' => 'int',
+        'student_no' => 'string',
+        'target_license_cd' => 'string',
+        'admission_date' => 'datetime:Y-m-d',
+        'effect_meas1_date' => 'datetime:Y-m-d',
+        'ascertain1_date' => 'datetime:Y-m-d',
+        'compltst_date' => 'datetime:Y-m-d',
+        'pl_test_date' => 'datetime:Y-m-d',
+        'effect_meas2_date' => 'datetime:Y-m-d',
+        'ascertain2_date' => 'datetime:Y-m-d',
+        'gradtst_date' => 'datetime:Y-m-d',
+        'status' => Status::class,
+    ];
 
     protected $fillable = [
         'id',

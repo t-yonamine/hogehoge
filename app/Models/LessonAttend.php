@@ -6,13 +6,13 @@ use App\Enums\LaType;
 use App\Enums\LessonAttendStatus;
 use App\Enums\PerfectScore;
 use App\Enums\ResultType;
+use App\Enums\StageType;
 use Exception;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
-use App\Enums\Status;
 class LessonAttend extends Model
 {
     use HasFactory, SoftDeletes;
@@ -34,19 +34,19 @@ class LessonAttend extends Model
     protected $casts = [
         'ledger_id' => 'int',
         'school_id' => 'int',
-        'la_type' => 'int',
-        'stage' => 'int',
+        'la_type' => LaType::class,
+        'stage' => StageType::class,
         'school_staff_id' => 'int',
         'target_license_names' => 'string',
         'period_date' => 'datetime:Y-m-d',
         'period_from' => 'datetime:h:i',
         'period_to' => 'datetime:h:i',
         'score' => 'int',
-        'result' => 'int',
+        'result' => ResultType::class,
         'question_num' => 'int',
         'remarks' => 'string',
-        'perfect_score' => 'int',
-        'status' => 'int',
+        'perfect_score' => PerfectScore::class,
+        'status' => LessonAttendStatus::class,
     ];
 
     protected $attributes = [
@@ -63,11 +63,11 @@ class LessonAttend extends Model
                 $model->fill($data);
                 $model->save();
 
-                if ($model->result == ResultType::OK) {
+                if ($model->result == ResultType::OK()) {
                     // 4.1. 仮免前の場合
-                    if ($model->la_type == LaType::PRE_EXAMINATION) {
+                    if ($model->la_type == LaType::EFF_MEAS_1N()) {
                         $ledger->effect_meas1_date = $model->period_date;
-                    } elseif ($model->la_type == LaType::GRADUATION) {
+                    } elseif ($model->la_type == LaType::EFF_MEAS_2N()) {
                         // 4.2. 卒検前の場合
                         $ledger->effect_meas2_date = $model->period_date;
                     }
@@ -90,7 +90,7 @@ class LessonAttend extends Model
         try {
             DB::transaction(function () use ($model) {
                 $userId = Auth::id();
-                $model->status = Status::DISABLE;
+                $model->status = LessonAttendStatus::WAITING_FOR_APPLICATION();
                 $model->deleted_at = now();
                 $model->deleted_user_id = $userId;
                 $model->save();

@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Enums\StaffRole;
 use App\Enums\Status;
 use Exception;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -18,6 +19,17 @@ class Staff extends Model
     protected $table = 'gstaffs';
     protected $perPage = 20;
 
+    /**
+     * The attributes that should be cast.
+     *
+     * @var array<string, string>
+     */
+    protected $casts = [
+        'created_user_id' => 'int',
+        'role' => StaffRole::class,
+        'status' => Status::class
+    ];
+
     protected $fillable = [
         'id',
         'staff_no',
@@ -27,14 +39,10 @@ class Staff extends Model
         'created_user_id'
     ];
 
-    /**
-     * The attributes that should be cast.
-     *
-     * @var array<string, string>
-     */
-    protected $casts = [
-        'created_user_id' => 'int',
-    ];
+    public function user()
+    {
+        return $this->hasOne(User::class, 'id', 'id');
+    }
 
     public static function handleSave(array $data, int $id, int $user_id)
     {
@@ -70,12 +78,12 @@ class Staff extends Model
                 //　選択されたユーザーを無効にする
 
                 //　　gusers.status = {無効} で更新
-                $model->status = Status::DISABLE;
+                $model->status = Status::DISABLED();
                 $model->deleted_at = now();
                 $model->deleted_user_id = $userId;
 
                 //　　gstaffs.status = {無効} で更新
-                $model->user->status = Status::DISABLE;
+                $model->user->status = Status::DISABLED();
                 $model->user->deleted_at = now();
                 $model->user->deleted_user_id = $userId;
 
@@ -85,11 +93,6 @@ class Staff extends Model
         } catch (Exception $e) {
             throw $e;
         }
-    }
-
-    public function user()
-    {
-        return $this->hasOne(User::class, 'id', 'id');
     }
 
     public static function handleCreate(array $dataUser, array $dataStaff, User $user = null, Staff $staff = null)

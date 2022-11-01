@@ -2,6 +2,9 @@
 
 namespace App\Http\Requests\EffectMeasurements;
 
+use App\Enums\LaType;
+use App\Enums\ResultType;
+use BenSampo\Enum\Rules\EnumValue;
 use Illuminate\Foundation\Http\FormRequest;
 
 class EffectMeasurementRequest extends FormRequest
@@ -24,13 +27,15 @@ class EffectMeasurementRequest extends FormRequest
      */
     public function rules()
     {
+
         return [
             'period_date' => 'required|date_format:Y-m-d',
             'period_from' => 'required|date_format:H:i',
             'question_num' => 'required|regex:/^[0-9]+$/|max:3',
             'score' => 'required|regex:/^[0-9]+$/|max:3',
-            'result' =>  'required',
+            'result' =>  'required|'. new EnumValue(ResultType::class, false),
             'remarks' => 'required|string|max:100',
+            'la_type' => 'required|in:' . LaType::EFF_MEAS_1N()->value . ',' . LaType::EFF_MEAS_2N()->value,
         ];
     }
 

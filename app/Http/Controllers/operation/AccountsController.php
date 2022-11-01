@@ -2,7 +2,7 @@
 
 namespace App\Http\Controllers\operation;
 
-use App\Enums\Role;
+use App\Enums\StaffRole;
 use App\Enums\Status;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Accounts\AccountsCreateRequest;
@@ -51,13 +51,13 @@ class AccountsController extends Controller
         try {
             $dataUser['login_id'] = $request->login_id;
             $dataUser['password'] = Hash::make($request->password);
-            $dataUser['status'] = Status::ENABLE;
+            $dataUser['status'] = Status::ENABLED();
             $dataUser['created_user_id'] = $user->id;
 
             $dataStaff['staff_no'] = $request->staff_no;
             $dataStaff['name'] = $request->name;
-            $dataStaff['role'] = Role::STAFF_MANAGER;
-            $dataStaff['status'] = Status::ENABLE;
+            $dataStaff['role'] = StaffRole::MANAGER();
+            $dataStaff['status'] = Status::ENABLED();
             $dataStaff['created_user_id'] = $user->id;
 
             Staff::handleCreate($dataUser, $dataStaff, null, null);
@@ -76,7 +76,7 @@ class AccountsController extends Controller
      */
     public function show($id)
     {
-        $user = User::where('id', $id)->where('status', Status::ENABLE)->first();
+        $user = User::where('id', $id)->where('status', Status::ENABLED())->first();
 
         if (empty($user) || empty($user->staff)) {
             abort(404);
@@ -115,12 +115,12 @@ class AccountsController extends Controller
     /**
      * @Route('/accounts', method: 'GET', name: 'accounts.index')
      *　データ取得
-     *　DBアクセスイメージ	
+     *　DBアクセスイメージ
      */
     public function index()
     {
-        $data = Staff::with(['user'])->where('status', Status::ENABLE)
-            ->where('role', Role::STAFF_MANAGER)->orderBy('staff_no')->paginate();
+        $data = Staff::with(['user'])->where('status', Status::ENABLED())
+            ->where('role', StaffRole::MANAGER())->orderBy('staff_no')->paginate();
         return view('operation.accounts.index', ['data' => $data]);
     }
 
