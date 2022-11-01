@@ -26,7 +26,7 @@ class Staff extends Model
      */
     protected $casts = [
         'created_user_id' => 'int',
-        'role' => StaffRole::class,
+        'role' => 'int',
         'status' => Status::class
     ];
 
