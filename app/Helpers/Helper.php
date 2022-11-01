@@ -2,6 +2,7 @@
 
 namespace App\Helpers;
 
+use App\Enums\Degree;
 use App\Enums\SchoolStaffRole;
 
 class Helper
@@ -80,6 +81,20 @@ class Helper
             } else {
                 return abort(403);
             }
+        }
+    }
+    /* 
+        @author HoangNH-VNEXT
+        Description: Get list Degree
+    */
+    public static function Degree($number)
+    {
+        $arrDegree = Degree::getValues();
+        $roleSelected = in_array($number, $arrDegree);
+        if ($roleSelected) {
+            return [$number];
+        } else {
+            return static::getListRole($number, $arrDegree);
         }
     }
 }

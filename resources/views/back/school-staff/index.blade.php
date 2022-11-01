@@ -77,7 +77,7 @@
                                                         <td>{{ $item->name }}</td>
                                                         <td>{{ Helper::getRoleName($item->role) }}</td>
                                                         <td class="text-center d-flex justify-content-center">
-                                                            <a href="#" class="btn btn-sm btn-secondary">編集</a>
+                                                            <a href="{{ route('school-staff.update', ['id' => $item->id]) }}" class="btn btn-sm btn-secondary">編集</a>
                                                             <button type="button"
                                                                 class="btn btn-sm btn-secondary delete-button ml-1"
                                                                 data-action="{{ route('school-staff.delete', ['id' => $item->id]) }}"

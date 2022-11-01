@@ -28,11 +28,11 @@ Route::get('/home', function () {
 Route::group(
     ['middleware' => 'auth'],
     function () {
-
-        // スタッフ管理
         Route::controller(SchoolStaffController::class)->prefix('school-staff')->name('school-staff.')->group(function () {
             Route::get('/', 'index')->name('index');
             Route::delete('/{id}', 'delete')->name('delete');
+            Route::get('/{id}', 'show')->name('show');
+            Route::put('/{id}', 'update')->name('update');
         });
 
         Route::controller(EffectMeasurementController::class)->prefix('effect-measurement')->name('effect-measurement.')->group(function () {
