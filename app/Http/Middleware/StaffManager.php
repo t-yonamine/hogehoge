@@ -19,7 +19,7 @@ class StaffManager
     {
         $user = Auth::user();
         $role = $user->staff?->role;
-        if (!$user->school_id && ($role == StaffRole::MANAGER() || $role->value == (StaffRole::SYS_ADMINISTRATOR + StaffRole::MANAGER))) {
+        if (!$user->school_id && ($role == StaffRole::MANAGER || $role == (StaffRole::SYS_ADMINISTRATOR + StaffRole::MANAGER))) {
             return $next($request);
         }
         abort(403);
