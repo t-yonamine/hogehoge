@@ -11,6 +11,7 @@ use App\Models\School;
 use App\Models\SchoolStaff;
 use App\Models\User;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Lang;
 
 class SchoolDrivingController extends Controller
 {
@@ -33,7 +34,7 @@ class SchoolDrivingController extends Controller
     {
         $model = School::where('id', $id)->first();
         if (!$model) {
-            return redirect()->route('school-driving.index')->with('error', 'データは削除されました。または存在していません。');
+            return redirect()->route('school-driving.index')->with('error', Lang::get('messages.MSE00002'));
         } else {
             try {
                 School::handleDelete($model);
@@ -41,7 +42,7 @@ class SchoolDrivingController extends Controller
                 throw $th;
             }
         }
-        return redirect()->route('school-driving.index')->with('success', '削除しました。');
+        return redirect()->route('school-driving.index')->with('success', Lang::get('messages.MSI00002'));
     }
 
     /**
@@ -89,7 +90,7 @@ class SchoolDrivingController extends Controller
         // ・教習所情報取得
         $school = School::where('id', '<>', $request->id)->where('school_cd', $request->school_cd)->first();
         if ($school) {
-            return back()->withErrors(['school_cd' => '同じ教習所CDは既に存在します。']);
+            return back()->withErrors(['school_cd' => __('messages.MSE00001', ['label' => '教習所CD'])]);
         }
         $schoolModel = School::where('id', $request->id)->first();
         if (!$schoolModel) {
@@ -114,7 +115,7 @@ class SchoolDrivingController extends Controller
             throw $th;
         }
 
-        return redirect()->route('school-driving.index')->with(['success' => '編集しました。']);
+        return redirect()->route('school-driving.index')->with(['success' => Lang::get('messages.MSI00003')]);
     }
     /**
      * @Route('/school-driving/create', method: 'GET', name: 'school-driving.create')
@@ -143,7 +144,7 @@ class SchoolDrivingController extends Controller
         // ・存在チェック
         $school = School::where('school_cd', $request->school_cd)->first();
         if ($school) {
-            return back()->withErrors(['school_cd' => '教習所CDは既に存在します。']);
+            return back()->withErrors(['school_cd' => __('messages.MSE00001', ['label' => '教習所CD'])]);
         }
 
         try {
@@ -152,6 +153,6 @@ class SchoolDrivingController extends Controller
             throw $th;
         }
 
-        return redirect()->route('school-driving.index')->with(['success' => '登録しました。']);
+        return redirect()->route('school-driving.index')->with(['success' => Lang::get('messages.MSI00004')]);
     }
 }

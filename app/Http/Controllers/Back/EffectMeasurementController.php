@@ -14,6 +14,7 @@ use App\Models\SchoolStaff;
 use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Lang;
 
 class EffectMeasurementController extends Controller
 {
@@ -110,7 +111,7 @@ class EffectMeasurementController extends Controller
             throw $th;
         }
 
-        return redirect()->route('effect-measurement.index', ['ledger_id' => $ledger->id])->with(['success' => '削除しました。']);
+        return redirect()->route('effect-measurement.index', ['ledger_id' => $ledger->id])->with(['success' => Lang::get('messages.MSI00002')]);
     }
 
     /**
@@ -153,7 +154,7 @@ class EffectMeasurementController extends Controller
         // 教習原簿IDの存在チェック
         $lessonAttend = LessonAttend::where('id', $id)->first();
         if (empty($lessonAttend)) {
-            return back()->with('error', 'データは削除されました。または存在していません。');
+            return back()->with('error', Lang::get('messages.MSE00002'));
         }
         //ボタン処理
         try {
@@ -161,6 +162,6 @@ class EffectMeasurementController extends Controller
         } catch (\Throwable $th) {
             throw $th;
         }
-        return back()->with('success', '削除しました。');
+        return back()->with('success', Lang::get('messages.MSI00002'));
     }
 }

@@ -11,6 +11,7 @@ use App\Models\Staff;
 use App\Models\User;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Lang;
 
 class AccountsController extends Controller
 {
@@ -38,13 +39,13 @@ class AccountsController extends Controller
         $existUserLogin = User::whereNull('school_id')
             ->where('login_id', $request->login_id)->first();
         if ($existUserLogin) {
-            return back()->withErrors(['login_id' => 'ログインIDは既に存在します。']);
+            return back()->withErrors(['login_id' => __('messages.MSE00001', ['label' => 'ログインID'])]);
         }
 
         // 運営側に同じ担当者番号が存在する場合はエラー
         $existStaff = Staff::where('staff_no', $request->staff_no)->first();
         if ($existStaff) {
-            return back()->withErrors(['staff_no' => '担当者番号は既に存在します。']);
+            return back()->withErrors(['staff_no' => __('messages.MSE00001', ['label' => '担当者番号'])]);
         }
 
         try {
@@ -63,7 +64,7 @@ class AccountsController extends Controller
         } catch (\Throwable $th) {
             throw $th;
         }
-        return redirect()->route('accounts.index')->with(['success' => '登録しました。']);
+        return redirect()->route('accounts.index')->with(['success' => Lang::get('messages.MSI00004')]);
     }
 
 
@@ -97,19 +98,19 @@ class AccountsController extends Controller
                 ->where('login_id', $request->login_id)
                 ->where('id', '!=', $id)->first();
             if ($existUserLogin) {
-                return back()->withErrors(['login_id' => 'ログインIDは既に存在します。']);
+                return back()->withErrors(['login_id' => __('messages.MSE00001', ['label' => 'ログインID'])]);
             }
             //　　運営側に選択ユーザー以外に同じ担当者番号が存在する場合はエラー
             $existStaff = Staff::where('staff_no', $request->staff_no)
                 ->where('id', '!=', $id)->first();
             if ($existStaff) {
-                return back()->withErrors(['staff_no' => '担当者番号は既に存在します。']);
+                return back()->withErrors(['staff_no' => __('messages.MSE00001', ['label' => '担当者番号'])]);
             }
             Staff::handleSave($request->input(), $id, $user->id);
         } catch (\Throwable $th) {
             throw $th;
         }
-        return back()->with('success', '編集しました。');
+        return back()->with('success', Lang::get('messages.MSI00003'));
     }
     /**
      * @Route('/accounts', method: 'GET', name: 'accounts.index')
@@ -130,10 +131,11 @@ class AccountsController extends Controller
     {
         $model = Staff::with(['user'])->where('id', $id)->first();
         if (!$model || !$model->user) {
-            return redirect()->route('accounts.index')->with('error', 'データは削除されました。または存在していません。');
+            return redirect()->route('accounts.index')->with('error', Lang::get('messages.MSE00002'));
         } else {
             Staff::handleDelete($model);
         }
-        return redirect()->route('accounts.index')->with('success', '削除しました。');
+
+        return redirect()->route('accounts.index')->with('success', Lang::get('messages.MSI00002'));
     }
 }

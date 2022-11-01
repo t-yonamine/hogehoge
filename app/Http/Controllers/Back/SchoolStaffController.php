@@ -10,6 +10,7 @@ use App\Models\SchoolStaff;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Lang;
 
 class SchoolStaffController extends Controller
 {
@@ -29,7 +30,7 @@ class SchoolStaffController extends Controller
                 'school_staff_no' => 'nullable|regex:/^[a-zA-Z0-9]+$/'
             ],
             [
-                'school_staff_no' => '職員番号に正しい形式を指定してください。'
+                'school_staff_no' => __('messages.MSE00004', ['label' => '職員番号'])
             ]
         );
 
@@ -55,10 +56,10 @@ class SchoolStaffController extends Controller
         $user = User::where('id', $id)->first();
         Helper::checkRole($authUser->schoolStaff->role);
         if (!$model) {
-            return redirect()->route('school-staff.index')->with('error', 'データは削除されました。または存在していません。');
+            return redirect()->route('school-staff.index')->with('error', Lang::get('messages.MSE00002'));
         } else {
             SchoolStaff::handleDelete($model, $user, $authUser);
         }
-        return redirect()->route('school-staff.index')->with('success', '削除しました。');
+        return redirect()->route('school-staff.index')->with('success', Lang::get('messages.MSI00002'));
     }
 }
