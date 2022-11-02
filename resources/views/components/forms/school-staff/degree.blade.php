@@ -1,11 +1,11 @@
-@props(['id', 'isQualified' => false, 'value' => [], 'key'])
+@props(['id', 'value' => [], 'key'])
 @php
     $selected = [
         ['name' => App\Enums\Degree::getDescription(App\Enums\Degree::TEACHING), 'value' => App\Enums\Degree::TEACHING, 'key' => 'teacher'],
         ['name' => App\Enums\Degree::getDescription(App\Enums\Degree::MIKIWAME), 'value' => App\Enums\Degree::MIKIWAME, 'key' => 'mikiwame'],
         ['name' => App\Enums\Degree::getDescription(App\Enums\Degree::CERTIFICATION), 'value' => App\Enums\Degree::CERTIFICATION, 'key' => 'certification']
     ];
-    $checked = $errors->any() ? old('qualification_'.$key) == '1' : $isQualified;
+    $checked = $errors->any() ? old('qualification_'.$key) == '1' : !empty($value);
 @endphp
 <div class="border d-flex rounded @error($key) is-invalid @enderror">
     <div class="form-check m-2">
@@ -36,13 +36,3 @@
     @endforeach
     {{-- certificate end--}}
 </div>
-@section('js')
-    <script>
-        $(function() {
-            $('.qualification-result').on('change', function() {
-                $(this).parents('.rounded').find('.qualify-selected').attr('checked',
-                    false).attr('disabled', this.value != 1);
-            });
-        });
-    </script>
-@stop

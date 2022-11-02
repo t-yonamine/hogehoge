@@ -2,13 +2,15 @@
 
 namespace App\Models;
 
+use App\Enums\RecipeItemItemType;
 use App\Enums\SchoolStaffRole;
 use App\Enums\Status;
 use Exception;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
-use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 
@@ -112,20 +114,14 @@ class SchoolStaff extends Model
             throw $e;
         }
     }
-    public static function handleSave(array $data, int $userId, $userById, $model = null)
+
+    public static function handleSave(array $data, bool $isCreate, User $user = null, SchoolStaff $model = null)
     {
         try {
+            $currentLoginId = Auth::id();
             $model = $model ?: new static();
-            DB::transaction(function () use ($data, $userId, $model, $userById) {
-                if ($data['password']) {
-                    $userById->fill([
-                        'password' => Hash::make($data['password']),
-                        'updated_user_id' => $userId,
-                    ])->save();
-                }
-
-                $data['role'] = $userId == $userById->id ? array_sum($data['role']) + SchoolStaffRole::SYS_ADMINISTRATOR : array_sum($data['role']);
-
+            $user = $user ?: new User();
+            DB::transaction(function () use ($data, $currentLoginId, $isCreate, $model, $user) {
                 $data['lic_l_mvl'] = $data['qualification_lic_l_mvl'] == self::QUALIFICATION_VAL ? array_sum($data['lic_l_mvl']) : self::DEFAULT_VAL;
                 $data['lic_m_mvl'] = $data['qualification_lic_m_mvl'] == self::QUALIFICATION_VAL ? array_sum($data['lic_m_mvl']) : self::DEFAULT_VAL;
                 $data['lic_s_mvl'] = $data['qualification_lic_s_mvl'] == self::QUALIFICATION_VAL ? array_sum($data['lic_s_mvl']) : self::DEFAULT_VAL;
@@ -137,10 +133,36 @@ class SchoolStaff extends Model
                 $data['lic_l_mvl_2'] = $data['qualification_lic_l_mvl_2'] == self::QUALIFICATION_VAL ? array_sum($data['lic_l_mvl_2']) : self::DEFAULT_VAL;
                 $data['lic_m_mvl_2'] = $data['qualification_lic_m_mvl_2'] == self::QUALIFICATION_VAL ? array_sum($data['lic_m_mvl_2']) : self::DEFAULT_VAL;
                 $data['lic_s_mvl_2'] = $data['qualification_lic_s_mvl_2'] == self::QUALIFICATION_VAL ? array_sum($data['lic_s_mvl_2']) : self::DEFAULT_VAL;
-                $data['updated_user_id'] = $userId;
 
-                $model->fill($data);
-                $model->save();
+                if (!$isCreate) {
+                    if ($data['password']) {
+                        $user->password = Hash::make($data['password']);
+                        $user->updated_user_id = $currentLoginId;
+                        $user->save();
+                    }
+                    $data['role'] = $currentLoginId == $user->id ? array_sum($data['role']) + SchoolStaffRole::SYS_ADMINISTRATOR : array_sum($data['role']);
+                    $model->fill($data);
+                    $model->updated_user_id = $currentLoginId;
+                    $model->save();
+                } else {
+                    $school_id = Auth::user()->school_id;
+                    // ユーザー登録
+                    $user->school_id = $school_id;
+                    $user->login_id = $data['login_id'];
+                    $user->password = Hash::make($data['password']);
+                    $user->status = Status::ENABLED();
+                    $user->created_user_id = $currentLoginId;
+                    $user->save();
+
+                    // 職員登録
+                    $model->fill($data);
+                    $model->id = $user->id;
+                    $model->school_id = $school_id;
+                    $model->created_user_id = $currentLoginId;
+                    $model->status = Status::ENABLED();
+                    $model->role = array_sum($data['role']);
+                    $model->save();
+                }
             });
         } catch (Exception $e) {
             throw $e;

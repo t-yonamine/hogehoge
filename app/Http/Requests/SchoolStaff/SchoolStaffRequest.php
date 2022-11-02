@@ -28,7 +28,7 @@ class SchoolStaffRequest extends FormRequest
      */
     public function rules()
     {
-        return [
+        $rule = [
             'password' => 'nullable|string|regex:/^[a-zA-Z0-9]+$/|min:6|max:20',
             'name' => 'required|string|max:128',
             'role' => 'required',
@@ -70,6 +70,14 @@ class SchoolStaffRequest extends FormRequest
             'is_road' => 'required|in:0,1',
             'is_wireless' => 'required|in:0,1',
         ];
+        if ($this->method() == "POST") {
+            $rule = array_merge($rule, [
+                'login_id' => 'required|regex:/^[a-zA-Z0-9]+$/|string|min:1|max:16',
+                'password' => 'required|string|regex:/^[a-zA-Z0-9]+$/|min:6|max:20',
+                'school_staff_no' => 'required|string|regex:/^[a-zA-Z0-9]+$/|max:10',
+            ]);
+        }
+        return $rule;
     }
 
     /**
@@ -80,6 +88,7 @@ class SchoolStaffRequest extends FormRequest
     public function attributes()
     {
         return [
+            'login_id' => 'ユーザー名',
             'password' => 'パスワード',
             'school_staff_no' => '職員番号',
             'name' => '教習所名',

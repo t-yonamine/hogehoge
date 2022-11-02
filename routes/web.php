@@ -29,10 +29,12 @@ Route::group(
     ['middleware' => 'auth'],
     function () {
         Route::controller(SchoolStaffController::class)->prefix('school-staff')->name('school-staff.')->group(function () {
-            Route::get('/', 'index')->name('index');
-            Route::delete('/{id}', 'delete')->name('delete');
+            Route::get('/create', 'create')->name('create');
+            Route::post('/create', 'store')->name('store');
             Route::get('/{id}', 'show')->name('show');
             Route::put('/{id}', 'update')->name('update');
+            Route::get('/', 'index')->name('index');
+            Route::delete('/{id}', 'delete')->name('delete');
         });
 
         Route::controller(EffectMeasurementController::class)->prefix('effect-measurement')->name('effect-measurement.')->group(function () {
