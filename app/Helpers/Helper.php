@@ -13,6 +13,10 @@ class Helper
     */
     public static function getListRole($number, $array)
     {
+        $roleSelected = in_array($number, $array);
+        if ($roleSelected) {
+            return [$number];
+        }
         // Create array empty
         $filter = [];
         // Filter array role and get value less number role
@@ -47,7 +51,7 @@ class Helper
         $roleSelected = in_array($number, $arrayRole);
 
         if ($roleSelected) {
-            return $roleSelected;
+            return SchoolStaffRole::getDescription($number);
         } else {
             $arrSelected = static::getListRole($number, $arrayRole);
             $result = [];
