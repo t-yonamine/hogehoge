@@ -85,15 +85,10 @@ class SchoolStaff extends Model
 
     public static function buildQuery(array $params): Builder
     {
-        $params = array_merge([
-            'school_staff_no' => false,
-            'name' => false,
-        ], $params);
-
-        return static::when($params['school_staff_no'], function (Builder $query, $school_staff_no) {
-            return $query->where('school_staff_no', 'like', "%{$school_staff_no}%");
-        })->when($params['name'], function (Builder $query, $name) {
-            return $query->where('name', 'like', "%{$name}%");
+        return static::when(isset($params['school_staff_no']), function (Builder $query) use ($params) {
+            return $query->where('school_staff_no', $params['school_staff_no']);
+        })->when(isset($params['name']), function (Builder $query) use ($params) {
+            return $query->where('name', 'like', "%{$params['name']}%");
         });
     }
 

@@ -22,6 +22,15 @@ class SchoolDrivingController extends Controller
      */
     public function index(Request $request)
     {
+        $request->validate(
+            [
+                'school_cd' => 'nullable|regex:/^[a-zA-Z0-9]+$/'
+            ],
+            [
+                'school_cd' => __('messages.MSE00004', ['label' => '教習所CD'])
+            ]
+        );
+
         $models = School::buildQuery($request->input())->where('status', Status::ENABLED())
             ->orderBy('school_cd')->paginate();
 
@@ -57,13 +66,17 @@ class SchoolDrivingController extends Controller
             abort(404);
         }
 
-        // get info システム管理者
-        $schoolStaff = SchoolStaff::where('school_id', $school->id)->where('role', SchoolStaffRole::SYS_ADMINISTRATOR())->first();
+        // get school staff have システム管理者 role
+        $schoolStaff = SchoolStaff::where('school_id', $school->id)
+            ->where('role', '&', SchoolStaffRole::SYS_ADMINISTRATOR)
+            ->where('status', Status::ENABLED())->first();
+
         if (!$schoolStaff) {
             abort(404);
         }
 
-        $user = User::where('id', $schoolStaff->id)->first();
+        // check user is exist.
+        $user = User::where('id', $schoolStaff->id)->where('status', Status::ENABLED())->first();
         if (!$user) {
             abort(404);
         }
