@@ -44,15 +44,10 @@ class School extends Model
 
     public static function buildQuery(array $params): Builder
     {
-        $params = array_merge([
-            'school_cd' => false,
-            'name_kana' => false,
-        ], $params);
-
-        return static::when($params['school_cd'], function (Builder $query, $school_cd) {
-            return $query->where('school_cd', $school_cd);
-        })->when($params['name_kana'], function (Builder $query, $name_kana) {
-            return $query->where('name_kana', 'like', "%{$name_kana}%");
+        return static::when(isset($params['school_cd']), function (Builder $query) use ($params) {
+            return $query->where('school_cd', $params['school_cd']);
+        })->when(isset($params['name_kana']), function (Builder $query)  use ($params) {
+            return $query->where('name_kana', 'like', "%{$params['name_kana']}%");
         });
     }
 
@@ -130,6 +125,8 @@ class School extends Model
                 $userModel['login_id'] = $data['login_id'];
                 $userModel['password'] = Hash::make($data['password']);
                 $userModel['status'] = Status::ENABLED();
+                $userModel['created_user_id'] = $userId;
+                $userModel['updated_user_id'] = $userId;
                 $userModel->save();
 
                 // 教習所システム管理者の登録
@@ -140,6 +137,8 @@ class School extends Model
                 $schoolStaffModel['name'] = $data['school_staff_name'];
                 $schoolStaffModel['role'] = SchoolStaffRole::SYS_ADMINISTRATOR();
                 $schoolStaffModel['status'] = Status::ENABLED();
+                $schoolStaffModel['created_user_id'] = $userId;
+                $schoolStaffModel['updated_user_id'] = $userId;
                 $schoolStaffModel->save();
             });
         } catch (Exception $e) {

@@ -22,7 +22,13 @@
                                     <th class="w-20">教習所CD</th>
                                     <td><input name="school_cd"
                                             value="{{ old('school_cd', request()->query('school_cd')) }}" type="text"
-                                            class="form-control" placeholder="" maxlength="4"></td>
+                                            class="form-control @error('school_cd') is-invalid @enderror" maxlength="4">
+                                        @error('school_cd')
+                                            <span class="invalid-feedback" role="alert">
+                                                <strong>{{ $message }}</strong>
+                                            </span>
+                                        @enderror
+                                    </td>
                                 </tr>
                                 <tr>
                                     <th class="w-20">フリガナ</th>
