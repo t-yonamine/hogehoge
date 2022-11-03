@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\Back\AptitudeDrivingController;
 use App\Http\Controllers\Back\EffectMeasurementController;
 use App\Http\Controllers\Back\SchoolStaffController;
 use App\Http\Controllers\operation\SchoolDrivingController;
@@ -42,6 +43,11 @@ Route::group(
             Route::delete('{ledger_id}', 'delete')->name('delete');
             Route::get('/create/{ledger_id}', 'create')->name('create');
             Route::post('/create', 'store')->name('store');
+        });
+
+        Route::controller(AptitudeDrivingController::class)->prefix('aptitude-driving')->name('aptitude-driving.')->group(function () {
+            Route::get('/create/{ledger_id}', 'create')->name('create');
+            Route::post('/create/{ledger_id}', 'new')->name('new');
         });
     }
 );
