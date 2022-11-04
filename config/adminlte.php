@@ -339,7 +339,7 @@ return [
         ],
         [
             'text' => '運転適性検査インポート',
-            'url'  => '#',
+            'route'  => 'aptitude-driving.importFile', 
             'icon' => 'fas fa-fw fa-circle',
             'can'  => ['staff'],
         ],
