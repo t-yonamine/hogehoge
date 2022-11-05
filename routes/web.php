@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\Back\AptitudeDrivingController;
+use App\Http\Controllers\Back\ApplicationTestController;
 use App\Http\Controllers\Back\EffectMeasurementController;
 use App\Http\Controllers\Back\SchoolStaffController;
 use App\Http\Controllers\Back\StudentController;
@@ -53,6 +54,11 @@ Route::group(
 
         Route::controller(StudentController::class)->prefix('student')->name('student.')->group(function () {
             Route::get('/', 'index')->name('index');
+        });
+
+        Route::controller(ApplicationTestController::class)->prefix('apply-test')->name('apply-test.')->group(function () {
+            Route::get('/', 'index')->name('index');
+            Route::post('/{id}', 'post')->name('post');
         });
     }
 );

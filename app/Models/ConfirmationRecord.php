@@ -12,4 +12,10 @@ class ConfirmationRecord extends Model
 
   protected $table = 'gconfirmation_recs';
 
+    /**
+     * The attributes that are mass assignable.
+     *
+     * @var string[]
+     */
+    protected $guarded = [];
 }
