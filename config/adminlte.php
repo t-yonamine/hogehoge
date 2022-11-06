@@ -297,7 +297,7 @@ return [
         ],
         [
             'text' => '教習生',
-            'url'  => '#',
+            'route'  => 'student.index', 
             'icon' => 'fas fa-fw fa-circle',
             'can'  => ['staff'],
         ],
@@ -315,7 +315,7 @@ return [
         ],
         [
             'text' => 'スタッフ一覧',
-            'url'  => 'school-staff',
+            'route'  => 'school-staff.index', 
             'icon' => 'fas fa-fw fa-circle',
             'can'  => ['staff'],
         ],

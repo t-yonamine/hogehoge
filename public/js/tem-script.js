@@ -7,4 +7,5 @@ $(function () {
     $('.qualification-result').on('change', function() {
         $(this).parents('.rounded').find('.qualify-selected').prop('checked', false).prop('disabled', this.value != 1);
     });
+    $('[data-toggle="tooltip"]').tooltip()
 })

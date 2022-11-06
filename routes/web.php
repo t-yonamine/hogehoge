@@ -3,6 +3,7 @@
 use App\Http\Controllers\Back\AptitudeDrivingController;
 use App\Http\Controllers\Back\EffectMeasurementController;
 use App\Http\Controllers\Back\SchoolStaffController;
+use App\Http\Controllers\Back\StudentController;
 use App\Http\Controllers\operation\SchoolDrivingController;
 use App\Http\Controllers\operation\AccountsController;
 use Illuminate\Support\Facades\Route;
@@ -48,6 +49,10 @@ Route::group(
         Route::controller(AptitudeDrivingController::class)->prefix('aptitude-driving')->name('aptitude-driving.')->group(function () {
             Route::get('/create/{ledger_id}', 'create')->name('create');
             Route::post('/create/{ledger_id}', 'new')->name('new');
+        });
+
+        Route::controller(StudentController::class)->prefix('student')->name('student.')->group(function () {
+            Route::get('/', 'index')->name('index');
         });
     }
 );
