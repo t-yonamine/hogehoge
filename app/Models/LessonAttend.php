@@ -13,6 +13,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
+
 class LessonAttend extends Model
 {
     use HasFactory, SoftDeletes;
@@ -97,6 +98,29 @@ class LessonAttend extends Model
             });
         } catch (Exception $e) {
             throw $e;
+        }
+    }
+
+    public static function rearrangeList($listLessonAttends, $loginId, $isIncreasing)
+    {
+        $currentTime = now();
+        $testNumValueToAdd = $isIncreasing ? 1 : -1;
+        foreach ($listLessonAttends as $item) {
+            static::rearrangePerRecord($item, $loginId, $currentTime, $testNumValueToAdd);
+        }
+    }
+
+    public static function rearrangePerRecord($lessAttend, $loginId, $currentTime, $testNumValueToAdd)
+    {
+        try {
+            DB::transaction(function () use ($lessAttend, $loginId, $currentTime, $testNumValueToAdd) {
+                $lessAttend->test_num = $lessAttend->test_num + $testNumValueToAdd;
+                $lessAttend->updated_at = $currentTime;
+                $lessAttend->updated_user_id = $loginId;
+                $lessAttend->save();
+            });
+        } catch (\Throwable $th) {
+            throw $th;
         }
     }
 }

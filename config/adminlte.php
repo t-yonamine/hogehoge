@@ -303,7 +303,7 @@ return [
         ],
         [
             'text' => '検定',
-            'url'  => '#',
+            'url'  => 'apply-test',
             'icon' => 'fas fa-fw fa-circle',
             'can'  => ['staff'],
         ],
