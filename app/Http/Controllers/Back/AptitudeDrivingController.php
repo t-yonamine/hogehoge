@@ -31,10 +31,8 @@ class AptitudeDrivingController extends Controller
             if (!$ledger) {
                 abort(404);
             }
-            // A. 教習原簿とログインユーザーの教習所一致確認 共通ロジック/権限チェック#2															
-            $schoolStaff = SchoolStaff::where('school_id', $ledger->school_id)->where('school_staff_no', $user->schoolStaff->school_staff_no)->first();
-            if (!$schoolStaff) {
-                abort(404);
+            if ($user->school_id !== session('school_id')) {
+                abort(403);
             }
             // システム管理者 || 事務員1
             if (($role & (SchoolStaffRole::CLERK_TWO + SchoolStaffRole::APTITUDE_TESTER + SchoolStaffRole::INSTRUCTOR + SchoolStaffRole::EXAMINER + SchoolStaffRole::SUB_ADMINISTRATOR + SchoolStaffRole::ADMINISTRATOR)) == 0) {
