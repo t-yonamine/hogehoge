@@ -1783,7 +1783,7 @@ pre code {
 .table th,
 .table td {
     padding: 0.4rem !important;
-    vertical-align: top;
+    vertical-align: middle !important;
     border-top: 1px solid #dee2e6;
 }
 
@@ -53131,4 +53131,12 @@ table.table.table-index tr th {
     max-width: inherit !important;
     width: 98% !important;
     margin-left: 15px !important;
+}
+
+.width-check-box {
+    width: 13px !important;
+}
+
+.cell-action {
+    gap: 4px;
 }

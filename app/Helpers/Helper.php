@@ -101,4 +101,5 @@ class Helper
             return static::getListRole($number, $arrDegree);
         }
     }
+
 }
