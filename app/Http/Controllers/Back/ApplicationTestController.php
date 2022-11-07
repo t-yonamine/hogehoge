@@ -3,24 +3,73 @@
 namespace App\Http\Controllers\Back;
 
 use App\Enums\ConfirmationRecsStatus;
+use App\Enums\Degree;
 use App\Enums\LaType;
 use App\Enums\LessonAttendOption;
 use App\Enums\LessonAttendStatus;
+use App\Enums\LicenseType;
 use App\Enums\ResultType;
 use App\Enums\SchoolStaffRole;
 use App\Enums\Status;
 use App\Http\Controllers\Controller;
+use App\Models\AdmCheckItem;
 use App\Models\ConfirmationRecord;
 use App\Models\LessonAttend;
+use App\Models\Period;
 use App\Models\SchoolPeriodM;
+use App\Models\SchoolStaff;
 use App\Models\Tests;
 use App\Models\SystemValue;
 use BenSampo\Enum\Rules\EnumValue;
+use Closure;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 
 class ApplicationTestController extends Controller
 {
+    public function __construct()
+    {
+        $this->middleware(function (Request $request, Closure $next) {
+            if ($request->routeIs('apply-test.examiner-allocation-regis.ajax', 'apply-test.examiner-allocation-regis.ajax-save')) {
+                // 1.入力パラメータ
+                $lessonAttendId = $request->lesson_attend_id;
+                $sesSchoolId = $request->session()->get('school_id');
+                $sesSchoolStaffId = $request->session()->get('school_staff_id');
+
+                // 3. 存在チェック
+                // A. 受講IDの存在チェック。 共通ロジック/存在チェック#5
+                $lessonAttend = LessonAttend::with(['school'])->where('id', $lessonAttendId)->where('school_id', $sesSchoolId)->first();
+                if (!$lessonAttend) {
+                    abort(404, '404 Error. Not Found');
+                }
+                //  B. ログイン職員の存在チェック。 共通ロジック/存在チェック#1 セッションの職員IDの情報を読む。
+                $currentStaffLogin = SchoolStaff::where('id', $sesSchoolStaffId)->first();
+                if (!$currentStaffLogin) {
+                    abort(404, '404 Error. Not Found');
+                }
+
+                //4. 権限チェック
+                // 受講データの教習所IDがsession/school_idと同じであること。
+                if (
+                    $request->session()->get('school_id') != $lessonAttend->school->id
+                    || (($currentStaffLogin->role & (SchoolStaffRole::ADMINISTRATOR + SchoolStaffRole::SUB_ADMINISTRATOR)) == 0)
+                ) {
+                    abort(403, '403 Error. Forbidden.');
+                }
+
+                // 5. 前提条件チェック
+                // A. 受講IDの受講(glesson_attends)の状態(status)が、全て 2:実施待 の前の状態か確認する。
+                if ($lessonAttend->status->value >= LessonAttendStatus::PENDING()->value) {
+                    abort(412, 'Error. Precondition Failed.');
+                }
+                $request['lessonAttend'] = $lessonAttend;
+            }
+            return $next($request)
+                ->header('Cache-Control', 'no-store, must-revalidate');
+        });
+    }
+
     /**
      * @Route('/', method: 'GET', name: 'apply-test.index')
      */
@@ -55,7 +104,7 @@ class ApplicationTestController extends Controller
 
         $data = LessonAttend::select('glesson_attends.*', 'gadm_check_items.student_no', 'gadm_check_items.name_kana', 'gadm_check_items.target_license_names')->join('gadm_check_items', 'glesson_attends.ledger_id', '=', 'gadm_check_items.ledger_id')
             ->where('gadm_check_items.status', Status::ENABLED())
-            ->where('glesson_attends.test_id', $dataTest && $dataTest->id)
+            ->where('glesson_attends.test_id', $dataTest?->id)
             ->where('glesson_attends.la_type', $request->la_type)
             ->orderBy('glesson_attends.test_num', 'ASC');
 
@@ -280,5 +329,136 @@ class ApplicationTestController extends Controller
                 break;
         }
         return back();
+    }
+
+    /**
+     * @Route('/apply-test/examiner-allocation-regis/ajax', method: 'GET', name: 'apply-test.completion-test')
+     */
+    public function examinerAllocationRegisAjax(Request $request)
+    {
+        $lessonAttend = $request->lessonAttend;
+        // 6. 対象受講の入所時確認項目(gadm_check_items)を読んでおく。
+        $admCheckItem = AdmCheckItem::with('licenseType')->where('ledger_id', $lessonAttend->ledger_id)->where('status', Status::ENABLED())->first();
+        if (!$admCheckItem) {
+            abort(404, '404 Error. Not Found');
+        }
+
+        // 7. 検定資格を持つ指導員をリストアップする。
+        // 下表にない免許種別CDではXX資格は確認しない。
+        $models = SchoolStaff::where('school_id', $lessonAttend->school_id)->where('role', '&', SchoolStaffRole::EXAMINER)
+            ->tap(function ($query) use ($admCheckItem) {
+                return $this->setLicCode($query, $admCheckItem->licenseType);
+            })->orderBy('school_staff_no')->get();
+
+        $existSchoolStaff = Period::where('test_id', $lessonAttend->test_id)->where('school_staff_id', $lessonAttend->school_staff_id)->get()->pluck('school_staff_id');
+
+        return response()->json(['status' => 200, 'data' => $models, 'exist_school_staff_id' => $existSchoolStaff]);
+    }
+
+    /**
+     * @Route('/apply-test/examiner-allocation-regis/ajax-save', method: 'POST', name: 'apply-test.completion-save')
+     */
+    public function examinerAllocationRegisAjaxSave(Request $request)
+    {
+        try {
+            DB::transaction(function () use ($request) {
+                $lessonAttend = $request->lessonAttend;
+                $schoolStaffSelected = $request->id_selected;
+                $sesSchoolStaffId = $request->session()->get('school_staff_id');
+                // 6. 対象の検定(gtests)、教習所別次元マスタ(gschool_period_m) を読む。
+                $modelTest = Tests::where('id', $lessonAttend->test_id)->first();
+                if (!$modelTest) {
+                    abort(404);
+                }
+                // B. 教習所別次元マスタ(gschool_period_m)を読む。複数行ある場合あり。
+                $schoolPeriodMs = SchoolPeriodM::where('school_id', $lessonAttend->school_id)->where('period_num', '>=', $modelTest->period_num_from)->where('period_num', '<=', $modelTest->period_num_to)->get();
+                if (!$schoolPeriodMs) {
+                    abort(404);
+                }
+
+                //8. 変更前の指導員が検定を担当する教習生が0人になった場合、指導員の時限(gperiods)を削除する。.
+                //A. 変更前の指導員の検定担当の受講(glesson_attends)が0件か確認する。
+                $numOfAttendances = LessonAttend::where('test_id', $modelTest->id)->where('school_staff_id', $lessonAttend->school_staff_id)->count();
+
+                // B. 0件の場合、時限(gperiods)を削除する。
+                if ($numOfAttendances == 0) {
+                    Period::where('test_id', $modelTest->id)->where('school_staff_id',  $lessonAttend->school_staff_id)->delete();
+                }
+
+                // 7. 対象受講(glesson_attends)の職員ID(school_staff_id)を変更する。
+                $lessonAttend->school_staff_id = $schoolStaffSelected;
+                $lessonAttend->updated_at = now();
+                $lessonAttend->updated_user_id = $sesSchoolStaffId;
+                $lessonAttend->save();
+
+                // 9. 変更後の指導員の時限(gperiods)が登録されていなければ追加する。
+                //   A. 変更後の指導員の検定の時限が登録されているか確認する。
+                $numOfperiods = Period::where('test_id', $modelTest->id)->where('school_staff_id', $lessonAttend->school_staff_id)->count();
+                // B. 0件の場合、時限を追加する。時限のfrom-toの数だけ追加する。
+                if ($numOfperiods == 0) {
+                    Period::handleInsert($modelTest, $sesSchoolStaffId, $lessonAttend, $schoolPeriodMs);
+                }
+                return response()->json(['status' => 200]);
+            });
+        } catch (\Throwable $th) {
+            throw $th;
+        }
+    }
+
+    /**
+     * @Route('apply-test/error-page', method: 'GET', name: 'apply-test.error-page')
+     */
+    public function errorPage(Request $request) {
+        return abort($request->status_code);
+    }
+
+    private function setLicCode($query, $licenseType)
+    {
+        $allow = [
+            LicenseType::SL_MVL,
+            LicenseType::SL_MVL_L,
+            LicenseType::L_MVL,
+            LicenseType::L_MVL_L,
+            LicenseType::M_MVL,
+            LicenseType::M_MVL_L,
+            LicenseType::SM_MVL,
+            LicenseType::SM_MVL_L,
+            LicenseType::S_MVL_MT,
+            LicenseType::S_MVL_MT_L,
+            LicenseType::S_MVL_AT,
+            LicenseType::TOWING,
+            LicenseType::TOWING_L,
+            LicenseType::L_ML,
+            LicenseType::L_ML_L,
+            LicenseType::L_ML_AT,
+            LicenseType::S_ML,
+            LicenseType::S_ML_L,
+            LicenseType::S_ML_AT,
+            LicenseType::L_MVL_2,
+            LicenseType::M_MVL_2,
+            LicenseType::S_MVL_2
+        ];
+        if (!in_array($licenseType->license_cd, $allow)) {
+            return $query;
+        }
+
+        return $query->where($this->getQualificationCheckField(intval($licenseType->license_cd)), '&', Degree::CERTIFICATION);
+    }
+
+    private function getQualificationCheckField($licenseCode)
+    {
+        return match ($licenseCode) {
+            LicenseType::SL_MVL, LicenseType::SL_MVL_L => "lic_sl_mvl",
+            LicenseType::L_MVL, LicenseType::L_MVL_L => "lic_l_mvl",
+            LicenseType::M_MVL, LicenseType::M_MVL_L, => "lic_m_mvl",
+            LicenseType::SM_MVL, LicenseType::SM_MVL_L => "lic_sm_mvl",
+            LicenseType::S_MVL_MT, LicenseType::S_MVL_MT_L, LicenseType::S_MVL_AT => "lic_s_mvl",
+            LicenseType::TOWING, LicenseType::TOWING_L => "lic_towing",
+            LicenseType::L_ML, LicenseType::L_ML_L, LicenseType::L_ML_AT => "lic_l_ml",
+            LicenseType::S_ML, LicenseType::S_ML_L, LicenseType::S_ML_AT => "lic_s_ml",
+            LicenseType::L_MVL_2 => "lic_l_mvl_2",
+            LicenseType::M_MVL_2 => "lic_m_mvl_2",
+            LicenseType::S_MVL_2 => "lic_s_mvl_2l"
+        };
     }
 }

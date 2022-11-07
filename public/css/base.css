@@ -6204,7 +6204,7 @@ a.disabled.mailbox-attachment-close {
 
 .modal-open .modal {
     overflow-x: hidden;
-    overflow-y: auto;
+    overflow-y: hidden !important;
 }
 
 .modal {
@@ -53139,4 +53139,11 @@ table.table.table-index tr th {
 
 .cell-action {
     gap: 4px;
+}
+
+.modal-body .tbl-overflow {
+    overflow:hidden; 
+    overflow-y:auto; 
+    max-height: calc(90vh - 200px); 
+    position: relative;
 }

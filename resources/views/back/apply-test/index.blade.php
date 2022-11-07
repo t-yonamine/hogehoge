@@ -291,8 +291,8 @@
                                                             <td>
                                                                 <div
                                                                     class="d-flex justify-content-center flex-wrap cell-action">
-                                                                    <button class="btn btn-sm btn-secondary"
-                                                                        type="submit" name="action" value="OPEN_MODAL"
+                                                                    <button class="btn btn-sm btn-secondary examiner-allocation-button"
+                                                                        type="button" name="action" value="OPEN_MODAL" data-id={{$item->id}}
                                                                         @if ($item->status >= App\Enums\LessonAttendStatus::PENDING() ||
                                                                             ($role & App\Enums\SchoolStaffRole::ADMINISTRATOR) == 0) disabled @endif>
                                                                         検定員
@@ -331,6 +331,7 @@
                 </div>
             @endif
         </div>
+        <x-forms.apply-test.examiner-allocation-regis/>
     </div>
 @stop
 

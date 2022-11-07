@@ -77,4 +77,9 @@ class AdmCheckItem extends Model
     {
         return $this->hasOne(Ledger::class, 'id', 'ledger_id');
     }
+
+    public function licenseType()
+    {
+        return $this->HasOne(LicenseType::class, 'license_cd', 'target_license_cd');
+    }
 }

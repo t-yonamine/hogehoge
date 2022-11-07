@@ -55,6 +55,11 @@ class LessonAttend extends Model
         'status' => LessonAttendStatus::PENDING
     ];
 
+    public function school()
+    {
+        return $this->hasOne(School::class, 'id', 'school_id');
+    }
+
     public static function handleSave(array $data, Ledger $ledger, LessonAttend $model = null)
     {
         try {
