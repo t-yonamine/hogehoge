@@ -104,4 +104,19 @@ class AptitudeDriving extends Model
       throw $e;
     }
   }
+
+  public static function handleSaveFile(array $data, int $userId, $model = null)
+  {
+    try {
+      $model = $model ?: new static();
+      DB::transaction(function () use ($data, $userId, $model) {
+        $aptitudeDrvs['created_user_id'] = $userId;
+        $aptitudeDrvs['updated_user_id'] = $userId;
+        $model->fill($data);
+        $model->save();
+      });
+    } catch (Exception $e) {
+      throw $e;
+    }
+  }
 }

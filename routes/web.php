@@ -49,6 +49,9 @@ Route::group(
         Route::controller(AptitudeDrivingController::class)->prefix('aptitude-driving')->name('aptitude-driving.')->group(function () {
             Route::get('/create/{ledger_id}', 'create')->name('create');
             Route::post('/create/{ledger_id}', 'new')->name('new');
+            Route::get('/import', 'importFile')->name('importFile');
+            Route::post('/import', 'upload')->name('import.upload');
+            Route::post('/insert', 'insert')->name('import.insert');
         });
 
         Route::controller(StudentController::class)->prefix('student')->name('student.')->group(function () {
