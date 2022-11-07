@@ -59,9 +59,14 @@ Route::group(
             Route::get('/', 'index')->name('index');
         });
 
+        // 検定申込結果 
         Route::controller(ApplicationTestController::class)->prefix('apply-test')->name('apply-test.')->group(function () {
             Route::get('/', 'index')->name('index');
             Route::post('/{id}', 'post')->name('post');
+            Route::get('/{lesson_attend_id}', 'completionTest')->name('completion');
+            Route::get('examiner-allocation-regis/ajax', 'examinerAllocationRegisAjax')->name('examiner-allocation-regis.ajax');
+            Route::post('examiner-allocation-regis/ajax-save', 'examinerAllocationRegisAjaxSave')->name('examiner-allocation-regis.ajax-save')->withoutMiddleware(\App\Http\Middleware\VerifyCsrfToken::class);
+            Route::post('error-page', 'errorPage')->name('error-page');
         });
     }
 );
