@@ -30,7 +30,7 @@
                                 <tr>
                                     <th class="w-20">氏名</th>
                                     <td><input name="name" type="text" class="form-control" placeholder=""
-                                            value="{{ old('name', $data->admCheckItem->name) }}" disabled></td>
+                                            value="{{ old('name', $data->admCheckItem->first()->name) }}" disabled></td>
                                 </tr>
                             </tbody>
                         </table>
