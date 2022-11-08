@@ -7,13 +7,16 @@ use App\Enums\Degree;
 use App\Enums\LaType;
 use App\Enums\LessonAttendOption;
 use App\Enums\LessonAttendStatus;
+use App\Enums\LessonCode;
 use App\Enums\LicenseType;
 use App\Enums\ResultType;
 use App\Enums\SchoolStaffRole;
 use App\Enums\Status;
+use App\Helpers\Helper;
 use App\Http\Controllers\Controller;
 use App\Models\AdmCheckItem;
 use App\Models\ConfirmationRecord;
+use App\Models\Ledger;
 use App\Models\LessonAttend;
 use App\Models\Period;
 use App\Models\SchoolPeriodM;
@@ -28,6 +31,9 @@ use Illuminate\Support\Facades\DB;
 
 class ApplicationTestController extends Controller
 {
+    const INIT_BLOCK = 0;
+    const BLOCK_B = 1;
+    const BLOCK_C = 2;
     public function __construct()
     {
         $this->middleware(function (Request $request, Closure $next) {
@@ -84,16 +90,10 @@ class ApplicationTestController extends Controller
         $user = Auth()->user();
         $role = $user->schoolStaff->role;
 
-        $systemValue = SystemValue::get();
-        $svValue = 0;
-        foreach ($systemValue as $item) {
-            if ($item->sv_key == 'test_num_of_days_max') {
-                $svValue = $item->sv_value;
-            }
-        }
+        $systemValue = SystemValue::where('sv_key', 'test_num_of_days_max')->first();
 
         $testNumberOfDaysMax = [];
-        for ($i = 1; $i <= $svValue; $i++) {
+        for ($i = 1; $i <= (int)$systemValue?->sv_value; $i++) {
             array_push($testNumberOfDaysMax, $i);
         }
 
@@ -109,15 +109,14 @@ class ApplicationTestController extends Controller
             ->orderBy('glesson_attends.test_num', 'ASC');
 
         $titleType = '';
-        $checkLaType = true;
+        $checkLaType = self::INIT_BLOCK;
         if (!$request->la_type) {
-            $checkLaType = 0;
             $laType = LaType::COMPLTST;
         } else if ($request->la_type == LaType::PL_TEST) {
-            $checkLaType = 1;
+            $checkLaType = self::BLOCK_B;
             $laType = LaType::PL_TEST;
         } else {
-            $checkLaType = 2;
+            $checkLaType = self::BLOCK_C;
             $laType = $request->la_type;
             $titleType = LaType::getDescription((int)$laType);
         }
@@ -137,13 +136,12 @@ class ApplicationTestController extends Controller
 
         $data = $data->get();
 
-        foreach ($data as $item) {
-            $item->school_staff;
-        }
-
         return  view('back.apply-test.index', ['data' => $data, 'numberMax' => $testNumberOfDaysMax, 'laType' => $laType, 'checkLaType' => $checkLaType, 'titleType' => $titleType, 'dataOptionPeriod' => $dataOptionPeriod, 'dataResultType' => $dataResultType, 'role' => $role]);
     }
 
+    /**
+     * @Route('/', method: 'POST', name: 'apply-test.index')
+     */
     public function post(Request $request, $id)
     {
         $user = Auth::user();
@@ -154,42 +152,43 @@ class ApplicationTestController extends Controller
         }
 
         $schoolStaff = $user->schoolStaff;
-        if (!$schoolId) {
-            return abort(403);
-        }
 
-        $dataTest = Tests::where('school_id', $schoolId)->first();
-        $lessonAttends = LessonAttend::find($id);
+        $lessonAttend = LessonAttend::find($id);
 
-        if (!$lessonAttends) {
+        if (!$lessonAttend) {
             return abort(404);
         }
 
-        $data = LessonAttend::where('test_id', $dataTest->id)
-            ->where('la_type', $lessonAttends->la_type)
+        // 4.権限チェック 
+        //  A. 受講データの教習所IDがsession/school_idと同じであること。
+
+        if ($lessonAttend->school_id != $schoolId) {
+            return abort(403);
+        }
+
+        $data = LessonAttend::where('test_id', $lessonAttend->test_id)
+            ->where('la_type', $lessonAttend->la_type)
             ->where('status', '>=', LessonAttendStatus::PENDING())
             ->get();
 
         $firstElement = 1;
 
         switch ($request->input('action')) {
-            case LessonAttendOption::OPEN_MODAL:
-                break;
             case LessonAttendOption::LICENSE_CONFIRM:
                 // 仮免許確定処理
+                $key = (int)$request->key;
                 try {
                     $request->validate(
                         [
-                            'question_num' => 'nullable|max:10',
-                            'lang' => 'nullable|max:20',
-                            'score' => 'nullable|regex:/^[0-9]+$/|max:3',
+                            'question_num_' . $key => 'nullable|max:10',
+                            'lang_' . $key => 'nullable|max:20',
+                            'score_' . $key => 'nullable|regex:/^[0-9]+$/|max:3',
                             'result' => 'nullable|max:1' . new EnumValue(ResultType::class, false),
-                            'status' => 'nullable|max:1',
                         ],
                         [
-                            'question_num' => __('messages.MSE00004', ['label' => '問題番号	']),
-                            'lang' => __('messages.MSE00004', ['label' => '問題言語	']),
-                            'score' => __('messages.MSE00004', ['label' => '得点']),
+                            'question_num_' . $key => __('messages.MSE00004', ['label' => '問題番号	']),
+                            'lang_' . $key => __('messages.MSE00004', ['label' => '問題言語	']),
+                            'score_' . $key => __('messages.MSE00004', ['label' => '得点']),
                             'result' => __('messages.MSE00004', ['label' => '合否']),
                         ]
                     );
@@ -201,12 +200,12 @@ class ApplicationTestController extends Controller
 
                     if ($user->schoolStaff->role & SchoolStaffRole::ADMINISTRATOR != 0) {
                         // 5. 受講データの更新 /
-                        $lessonAttends->question_num = $request->question_num;
-                        $lessonAttends->lang = $request->lang;
-                        $lessonAttends->score = (int)$request->score;
+                        $lessonAttend->question_num = $request['question_num_' . $key];
+                        $lessonAttend->lang = $request['lang_' . $key];
+                        $lessonAttend->score = $request['score_' . $key];
                         if ($request->result != null) {
-                            $lessonAttends->result = (int)$request->result;
-                            $lessonAttends->status = LessonAttendStatus::APPROVED;
+                            $lessonAttend->result = (int)$request->result;
+                            $lessonAttend->status = LessonAttendStatus::APPROVED;
 
                             //6. 受講(glesson_attends)の結果(result)を null→null以外 に変更したとき、結果承認の確認記録を更新する。
                             $confirmRecord->staff_id = $schoolStaff->id;
@@ -217,9 +216,19 @@ class ApplicationTestController extends Controller
                             $confirmRecord->status = ConfirmationRecsStatus::CONFIRMED;
                             $confirmRecord->updated_user_id = $schoolStaff->id;
                             $confirmRecord->save();
+
+                            // 7. 結果(result)が1:OK の場合、教習原簿(gledgers)の教習ステータス等も変更する。
+                            $ledger = Ledger::where('id', $lessonAttend->ledger_id)->first();
+                            if ($request->result == ResultType::OK) {
+                                $ledger->lesson_sts = LessonCode::SECOND_STAGE;
+                                $ledger->pl_test_date = $lessonAttend->period_date;
+                                $ledger->updated_at = now();
+                                $ledger->updated_user_id = $schoolStaff->id;
+                                $ledger->save();
+                            }
                         }
                         // Update Confirmation Recs
-                        $lessonAttends->save();
+                        $lessonAttend->save();
                     }
                 } catch (\Throwable $th) {
                     throw $th;
@@ -235,9 +244,9 @@ class ApplicationTestController extends Controller
                     return abort(404);
                 }
 
-                $listLessonAttends = LessonAttend::where('test_num', '>', $lessonAttends->test_num)
-                    ->where('la_type', $lessonAttends->la_type)
-                    ->where('test_id', $dataTest->id)
+                $listLessonAttends = LessonAttend::where('test_num', '>', $lessonAttend->test_num)
+                    ->where('la_type', $lessonAttend->la_type)
+                    ->where('test_id', $lessonAttend->test_id)
                     ->get();
                 foreach ($listLessonAttends as $item) {
                     $item->test_num = $item->test_num - 1;
@@ -249,12 +258,12 @@ class ApplicationTestController extends Controller
                 $confirmRecord->deleted_at = now();
                 $confirmRecord->deleted_user_id = $user->id;
 
-                $lessonAttends->test_num = 0;
-                $lessonAttends->deleted_at = now();
-                $lessonAttends->deleted_user_id = $user->id;
+                $lessonAttend->test_num = 0;
+                $lessonAttend->deleted_at = now();
+                $lessonAttend->deleted_user_id = $user->id;
 
                 $confirmRecord->save();
-                $lessonAttends->save();
+                $lessonAttend->save();
                 return back();
                 break;
             case LessonAttendOption::TOP_BUTTON:
@@ -262,16 +271,16 @@ class ApplicationTestController extends Controller
                 if (count($data) > 0) {
                     return abort(412, 'Error. Precondition Failed.');
                 }
-                if ($lessonAttends->test_num === $firstElement) {
+                if ($lessonAttend->test_num === $firstElement) {
                     return back();
                 } else {
-                    $listLessonAttends = LessonAttend::where('test_num', '<', $lessonAttends->test_num)
-                        ->where('la_type', $lessonAttends->la_type)
-                        ->where('test_id', $dataTest->id)
+                    $listLessonAttends = LessonAttend::where('test_num', '<', $lessonAttend->test_num)
+                        ->where('la_type', $lessonAttend->la_type)
+                        ->where('test_id', $lessonAttend->test_id)
                         ->get();
 
                     LessonAttend::rearrangeList($listLessonAttends, $user->id, true);
-                    LessonAttend::rearrangePerRecord($lessonAttends, $user->id, now(), ($firstElement - $lessonAttends->test_num));
+                    LessonAttend::rearrangePerRecord($lessonAttend, $user->id, now(), ($firstElement - $lessonAttend->test_num));
                 }
                 break;
             case LessonAttendOption::UP_BUTTON:
@@ -279,15 +288,15 @@ class ApplicationTestController extends Controller
                 if (count($data) > 0) {
                     return abort(412, 'Error. Precondition Failed.');
                 }
-                if ($lessonAttends->test_num === 1) {
+                if ($lessonAttend->test_num === 1) {
                     return back();
                 } else {
-                    $listLessonAttends = LessonAttend::where('test_num', $lessonAttends->test_num - $firstElement)
-                        ->where('la_type', $lessonAttends->la_type)
-                        ->where('test_id', $dataTest->id)
+                    $listLessonAttends = LessonAttend::where('test_num', $lessonAttend->test_num - $firstElement)
+                        ->where('la_type', $lessonAttend->la_type)
+                        ->where('test_id', $lessonAttend->test_id)
                         ->get();
                     LessonAttend::rearrangeList($listLessonAttends, $user->id, true);
-                    LessonAttend::rearrangePerRecord($lessonAttends, $user->id, now(), (-$firstElement));
+                    LessonAttend::rearrangePerRecord($lessonAttend, $user->id, now(), (-$firstElement));
                 }
                 break;
             case LessonAttendOption::DOWN_BUTTON:
@@ -295,18 +304,18 @@ class ApplicationTestController extends Controller
                 if (count($data) > 0) {
                     return abort(412, 'Error. Precondition Failed.');
                 }
-                $findMaxTestNum = LessonAttend::where('test_id', $dataTest->id)
-                    ->where('la_type', $lessonAttends->la_type)->max('test_num');
-                if ($lessonAttends->test_num == $findMaxTestNum) {
+                $findMaxTestNum = LessonAttend::where('test_id', $lessonAttend->test_id)
+                    ->where('la_type', $lessonAttend->la_type)->max('test_num');
+                if ($lessonAttend->test_num == $findMaxTestNum) {
                     return back();
                 } else {
-                    $listLessonAttends = LessonAttend::where('test_num', $lessonAttends->test_num + $firstElement)
-                        ->where('la_type', $lessonAttends->la_type)
-                        ->where('test_id', $dataTest->id)
+                    $listLessonAttends = LessonAttend::where('test_num', $lessonAttend->test_num + $firstElement)
+                        ->where('la_type', $lessonAttend->la_type)
+                        ->where('test_id', $lessonAttend->test_id)
                         ->get();
 
                     LessonAttend::rearrangeList($listLessonAttends, $user->id, false);
-                    LessonAttend::rearrangePerRecord($lessonAttends, $user->id, now(), ($firstElement));
+                    LessonAttend::rearrangePerRecord($lessonAttend, $user->id, now(), ($firstElement));
                 }
                 break;
             case LessonAttendOption::END_BUTTON:
@@ -314,17 +323,17 @@ class ApplicationTestController extends Controller
                 if (count($data) > 0) {
                     return abort(412, 'Error. Precondition Failed.');
                 }
-                $findMaxTestNum = LessonAttend::where('test_id', $dataTest->id)
-                    ->where('la_type', $lessonAttends->la_type)->max('test_num');
-                if ($lessonAttends->test_num == $findMaxTestNum) {
+                $findMaxTestNum = LessonAttend::where('test_id', $lessonAttend->test_id)
+                    ->where('la_type', $lessonAttend->la_type)->max('test_num');
+                if ($lessonAttend->test_num == $findMaxTestNum) {
                     return back();
                 } else {
-                    $listLessonAttends = LessonAttend::where('test_num', '>', $lessonAttends->test_num)
-                        ->where('la_type', $lessonAttends->la_type)
-                        ->where('test_id', $dataTest->id)
+                    $listLessonAttends = LessonAttend::where('test_num', '>', $lessonAttend->test_num)
+                        ->where('la_type', $lessonAttend->la_type)
+                        ->where('test_id', $lessonAttend->test_id)
                         ->get();
                     LessonAttend::rearrangeList($listLessonAttends, $user->id, false);
-                    LessonAttend::rearrangePerRecord($lessonAttends, $user->id, now(), ($findMaxTestNum - $firstElement));
+                    LessonAttend::rearrangePerRecord($lessonAttend, $user->id, now(), ($findMaxTestNum - $firstElement));
                 }
                 break;
         }
@@ -408,7 +417,8 @@ class ApplicationTestController extends Controller
     /**
      * @Route('apply-test/error-page', method: 'GET', name: 'apply-test.error-page')
      */
-    public function errorPage(Request $request) {
+    public function errorPage(Request $request)
+    {
         return abort($request->status_code);
     }
 

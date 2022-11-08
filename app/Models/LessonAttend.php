@@ -44,7 +44,7 @@ class LessonAttend extends Model
         'period_to' => 'datetime:h:i',
         'score' => 'int',
         'result' => ResultType::class,
-        'question_num' => 'int',
+        'question_num' => 'string',
         'remarks' => 'string',
         'perfect_score' => PerfectScore::class,
         'status' => LessonAttendStatus::class,

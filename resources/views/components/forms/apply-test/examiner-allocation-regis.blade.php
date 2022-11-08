@@ -8,7 +8,7 @@
                         <span aria-hidden="true">&times;</span>
                     </button>
                 </div>
-                <div class="card">
+                <div class="card m-3">
                     <div class="card-body">
                         <table class="table table-bordered table-view">
                             <tbody>
@@ -22,7 +22,7 @@
                         </table>
                     </div>
                 </div>
-                <div class="card  modal-body">
+                <div class="card modal-body m-3">
                     <div class="card-body">
                         <div class="dataTables_wrapper dt-bootstrap4">
                             <div class="row">

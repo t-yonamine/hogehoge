@@ -22,23 +22,23 @@
                                             <input name="la_type" class="" id="COMPLTST" type="radio" $laType
                                                 class="form-control" placeholder="" value="{{ App\Enums\LaType::COMPLTST }}"
                                                 @if (old('la_type', $laType) == App\Enums\LaType::COMPLTST) checked @endif>
-                                            <span class="mb-0 ml-1 mr-3" for="COMPLTST">修了検定</span>
+                                            <label class="mb-0 ml-1 mr-3 font-weight-normal" for="COMPLTST">修了検定</label>
 
                                             <input name="la_type" class="" id="PL_TEST" type="radio"
                                                 class="form-control" placeholder="" value="{{ App\Enums\LaType::PL_TEST }}"
                                                 @if (old('la_type', $laType) == App\Enums\LaType::PL_TEST) checked @endif>
-                                            <span class="m-0 mx-1 mr-3" for="PL_TEST">仮免許</span>
+                                            <label class="m-0 mx-1 mr-3 font-weight-normal" for="PL_TEST">仮免許</label>
 
                                             <input name="la_type" class="" id="GRADTST" type="radio"
                                                 class="form-control" placeholder="" value="{{ App\Enums\LaType::GRADTST }}"
                                                 @if (old('la_type', $laType) == App\Enums\LaType::GRADTST) checked @endif>
-                                            <span class="mb-0 ml-1 mr-3" for="GRADTST">卒業検定</span>
+                                            <label class="mb-0 ml-1 mr-3 font-weight-normal" for="GRADTST">卒業検定</label>
 
                                             <input name="la_type" class="" id="DRVSKLTST" type="radio"
                                                 class="form-control" placeholder=""
                                                 value="{{ App\Enums\LaType::DRVSKLTST }}"
                                                 @if (old('la_type', $laType) == App\Enums\LaType::DRVSKLTST) checked @endif>
-                                            <span class="m-0 mx-1" for="DRVSKLTST">技能審査</span>
+                                            <label class="m-0 mx-1 font-weight-normal" for="DRVSKLTST">技能審査</label>
                                         </div>
                                     </th>
                                 </tr>
@@ -145,9 +145,9 @@
                                                     <td colspan="100%" class="text-center">データがありません。</td>
                                                 </tr>
                                             @else
-                                                @foreach ($data as $item)
+                                                @foreach ($data as $key => $item)
                                                     <form class="flex flex-col w-full" method="POST" autocomplete="off"
-                                                        action="{{ route('apply-test.post', ['id' => $item->id]) }}">
+                                                        action="{{ route('apply-test.post', ['id' => $item->id, 'key' => $key]) }}">
                                                         @csrf
                                                         <tr>
                                                             <td>{{ $item->test_num }}</td>
@@ -158,29 +158,43 @@
 
                                                             <td>{{ $item->target_license_names }}
                                                             </td>
-                                                            <td><input name="question_num" type="text" maxlength="20"
-                                                                    class="form-control"
-                                                                    value="{{ old('question_num', $item->question_num) }}"
+                                                            <td><input name="{{ 'question_num_' . $key }}" type="text"
+                                                                    maxlength="20"
+                                                                    class="form-control @error('question_num_' . $key) is-invalid @enderror"
+                                                                    value="{{ old('question_num_', $item->question_num) }}"
                                                                     @if (($role & App\Enums\SchoolStaffRole::ADMINISTRATOR) == 0) disabled @endif />
+                                                                @error('question_num_' . $key)
+                                                                    <span class="invalid-feedback" role="alert">
+                                                                        <strong>{{ $message }}</strong>
+                                                                    </span>
+                                                                @enderror
                                                             </td>
 
-                                                            <td><input name="lang" type="text" class="form-control"
-                                                                    maxlength="20" value="{{ old('lang', $item->lang) }}"
+                                                            <td><input name="{{ 'lang_' . $key }}" type="text"
+                                                                    class="form-control @error('lang_' . $key) is-invalid @enderror"
+                                                                    maxlength="20"
+                                                                    value="{{ old('lang_' . $key, $item->lang) }}"
                                                                     @if (($role & App\Enums\SchoolStaffRole::ADMINISTRATOR) == 0) disabled @endif />
+                                                                @error('lang_' . $key)
+                                                                    <span class="invalid-feedback" role="alert">
+                                                                        <strong>{{ $message }}</strong>
+                                                                    </span>
+                                                                @enderror
                                                             </td>
-                                                            <td><input name="score" type="text"
-                                                                    class="form-control @error('score') is-invalid @enderror"
+                                                            <td><input name="{{ 'score_' . $key }}" type="text"
+                                                                    class="form-control @error('score_' . $key) is-invalid @enderror"
                                                                     maxlength="3"
-                                                                    value="{{ old('score', $item->score) }}"
+                                                                    value="{{ old('score_' . $key, $item->score) }}"
                                                                     @if (($role & App\Enums\SchoolStaffRole::ADMINISTRATOR) == 0) disabled @endif />
-                                                                @error('score')
+                                                                @error('score_' . $key)
                                                                     <span class="invalid-feedback" role="alert">
                                                                         <strong>{{ $message }}</strong>
                                                                     </span>
                                                                 @enderror
                                                             </td>
                                                             <td>
-                                                                <select class="form-control mr-1" name="result">
+                                                                <select class="form-control mr-1" name="result"
+                                                                    @if (($role & App\Enums\SchoolStaffRole::ADMINISTRATOR) == 0) disabled @endif>
                                                                     <option value="{{ null }}"
                                                                         @if ($item->result == null) selected @endif>
                                                                     </option>
@@ -291,13 +305,17 @@
                                                             <td>
                                                                 <div
                                                                     class="d-flex justify-content-center flex-wrap cell-action">
-                                                                    <button class="btn btn-sm btn-secondary examiner-allocation-button"
-                                                                        type="button" name="action" value="OPEN_MODAL" data-id={{$item->id}}
+                                                                    <button
+                                                                        class="btn btn-sm btn-secondary examiner-allocation-button"
+                                                                        type="button" name="action" value="OPEN_MODAL"
+                                                                        data-id={{ $item->id }}
                                                                         @if ($item->status >= App\Enums\LessonAttendStatus::PENDING() ||
                                                                             ($role & App\Enums\SchoolStaffRole::ADMINISTRATOR) == 0) disabled @endif>
                                                                         検定員
                                                                     </button>
                                                                     <button class="btn btn-sm btn-secondary"
+                                                                        type="submit" name="action"
+                                                                        value="DELETE_APPPLICATION"
                                                                         @if ($item->status >= App\Enums\LessonAttendStatus::PENDING()) disabled @endif>
                                                                         削除</button>
                                                                     <button class="btn btn-sm btn-secondary"
@@ -331,7 +349,7 @@
                 </div>
             @endif
         </div>
-        <x-forms.apply-test.examiner-allocation-regis/>
+        <x-forms.apply-test.examiner-allocation-regis />
     </div>
 @stop
 
