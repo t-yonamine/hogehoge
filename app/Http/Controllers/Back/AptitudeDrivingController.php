@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Back;
 
+use App\Enums\ResultCharacter;
 use App\Enums\TestType;
 use App\Enums\Seq;
 use App\Enums\SchoolStaffRole;
@@ -111,7 +112,6 @@ class AptitudeDrivingController extends Controller
     public function upload(Request $request)
     {
         $user = Auth::user();
-        $finalNameFile = 'csv'; //CSVを
         $placeFirst = 0;
         $dataGet = [];
         //CSVを読み込み入力チェックをする
@@ -139,11 +139,11 @@ class AptitudeDrivingController extends Controller
             if ($key === $placeFirst) {
                 //ヘッダーの項目数をチェック
                 if (count($arrChildData) !== count(self::HEADER)) {
-                    return back()->with('error', Lang::get(''));
+                    return back()->withErrors(['files' => Lang::get('messages.MSE00010', ['label' => 'File'])]);
                 }
                 foreach ($arrChildData as $val) {
                     if (!in_array($val, self::HEADER)) {
-                        return back()->with('error', Lang::get(''));
+                        return back()->withErrors(['files' => Lang::get('messages.MSE00010', ['label' => 'File'])]);
                     }
                 }
             } else {
@@ -182,14 +182,14 @@ class AptitudeDrivingController extends Controller
                 array_push($dataGet, $childData);
             }
         }
-        return view('back.aptitude-driving.import-file', ['data' => $dataGet, 'fileName' => $file->getClientOriginalName()]);;
+        return view('back.aptitude-driving.import-file', ['data' => $dataGet, 'fileName' => $file->getClientOriginalName()]);
     }
 
     // 各項目のサイズ、形式、文字種などをチェックする
     private function validator($data)
     {
-        $validArr_A = 'in:A,B,C,D,E';
-        $validArr_B = 'in:A,B,C';
+        $validAtoC = join(self::SEPARATOR, ResultCharacter::getKeys([ResultCharacter::A, ResultCharacter::B, ResultCharacter::C]));
+        $validAtoE = $validAtoC . join(self::SEPARATOR, ResultCharacter::getKeys([ResultCharacter::D, ResultCharacter::E]));
         $rule = [
             'date' => 'required|date_format:"Ymd"',
             'student_no' => 'required|numeric|max:8|min:1',
@@ -199,10 +199,10 @@ class AptitudeDrivingController extends Controller
             'od_persty_pattern_1' => 'required|int|max:2',
             'od_persty_pattern_2' => 'required|int|max:2',
             'od_drv_aptitude' => 'required|in:1,2,3,4,5',
-            'od_safe_aptitude' => 'required|' . $validArr_A,
+            'od_safe_aptitude' => 'required|in:' . $validAtoE,
             'od_specific_rxn' => 'required|in:1,2,3',
-            'od_a', 'od_b', 'od_c', 'od_d', 'od_e', 'od_f', 'od_g' => 'required|' . $validArr_A,
-            'od_h', 'od_i', 'od_j', 'od_k', 'od_l', 'od_m', 'od_n', 'od_o', 'od_p' => 'required|' . $validArr_B,
+            'od_a', 'od_b', 'od_c', 'od_d', 'od_e', 'od_f', 'od_g' => 'required|in:' . $validAtoE,
+            'od_h', 'od_i', 'od_j', 'od_k', 'od_l', 'od_m', 'od_n', 'od_o', 'od_p' => 'required|in:' . $validAtoC,
         ];
         $attributes = [
             'date' => '実施日',

@@ -17,4 +17,5 @@ return [
     'MSE00007' => '要求が失敗しました。',
     'MSE00008' => '値に不備があります', //msg specific task 3490
     'MSE00009' => '教習生不在', //msg specific task 3490
+    'MSE00010' => ':labelの形式が正しくありません。',
 ];
