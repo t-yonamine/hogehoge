@@ -6,6 +6,7 @@ use App\Enums\LaType;
 use App\Enums\ResultType;
 use App\Enums\SchoolStaffRole;
 use App\Enums\StageType;
+use App\Enums\Status;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\EffectMeasurements\EffectMeasurementRequest;
 use App\Models\Ledger;
@@ -49,7 +50,9 @@ class EffectMeasurementController extends Controller
         }
         // 2. 存在チェック
         //   A. 教習原簿IDの存在チェック 共通ロジック/存在チェック#3
-        $data = Ledger::with('admCheckItem')->where('id', $ledger_id)->first();
+        $data = Ledger::with('admCheckItem')->whereHas('admCheckItem', function ($q) {
+            $q->where('status', Status::ENABLED());
+        })->where('id', $ledger_id)->first();
 
         if (!isset($data)) {
             return abort(404);
@@ -136,8 +139,10 @@ class EffectMeasurementController extends Controller
             $q->with('schoolStaff')->where('la_type', '>=', LaType::EFF_MEAS_MIN())
                 ->where('la_type', '<=', LaType::EFF_MEAS_MAX())
                 ->orderBy('period_date');
-        }])->where('id', $id)->first();
-        if (empty($data) || empty($data->admCheckItem)) {
+        }])->whereHas('admCheckItem', function ($q) {
+            $q->where('status', Status::ENABLED());
+        })->where('id', $id)->first();
+        if (empty($data)) {
             abort(404);
         }
         return view('back.effect-measurement.index', ['data' => $data, 'lesson_attends' => $data->lessonAttend]);

@@ -55,7 +55,7 @@ class Ledger extends Model
 
     public function admCheckItem()
     {
-        return $this->hasOne(AdmCheckItem::class);
+        return $this->hasMany(AdmCheckItem::class);
     }
 
     public function lessonAttend()
