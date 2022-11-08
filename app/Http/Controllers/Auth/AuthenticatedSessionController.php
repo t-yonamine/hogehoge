@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\Auth\LoginRequest;
 use App\Providers\RouteServiceProvider;
 use Illuminate\Http\Request;
+use Illuminate\Routing\Router;
 use Illuminate\Support\Facades\Auth;
 
 class AuthenticatedSessionController extends Controller
@@ -15,9 +16,20 @@ class AuthenticatedSessionController extends Controller
      *
      * @return \Illuminate\View\View
      */
-    public function create($school_cd = null)
+    public function create(Request $request, $school_cd = null)
     {
-        return view('auth.login', ['schoolCd' => $school_cd]);
+        $uri = $request->fullUrl();
+
+        $urlTablet = route('frt.login', $school_cd);
+
+        //check PC OR Tablet
+        if ($uri == $urlTablet) {
+            $request->session()->put('tablet', true);
+            return view('tablet.auth.login', ['schoolCd' => $school_cd]);
+        } else {
+            $request->session()->put('tablet', false);
+            return view('auth.login', ['schoolCd' => $school_cd]);
+        }
     }
 
     /**
@@ -51,16 +63,17 @@ class AuthenticatedSessionController extends Controller
     {
         Auth::guard('web')->logout();
 
-        $school_cd = $request->session()->get('school_cd');
+        $schoolCd = session('school_cd');
+        $tablet = session('tablet');
 
         $request->session()->invalidate();
 
         $request->session()->regenerateToken();
 
-        if ($school_cd) {
-            return redirect()->route('login', $school_cd);
+        if ($tablet) {
+            return redirect()->route('frt.login', $schoolCd);
         } else {
-            return  redirect()->route('login');
+            return  redirect()->route('login', $schoolCd);
         }
     }
 }

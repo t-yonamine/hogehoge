@@ -1,0 +1,218 @@
+@charset "utf-8";
+
+#content {
+    padding-bottom: 20px;
+}
+
+
+.search_header {
+    margin-bottom: 30px;
+}
+
+.search_header_1, .search_header_2 {
+    display: flex;
+    justify-content: space-between;
+    width: 100%;
+    margin-bottom: 10px;
+}
+
+.search_header_title {
+    font-weight: bold;
+    font-size: 16px;
+    line-height: 20px;
+    text-align: left;
+    color: #152b48;
+    margin-bottom: 4px;
+}
+
+
+.search_header_no input[type=text] {
+    background: #F7F8F8;
+    padding: 8px 20px;
+    font-size: 14px;
+    line-height: 20px;
+    color: #222220;
+    border: 1px solid #222220;
+    width: 120px;
+}
+
+
+.search_header_name input[type=text] {
+    background: #F7F8F8;
+    padding: 8px 20px;
+    font-size: 14px;
+    line-height: 20px;
+    color: #222220;
+    border: 1px solid #222220;
+    width: 200px;
+}
+
+.search_header #aiueo {
+    flex-shrink: 0;
+    width: 320px;
+    height: 70px;
+    display: flex;
+    flex-wrap: wrap;
+    flex-direction: column;
+    justify-content: space-between;
+}
+
+.search_header #aiueo>div {
+    width: 60px;
+    height: 32px;
+}
+
+.search_header #aiueo input[type=radio] {
+    display: none;
+}
+
+.search_header #aiueo input[type=radio]+label {
+    border: 1px solid #21ADC8;
+    border-radius: 5px;
+    height: 32px;
+    display: block;
+    text-align: center;
+    font-weight: bold;
+    font-size: 16px;
+    text-align: center;
+    color: #21adc8;
+    line-height: 32px;
+}
+
+.search_header #aiueo input[type=radio]:checked+label {
+    background: #21ADC8;
+    color: #fff;
+}
+
+.search_header .datepicker {
+    width: 140px;
+}
+
+.search_header .search_header_exist .search_header_body {
+    display: flex;
+    flex-shrink: 0;
+    width: 200px;
+    line-height: 40px;
+}
+
+.search_header .search_header_exist input[type=radio] {
+    display: none;
+}
+
+.search_header .search_header_exist input[type=radio]+label {
+    margin-right: 15px;
+}
+
+.search_header .search_header_exist input[type=radio]+label::before {
+    content: '';
+    display: inline-block;
+    width: 18px;
+    height: 18px;
+    border: 2px solid #888;
+    vertical-align: middle;
+    margin-right: 8px;
+    border-radius: 2px;
+    box-sizing: border-box;
+}
+
+.search_header .search_header_exist input[type=radio]:checked+label::before {
+    background: #21ADC8;
+}
+
+#search_button {
+    text-align: center;
+    margin-top: 25px;
+}
+
+
+
+
+#search_list table {
+    width: 100%;
+}
+
+#search_list th {
+    background: #152B48;
+    font-weight: bold;
+    font-size: 14px;
+    line-height: 20px;
+    text-align: left;
+    color: #fff;
+    padding: 6px;
+    text-align: center;
+}
+
+
+#search_list td {
+    padding: 6px;
+    font-size: 16px;
+    line-height: 20px;
+    text-align: center;
+    font-weight: 500;
+}
+
+#search_list tr:nth-child(even) td {
+    background: #F9F9F9;
+}
+
+
+#search_list td.no a {
+    color: #21adc8;
+    text-decoration: underline;
+    font-weight: bold;
+}
+
+#search_list td.name {
+    text-align: left;
+}
+
+#search_list_pager {
+    border-top: 1px solid #152B48;
+    position: relative;
+}
+
+#search_list_pager_now {
+    position: absolute;
+    top: 10px;
+    left: 5px;
+    font-weight: 500;
+    font-size: 12px;
+    line-height: 20px;
+    text-align: left;
+}
+
+#search_list_pager_page {
+    margin: 11px auto 0;
+    display: flex;
+    justify-content: center;
+}
+
+#search_list_pager_page button {
+    height: 30px;
+    font-weight: bold;
+    font-size: 14px;
+    padding: 5px;
+}
+
+#search_list_pager_page button.prev, #search_list_pager_page button.next {
+    width: 80px;
+    margin: 0 18px;
+}
+#search_list_pager_page button.prev {
+    background: url(../images/icon_prev.png) center left 5px/6px no-repeat, #21ADC8;
+}
+#search_list_pager_page button.next {
+    background: url(../images/icon_next.png) center right 5px/6px no-repeat,  #21ADC8;
+}
+#search_list_pager_page button.p {
+    width: 30px;
+    margin: 0 1.5px;
+    background: #fff;
+    color: #21ADC8;
+    border: 1px solid #21ADC8;
+}
+#search_list_pager_page button.p.now {
+    background: #666666;
+    color: #fff;
+    border: none;
+}

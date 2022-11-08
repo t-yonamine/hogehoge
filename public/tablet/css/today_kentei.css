@@ -1,0 +1,493 @@
+@charset "utf-8";
+
+/* DATE TIME */
+
+#datetime {
+    display: flex;
+    align-items: center;
+    margin-bottom: 23px;
+}
+
+#date {
+    width: 154px;
+    margin-right: 15px;
+    flex-shrink: 0;
+}
+
+#date input[type=date] {
+    width: 100%;
+    border: 1px solid #222220;
+    padding: 5px 10px;
+    font-weight: 500;
+    font-size: 14px;
+    line-height: 20px;
+    text-align: left;
+    color: #222220;
+}
+
+#time {
+    overflow-x: auto;
+}
+
+#time>div {
+    display: flex;
+    margin-bottom: 10px;
+    border-left: 1px solid #152B48;
+    box-sizing: border-box;
+}
+
+#time>div>div {
+    width: 82px;
+    flex-shrink: 0;
+}
+
+#time .time {
+    background: #152B48;
+    padding: 8px;
+    text-align: center;
+    font-weight: bold;
+    font-size: 14px;
+    color: #fff;
+    box-sizing: border-box;
+}
+
+#time .outline {
+    padding: 10px;
+    background: #F0F7F8;
+    text-align: center;
+    border-bottom: 1px solid #152B48;
+    box-sizing: border-box;
+    border-right: 1px solid #152B48;
+}
+
+#time .outline a {
+    font-weight: bold;
+    font-size: 12px;
+    line-height: 20px;
+    color: #21adc8;
+}
+
+#time .now {
+    background: #FFECAC;
+}
+
+
+/* DETAIL */
+
+#today_detail {
+    margin-bottom: 20px;
+    display: flex;
+    height: 64px;
+    width: 100%;
+    justify-content: space-between;
+    border: 1px solid #152B48;
+    position: relative;
+}
+
+#today_detail_date {
+    background: #152B48;
+    width: 100px;
+    height: 62px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    font-weight: bold;
+    font-size: 14px;
+    line-height: 20px;
+    color: #fff;
+    flex-shrink: 0;
+}
+
+#today_detail_date em {
+    font-weight: bold;
+    font-size: 20px;
+    display: block;
+}
+
+#today_detail_time {
+    width: 73px;
+    flex-shrink: 0;
+    height: 62px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    font-weight: bold;
+    font-size: 14px;
+    line-height: 20px;
+    color: #152b48;
+}
+
+#today_detail_time em {
+    font-size: 20px;
+    font-weight: bold;
+    display: block;
+}
+
+#today_detail_title {
+    position: relative;
+    width: 100%;
+    background: #F0F7F8;
+}
+
+#today_detail_title_outline {
+    position: absolute;
+    background: #1BA368;
+    width: 100px;
+    height: 24px;
+    font-weight: bold;
+    font-size: 12px;
+    line-height: 24px;
+    text-align: center;
+    color: #fff;
+}
+
+#today_detail_title_body {
+    display: flex;
+    height: 64px;
+    align-items: center;
+    justify-content: space-between;
+    margin: 0 16px 0 117px;
+}
+
+#today_detail_title_body_title {
+    font-weight: bold;
+    font-size: 20px;
+    line-height: 20px;
+    ;
+    color: #222220;
+}
+
+#today_detail_title_body_button {
+    width: 60px;
+    text-align: right;
+}
+
+#today_detail_title_body_button button {
+    width: 60px;
+    height: 30px;
+    background: #21ADC8;
+    border-radius: 5px;
+    border: none;
+    font-weight: bold;
+    font-size: 14px;
+    text-align: center;
+    color: #fff;
+    line-height: 30px;
+}
+
+
+/* STUDENTS */
+
+#students {
+    margin-bottom: 14px;
+}
+
+#students>article {
+    margin-bottom: 8px;
+    border: 1px solid #152B48;
+    position: relative;
+    height: 93px;
+    box-sizing: border-box;
+}
+
+#students .photo {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 87px;
+    height: 91px;
+    object-fit: cover;
+}
+
+#students .photo img {
+    width: 87px;
+    height: 91px;
+    object-fit: cover;
+}
+
+#students .profile,
+#students .data {
+    margin-left: 86px;
+    display: flex;
+    justify-content: space-between;
+}
+
+#students .profile {
+    background: #F0F7F8;
+    height: 43px;
+    align-items: center;
+}
+
+#students .data {
+    height: 48px;
+}
+
+#students .no {
+    width: 97px;
+    flex-shrink: 0;
+    padding-left: 10px;
+    font-weight: bold;
+    text-decoration: underline;
+    font-size: 16px;
+    line-height: 20px;
+}
+
+#students .no a {
+    color: #21adc8;
+}
+
+#students .name {
+    width: 500px;
+    font-weight: bold;
+    font-size: 16px;
+    line-height: 20px;
+    color: #222220;
+}
+
+#students .mikiwame {
+    width: 214px;
+    flex-shrink: 0;
+    font-weight: bold;
+    font-size: 16px;
+    line-height: 20px;
+    color: #CCCCCC;
+}
+
+#students .mikiwame.active {
+    color: #E20638;
+}
+
+#students .car {
+    width: 136px;
+    flex-shrink: 0;
+    flex-shrink: 0;
+    font-weight: 500;
+    font-size: 14px;
+    line-height: 20px;
+    color: #222220;
+}
+
+#students .fuzai {
+    width: 79px;
+    flex-shrink: 0;
+    font-weight: bold;
+    font-size: 14px;
+    line-height: 20px;
+    color: #222220;
+}
+
+#students .fuzai input {
+    margin-right: 6px;
+}
+
+#students .check {
+    width: 130px;
+    flex-shrink: 0;
+    margin-right: 16px;
+}
+
+#students .check button {
+    width: 130px;
+    height: 30px;
+    background: #21ADC8;
+    font-weight: bold;
+    font-size: 14px;
+    color: #fff;
+    border: none;
+    border-radius: 5px;
+}
+
+#students .check button:disabled {
+    background: #CCCCCC;
+}
+
+#students .icon {
+    flex-shrink: 0;
+    width: 30px;
+    height: 48px;
+    background: url(/images/icon_pen.png) center center no-repeat, #152B48;
+    margin-right: 14px;
+}
+
+#students .kekka,
+#students .tokuten,
+#students .moushiokuri {
+    font-weight: bold;
+    font-size: 10px;
+    line-height: 18px;
+    color: #666;
+    height: 48px;
+    padding-top: 3px;
+}
+
+#students .kekka {
+    width: 60px;
+    flex-shrink: 0;
+}
+
+#students .tokuten {
+    width: 60px;
+    flex-shrink: 0;
+}
+
+#students .moushiokuri {
+    width: 100%;
+}
+
+#students .kekka em,
+#students .tokuten em,
+#students .moushiokuri em {
+    display: block;
+    font-weight: 500;
+    font-size: 14px;
+    padding-left: 6px;
+    color: #222220;
+}
+
+#students .nippou {
+    width: 60px;
+    height: 48px;
+    flex-shrink: 0;
+    margin-right: 16px;
+    margin-left: 14px;
+    padding-top: 9px;
+}
+
+#students .nippou button {
+    width: 60px;
+    height: 30px;
+    background: #21ADC8;
+    font-weight: bold;
+    font-size: 14px;
+    color: #fff;
+    border: none;
+    border-radius: 5px;
+}
+
+#students .nippou button:disabled {
+    background: #CCCCCC;
+}
+
+#student_register {
+    margin-bottom: 14px;
+    text-align: center;
+}
+
+#student_register button {
+    width: 210px;
+    height: 40px;
+    background: #21ADC8;
+    border-radius: 5px;
+    border: none;
+    font-weight: bold;
+    font-size: 14px;
+    text-align: center;
+    color: #fff;
+    line-height: 40px;
+}
+
+#student_comment {
+    display: flex;
+}
+
+#student_comment_title {
+    background: #152B48;
+    width: 60px;
+    flex-shrink: 0;
+    font-weight: bold;
+    font-size: 14px;
+    line-height: 20px;
+    text-align: center;
+    color: #fff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+#student_comment_input {
+    border-top: 1px solid #152B48;
+    padding: 13px 15px;
+    width: 100%;
+    border-bottom: 1px solid #152B48;
+}
+
+#student_comment_input textarea {
+    width: 100%;
+    height: 68px;
+}
+
+
+/* MODAL_KENTEINIPPOU */
+
+#nippou_table {
+    width: 100%;
+    border-collapse: separate;
+    border-spacing: 8px;
+    margin-bottom: 10px;
+}
+
+#nippou_table th {
+    width: 220px;
+    padding: 7px 23px;
+    vertical-align: middle;
+    background: #F9F9F9;
+    font-weight: bold;
+    font-size: 16px;
+    line-height: 20px;
+    color: #152b48;
+}
+
+#nippou_table th em {
+    background: #E83015;
+    font-weight: bold;
+    font-size: 11px;
+    letter-spacing: 0.05em;
+    line-height: 20px;
+    text-align: center;
+    color: #fff;
+    padding: 3px 5px;
+    margin-left: 12px;
+}
+
+#nippou_table td {
+    padding: 7px 23px;
+    vertical-align: middle;
+    font-weight: 500;
+    font-size: 16px;
+    line-height: 20px;
+    color: #222220;
+}
+
+#nippou_table select {
+    font-weight: 500;
+    font-size: 16px;
+    line-height: 20px;
+    color: #222220;
+    background: #F7F8F8;
+    padding: 5px 30px 5px 15px;
+}
+
+#nippou_table input[type=radio] {
+    margin-right: 5px;
+}
+
+#nippou_table input[type=radio]+label {
+    width: 100px;
+    display: inline-block;
+}
+
+#nippou_table input[type=text] {
+    background: #F7F8F8;
+    padding: 8px 20px;
+    width: 424px;
+    font-size: 14px;
+    line-height: 20px;
+    color: #222220;
+    border: 1px solid #222220;
+}
+
+#nippou_button {
+    text-align: center;
+}

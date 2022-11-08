@@ -356,13 +356,13 @@ return [
         ],
         [
             'text' => '教習所',
-            'route'  => 'school-driving.index', 
+            'route'  => 'school-driving.index',
             'icon' => 'fas fa-fw fa-circle',
             'can'  => ['admin'],
         ],
         [
             'text' => '運営アカウント一覧',
-            'route'  => 'accounts.index', 
+            'route'  => 'accounts.index',
             'icon' => 'fas fa-fw fa-circle',
             'can'  => ['admin'],
         ],
