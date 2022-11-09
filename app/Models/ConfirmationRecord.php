@@ -3,7 +3,7 @@
 namespace App\Models;
 
 use App\Enums\ConfgInformationType;
-use App\Enums\Status;
+use App\Enums\ConfirmationRecsStatus;
 use Exception;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -13,11 +13,18 @@ use Illuminate\Support\Facades\DB;
 class ConfirmationRecord extends Model
 {
   use HasFactory, SoftDeletes;
-
+  /**
+   * The attributes that are mass assignable.
+   *
+   * @var string[]
+   */
+  protected $guarded = [];
+  
   protected $table = 'gconfirmation_recs';
 
   protected $casts = [
     'conf_type' => ConfgInformationType::class,
+    'status' => ConfirmationRecsStatus::class,
   ];
 
   protected $fillable = [

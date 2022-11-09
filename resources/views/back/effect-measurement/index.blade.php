@@ -23,7 +23,7 @@
                             <tr>
                                 <th class="w-20">氏名</th>
                                 <td>
-                                    <input type="text" class="form-control" value="{{ $data->admCheckItem->name }}"
+                                    <input type="text" class="form-control" value="{{ $data->admCheckItem->first()->name }}"
                                         disabled="true">
                                 </td>
                             </tr>

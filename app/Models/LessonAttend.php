@@ -13,6 +13,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
+
 class LessonAttend extends Model
 {
     use HasFactory, SoftDeletes;
@@ -43,7 +44,7 @@ class LessonAttend extends Model
         'period_to' => 'datetime:h:i',
         'score' => 'int',
         'result' => ResultType::class,
-        'question_num' => 'int',
+        'question_num' => 'string',
         'remarks' => 'string',
         'perfect_score' => PerfectScore::class,
         'status' => LessonAttendStatus::class,
@@ -53,6 +54,11 @@ class LessonAttend extends Model
         'perfect_score' => PerfectScore::ONE_HUNDRED,
         'status' => LessonAttendStatus::PENDING
     ];
+
+    public function school()
+    {
+        return $this->hasOne(School::class, 'id', 'school_id');
+    }
 
     public static function handleSave(array $data, Ledger $ledger, LessonAttend $model = null)
     {
@@ -98,6 +104,29 @@ class LessonAttend extends Model
             });
         } catch (Exception $e) {
             throw $e;
+        }
+    }
+
+    public static function rearrangeList($listLessonAttends, $loginId, $isIncreasing)
+    {
+        $currentTime = now();
+        $testNumValueToAdd = $isIncreasing ? 1 : -1;
+        foreach ($listLessonAttends as $item) {
+            static::rearrangePerRecord($item, $loginId, $currentTime, $testNumValueToAdd);
+        }
+    }
+
+    public static function rearrangePerRecord($lessAttend, $loginId, $currentTime, $testNumValueToAdd)
+    {
+        try {
+            DB::transaction(function () use ($lessAttend, $loginId, $currentTime, $testNumValueToAdd) {
+                $lessAttend->test_num = $lessAttend->test_num + $testNumValueToAdd;
+                $lessAttend->updated_at = $currentTime;
+                $lessAttend->updated_user_id = $loginId;
+                $lessAttend->save();
+            });
+        } catch (\Throwable $th) {
+            throw $th;
         }
     }
 }

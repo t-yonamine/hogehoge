@@ -22,5 +22,4 @@ final class LessonCode extends Enum
     const SECOND_STAGE = 5;
     const TEST_2_WAIT = 6;
     const GRADUATION = 7;
-    
 }

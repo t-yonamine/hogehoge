@@ -303,7 +303,7 @@ return [
         ],
         [
             'text' => '検定',
-            'url'  => '#',
+            'route'  => 'apply-test.index',
             'icon' => 'fas fa-fw fa-circle',
             'can'  => ['staff'],
         ],
@@ -339,7 +339,7 @@ return [
         ],
         [
             'text' => '運転適性検査インポート',
-            'url'  => '#',
+            'route'  => 'aptitude-driving.importFile', 
             'icon' => 'fas fa-fw fa-circle',
             'can'  => ['staff'],
         ],
@@ -356,13 +356,13 @@ return [
         ],
         [
             'text' => '教習所',
-            'route'  => 'school-driving.index', 
+            'route'  => 'school-driving.index',
             'icon' => 'fas fa-fw fa-circle',
             'can'  => ['admin'],
         ],
         [
             'text' => '運営アカウント一覧',
-            'route'  => 'accounts.index', 
+            'route'  => 'accounts.index',
             'icon' => 'fas fa-fw fa-circle',
             'can'  => ['admin'],
         ],

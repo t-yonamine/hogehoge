@@ -1,0 +1,190 @@
+@charset "utf-8";
+#today_tt {
+    width: 100%;
+    position: relative;
+}
+
+.fixed {
+    position: sticky;
+    top: 84px;
+}
+
+#today_tt th {
+    background: #152B48;
+    color: #fff;
+    font-weight: 500;
+    font-size: 11px;
+    text-align: center;
+    color: #fff;
+    border-bottom: 1px solid #fff;
+    width: 90px;
+    vertical-align: middle;
+    height: 57px;
+}
+
+#today_tt td {
+    border-bottom: 1px solid #152B48;
+}
+
+#today_tt th em {
+    font-weight: bold;
+    font-size: 14px;
+    display: block;
+    margin-bottom: 6px;
+}
+
+#today_tt .header {
+    background: #152B48;
+    color: #fff;
+    padding: 10px;
+}
+
+#today_tt .header button {
+    width: 80px;
+    background: #21ADC8;
+    border-radius: 5px;
+    border: none;
+    font-weight: bold;
+    font-size: 14px;
+    text-align: center;
+    color: #fff;
+    padding: 5px;
+}
+
+#today_tt .header button.prev {
+    background: url(/images/icon_prev.png) left 8px center/6px no-repeat, #21ADC8;
+}
+
+#today_tt .header button.next {
+    background: url(/images/icon_next.png) right 8px center/6px no-repeat, #21ADC8;
+}
+
+#today_tt .header input[type=date] {
+    width: 150px;
+    border: none;
+    padding: 5px 10px;
+    font-weight: 500;
+    font-size: 14px;
+    line-height: 20px;
+    text-align: left;
+    color: #222220;
+}
+
+#today_tt .header>div {
+    display: flex;
+    justify-content: space-between;
+    width: 100%;
+}
+
+#today_tt .category {
+    background: #666666;
+    font-weight: bold;
+    font-size: 14px;
+    line-height: 20px;
+    text-align: center;
+    color: #fff;
+    vertical-align: middle;
+    width: 61px;
+    padding: 0px 15px;
+}
+
+#today_tt .category.gyoumu {
+    background: #666666;
+}
+
+#today_tt .category.kentei {
+    background: #1BA368;
+}
+
+#today_tt .category.ginoukyoushu {
+    background: #0C9A9B;
+}
+
+#today_tt .category.gakkakyoushu {
+    background: #00439F;
+}
+
+#today_tt .outline {
+    width: 100px;
+    background: #F0F7F8;
+    vertical-align: middle;
+    padding: 4px 10px;
+}
+
+#today_tt .outline a {
+    color: #21adc8;
+    font-weight: bold;
+    font-size: 14px;
+    line-height: 24px;
+}
+
+#today_tt .detail {
+    padding: 6px 6px 6px 8px;
+}
+
+#today_tt .detail.now {
+    background: #FFECAC;
+}
+
+#today_tt .detail_line {
+    display: flex;
+    justify-content: space-between;
+    align-items: start;
+    width: 100%;
+    margin-bottom: 3px;
+}
+
+#today_tt .detail_data {
+    font-weight: 500;
+    font-size: 14px;
+    line-height: 20px;
+    color: #222220;
+    width: 100%;
+}
+
+#today_tt .detail_data>a {
+    color: #21adc8;
+    margin-right: 10px;
+}
+
+#today_tt .detail_status {
+    width: 63px;
+    text-align: center;
+    font-weight: 500;
+    font-size: 12px;
+    line-height: 20px;
+    color: #fff;
+    background: #666666;
+    box-sizing: border-box;
+    border-radius: 30px;
+    flex-shrink: 0;
+}
+
+#today_tt .detail_status.jisshizumi {
+    background: #666666;
+}
+
+#today_tt .detail_status.joushazumi {
+    background: #666666;
+}
+
+#today_tt .detail_status.uketsukechu {
+    background: #fff;
+    color: #00439F;
+    border: 1px solid #00439F;
+}
+
+#today_tt .detail_status.yotei {
+    background: #666666;
+    border: 1px solid #666666;
+}
+
+#today_tt .detail_status.haishazumi {
+    background: #fff;
+    color: #0C9A9B;
+    border: 1px solid #0C9A9B;
+}
+
+#today_tt .detail_status.mihaisha {
+    background: #E20638;
+}

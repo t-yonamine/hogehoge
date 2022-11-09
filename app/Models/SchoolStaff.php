@@ -83,6 +83,11 @@ class SchoolStaff extends Model
         'is_wireless',
     ];
 
+    public function school()
+    {
+        return $this->hasOne(School::class, 'id', 'school_id');
+    }
+
     public static function buildQuery(array $params): Builder
     {
         return static::when(isset($params['school_staff_no']), function (Builder $query) use ($params) {

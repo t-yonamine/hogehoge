@@ -55,11 +55,10 @@ class LaType extends Enum
     const EFF_MEAS_2N = 2221;
     const EFF_MEAS_MIN = 2200;
     const EFF_MEAS_MAX = 2299;
-    //
     const COMPLTST = 3110;
-    const PLS_TEST = 3210;
-    const GRASTST = 3320;
-    const DRV_LESSON = 3400;
+    const PL_TEST = 3210;
+    const GRADTST = 3320;
+    const DRVSKLTST = 3400;
 
     /**
      * Get the description for an enum value
@@ -89,10 +88,10 @@ class LaType extends Enum
             self::EFF_MEAS_2, self::EFF_MEAS_2N => "卒検前",
             self::EFF_MEAS_MIN => "",
             self::EFF_MEAS_MAX => "",
-            self::COMPLTST => "修了検定",
-            self::PLS_TEST => "仮免許",
-            self::GRASTST => "卒業検定",
-            self::DRV_LESSON => "技能審査",
+            self::COMPLTST, self::COMPLTST => "修了検定",
+            self::PL_TEST, self::PL_TEST => "仮免許",
+            self::GRADTST, self::GRADTST => "卒業検定",
+            self::DRVSKLTST, self::DRVSKLTST => "技能審査",
         };
     }
    
