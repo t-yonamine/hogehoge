@@ -475,10 +475,12 @@ class ApplicationTestController extends Controller
                 'la_type' => $ischeckType ?  $ischeckType : '',
                 'test_date' =>  $request->query('test_date'),
                 'num_of_days' => $request->query('num_of_days'),
-                'period_num_to' =>  $periods->filter(function ($value) use ($numTo) {
+                'period_num_to' =>  $numTo,
+                'period_name_to' =>  $periods->filter(function ($value) use ($numTo) {
                     return $value->period_num == $numTo;
                 })->first()->period_name ,
-                'period_num_from' =>   $periods->filter(function ($value) use ($numFrom) {
+                'period_num_from' =>   $numFrom,
+                'period_name_from' =>   $periods->filter(function ($value) use ($numFrom) {
                     return $value->period_num == $numFrom;
                 })->first()->period_name,
                 'list_student' => $list_student ? $list_student : [],
@@ -499,6 +501,7 @@ class ApplicationTestController extends Controller
             'num_of_days' => 'required',
             'period_num_from' => 'required',
             'period_num_to' => 'required',
+            'ledger_id' => 'required',
 
         ], [], []);
         DB::transaction(function () use ($request) {
@@ -544,7 +547,7 @@ class ApplicationTestController extends Controller
                 $dataTest['created_user_id'] = $schoolStaffId;
                 $dataTest['updated_at'] = now();
                 $dataTest['updated_user_id'] = $schoolStaffId;
-                $dataTest['test_date'] = now();
+                $dataTest['test_date'] = $request->test_date;
                 $modelTests = Tests::handleSave($dataTest, null);
             } else if (
                 $modelTests->period_num_to != $request->period_num_to &&
@@ -578,7 +581,7 @@ class ApplicationTestController extends Controller
                     $dataLessonAttend['stage'] = StageType::checkType($laType);
                     $dataLessonAttend['period_date'] = now();
                     $dataLessonAttend['period_from'] = $request->period_num_from;
-                    $dataLessonAttend['period_to'] = $request->period_to;
+                    $dataLessonAttend['period_to'] = $request->period_num_to;
                     $dataLessonAttend['test_id'] = $modelTests->id;
                     $dataLessonAttend['test_num'] = $testNumMax ? $testNumMax + 1 : 0;
                     $dataLessonAttend['status'] = LessonAttendStatus::SCHEDULED_WAITING();

@@ -77,7 +77,7 @@
                                             <select class="form-control mr-1" name="period_num_from">
                                                 @foreach ($dataOptionPeriod as $value)
                                                     <option value="{{ $value->period_num }}"
-                                                    @if (old('period_num', request()->query('period_num')) == $value) selected @endif>
+                                                    @if (old('period_num_from', request()->query('period_num_from')) == $value) selected @endif>
                                                         {{ $value->period_name }}
                                                     </option>
                                                 @endforeach
