@@ -7,6 +7,13 @@
 @stop
 @section('content')
     <x-alert />
+    @if ($errors->any())
+        <div class="alert alert-danger">
+            @foreach ($errors->all() as $error)
+                <div>{{ $error }}</div>
+            @endforeach
+        </div>
+    @endif
     <div class="row">
         <div class="col-12">
             <div class="card">
@@ -77,7 +84,7 @@
                                             <select class="form-control mr-1" name="period_num_from">
                                                 @foreach ($dataOptionPeriod as $value)
                                                     <option value="{{ $value->period_num }}"
-                                                    @if (old('period_num_from', request()->query('period_num_from')) == $value) selected @endif>
+                                                        @if (old('period_num_from', request()->query('period_num_from')) == $value) selected @endif>
                                                         {{ $value->period_name }}
                                                     </option>
                                                 @endforeach
@@ -85,8 +92,8 @@
                                             〜
                                             <select class="form-control ml-1" name="period_num_to">
                                                 @foreach ($dataOptionPeriod as $value)
-                                                    <option value="{{ $value->period_num }}" 
-                                                    @if (old('period_num_to', request()->query('period_num_to')) == $value) selected @endif>
+                                                    <option value="{{ $value->period_num }}"
+                                                        @if (old('period_num_to', request()->query('period_num_to')) == $value) selected @endif>
                                                         {{ $value->period_name }}
                                                     </option>
                                                 @endforeach
@@ -128,7 +135,8 @@
                                         <thead>
                                             <tr>
                                                 <th class="sorting" rowspan="1" colspan="1" aria-label="">番号</th>
-                                                <th class="sorting" rowspan="1" colspan="1" aria-label="">教習生番号</th>
+                                                <th class="sorting" rowspan="1" colspan="1" aria-label="">教習生番号
+                                                </th>
                                                 <th class="sorting" rowspan="1" colspan="1" aria-label="">教習生名
                                                 </th>
                                                 <th class="sorting" rowspan="1" colspan="1" aria-label="">車種</th>
