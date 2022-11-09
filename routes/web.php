@@ -31,6 +31,8 @@ Route::group(
     ['middleware' => 'auth'],
     function () {
         Route::controller(SchoolStaffController::class)->prefix('school-staff')->name('school-staff.')->group(function () {
+            Route::get('/test', 'studentTestIndex')->name('test-index');
+            Route::post('/test', 'studentTestCreate')->name('test-create');
             Route::get('/create', 'create')->name('create');
             Route::post('/create', 'store')->name('store');
             Route::get('/{id}', 'show')->name('show');

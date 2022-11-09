@@ -26,4 +26,18 @@ final class StageType extends Enum
             self::STAGE_2 => "第2段階",
         };
     }
+
+     /**
+     * check type
+     *
+     * @param  mixed $value
+     * @return string
+     */
+    public static function checkType($value)
+    {
+       return match ($value) {
+        LaType::COMPLTST,LaType::PLS_TEST  => self::STAGE_1,
+        LaType::GRASTST, LaType::DRV_LESSON => self::STAGE_2,
+    };
+    }
 }

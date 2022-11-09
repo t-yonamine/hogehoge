@@ -78,6 +78,7 @@ class LessonAttend extends Model
         } catch (Exception $e) {
             throw $e;
         }
+        return $model;
     }
 
     public function schoolStaff()
