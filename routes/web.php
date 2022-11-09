@@ -67,6 +67,9 @@ Route::group(
             Route::get('examiner-allocation-regis/ajax', 'examinerAllocationRegisAjax')->name('examiner-allocation-regis.ajax');
             Route::post('examiner-allocation-regis/ajax-save', 'examinerAllocationRegisAjaxSave')->name('examiner-allocation-regis.ajax-save')->withoutMiddleware(\App\Http\Middleware\VerifyCsrfToken::class);
             Route::post('error-page', 'errorPage')->name('error-page');
+            Route::get('/ledger/create', 'create')->name('create');
+            Route::post('/ledger/create', 'createSave')->name('create.save');
+
         });
     }
 );

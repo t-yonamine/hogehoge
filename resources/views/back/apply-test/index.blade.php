@@ -74,17 +74,19 @@
                                     <th class="w-20">実施時限</th>
                                     <td>
                                         <div class="d-flex align-items-center">
-                                            <select class="form-control mr-1">
+                                            <select class="form-control mr-1" name="period_num_from">
                                                 @foreach ($dataOptionPeriod as $value)
-                                                    <option value="{{ $value->period_num }}">
+                                                    <option value="{{ $value->period_num }}"
+                                                    @if (old('period_num_from', request()->query('period_num_from')) == $value) selected @endif>
                                                         {{ $value->period_name }}
                                                     </option>
                                                 @endforeach
                                             </select>
                                             〜
-                                            <select class="form-control ml-1">
+                                            <select class="form-control ml-1" name="period_num_to">
                                                 @foreach ($dataOptionPeriod as $value)
-                                                    <option value="{{ $value->period_num }}">
+                                                    <option value="{{ $value->period_num }}" 
+                                                    @if (old('period_num_to', request()->query('period_num_to')) == $value) selected @endif>
                                                         {{ $value->period_name }}
                                                     </option>
                                                 @endforeach
@@ -101,7 +103,7 @@
                                 検索</button>
                         </div>
                         <div class="col">
-                            <button class="btn btn-sm btn-secondary" type="submit">
+                            <button class="btn btn-sm btn-secondary" name="action" value="create" type="submit">
                                 教習生追加</button>
                             <button class="btn btn-sm btn-secondary" type="submit">
                                 教習原簿PDFダウンロード
