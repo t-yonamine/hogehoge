@@ -50,12 +50,12 @@
                             <div class="d-flex">
                                 <input name="seq" class="" id="OK" type="radio" class="form-control"
                                     value="{{ App\Enums\Seq::FIRST1 }}" @if (old('seq', $seq) == App\Enums\Seq::FIRST1) checked @endif>
-                                <span class="mb-0 ml-1 mr-3"
-                                    for="OK">{{ App\Enums\Seq::getDescription(App\Enums\Seq::FIRST1) }}</span>
+                                <label class="mb-0 ml-1 mr-3 font-weight-normal"
+                                    for="OK">{{ App\Enums\Seq::getDescription(App\Enums\Seq::FIRST1) }}</label>
                                 <input name="seq" class="" id="NG" type="radio"
                                     value="{{ App\Enums\Seq::FIRST2 }}" @if (old('seq', $seq ?? 0) == App\Enums\Seq::FIRST2) checked @endif>
-                                <span class="m-0 mx-1"
-                                    for="NG">{{ App\Enums\Seq::getDescription(App\Enums\Seq::FIRST2) }}</span>
+                                <label class="m-0 mx-1 font-weight-normal"
+                                    for="NG">{{ App\Enums\Seq::getDescription(App\Enums\Seq::FIRST2) }}</label>
                             </div>
                             @error('seq')
                                 <span class="invalid-feedback" role="alert">
@@ -72,13 +72,13 @@
                             <div class="d-flex">
                                 <input name="test_type" class="" id="OK" type="radio" class="form-control"
                                     value="{{ App\Enums\TestType::OD }}" @if (old('test_type', $testtype) == App\Enums\TestType::OD) checked @endif>
-                                <span class="mb-0 ml-1 mr-3"
-                                    for="OK">{{ App\Enums\TestType::getDescription(App\Enums\TestType::OD) }}</span>
+                                <label class="mb-0 ml-1 mr-3 font-weight-normal"
+                                    for="OK">{{ App\Enums\TestType::getDescription(App\Enums\TestType::OD) }}</label>
                                 <input name="test_type" class="" id="NG" type="radio" class="form-control"
                                     disabled value="{{ App\Enums\TestType::K2 }}"
                                     @if (old('test_type', $testtype ?? 0) == App\Enums\TestType::K2) checked @endif>
-                                <span class="m-0 mx-1"
-                                    for="NG">{{ App\Enums\TestType::getDescription(App\Enums\TestType::K2) }}</span>
+                                <label class="m-0 mx-1 font-weight-normal"
+                                    for="NG">{{ App\Enums\TestType::getDescription(App\Enums\TestType::K2) }}</label>
                             </div>
                             @error('test_type')
                                 <span class="invalid-feedback" role="alert">
