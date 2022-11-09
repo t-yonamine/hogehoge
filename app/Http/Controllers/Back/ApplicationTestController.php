@@ -446,7 +446,14 @@ class ApplicationTestController extends Controller
         try {
             $schoolId =  $request->session()->get('school_id');
             $laType = (int)$request->query('la_type');
-            $period = SchoolPeriodM::where('school_id', $schoolId)->first();
+            $numFrom = $request->query('period_num_from');
+            $numTo = $request->query('period_num_to');
+            $periods = SchoolPeriodM::where('school_id', $schoolId)
+            ->where(function ($query) use ($numFrom, $numTo) {
+                $query->where('period_num', '=', $numFrom)
+                    ->orWhere('period_num', '<=', $numTo);
+            })->get();
+
             $ischeckType = LaType::getDescription($laType);
 
             switch ($laType) {
@@ -468,7 +475,12 @@ class ApplicationTestController extends Controller
                 'la_type' => $ischeckType ?  $ischeckType : '',
                 'test_date' =>  $request->query('test_date'),
                 'num_of_days' => $request->query('num_of_days'),
-                'period_num' =>  $period ? $period->period_name : null,
+                'period_num_to' =>  $periods->filter(function ($value) use ($numTo) {
+                    return $value->period_num == $numTo;
+                })->first()->period_name ,
+                'period_num_from' =>   $periods->filter(function ($value) use ($numFrom) {
+                    return $value->period_num == $numFrom;
+                })->first()->period_name,
                 'list_student' => $list_student ? $list_student : [],
             ];
         } catch (\Throwable $th) {
@@ -567,7 +579,7 @@ class ApplicationTestController extends Controller
                     $dataLessonAttend['period_date'] = now();
                     $dataLessonAttend['period_from'] = $request->period_num_from;
                     $dataLessonAttend['period_to'] = $request->period_to;
-                    $dataLessonAttend['test_id'] = $modelTests->test_id;
+                    $dataLessonAttend['test_id'] = $modelTests->id;
                     $dataLessonAttend['test_num'] = $testNumMax ? $testNumMax + 1 : 0;
                     $dataLessonAttend['status'] = LessonAttendStatus::SCHEDULED_WAITING();
                     $dataLessonAttend['created_at'] = now();

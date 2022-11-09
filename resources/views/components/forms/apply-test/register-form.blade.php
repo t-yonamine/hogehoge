@@ -30,7 +30,7 @@
                 <tr>
                     <th class="w-20">実施時限</th>
                     <td>
-                        <input name="period_num" type="text" class="form-control" value="{{ old('period_num', $data->period_num) }}" disabled>
+                        <input name="period_num" type="text" class="form-control" value="{{ $data->period_num_from. '～'. $data->period_num_to }}" disabled>
                     </td>
                 </tr>
             </tbody>
