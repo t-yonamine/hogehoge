@@ -38,6 +38,8 @@ class ApplicationTestController extends Controller
     const INIT_BLOCK = 0;
     const BLOCK_B = 1;
     const BLOCK_C = 2;
+    const RESTRICTION_RELEASED = 1;
+    const LICENSE_NORMAL = 0;
     public function __construct()
     {
         $this->middleware(function (Request $request, Closure $next) {
@@ -91,7 +93,7 @@ class ApplicationTestController extends Controller
             return abort(403);
         }
 
-        if($request->has('action') && $request->action == 'create') {
+        if ($request->has('action') && $request->action == 'create') {
             return redirect()->route('apply-test.create', $request->query->all());
         }
 
@@ -167,7 +169,7 @@ class ApplicationTestController extends Controller
             return abort(404);
         }
 
-        // 4.権限チェック 
+        // 4.権限チェック
         //  A. 受講データの教習所IDがsession/school_idと同じであること。
 
         if ($lessonAttend->school_id != $schoolId) {
@@ -435,24 +437,34 @@ class ApplicationTestController extends Controller
      */
     public function create(Request $request)
     {
-        $request->validate([
-            'la_type'=> 'required|', new Enum(LaType::class),
-            'test_date' => 'required',
-            'num_of_days' => 'required',
-            'period_num_from' => 'required',
-            'period_num_to' => 'required',
+        $request->validate(
+            [
+                'la_type' => 'required|', new Enum(LaType::class),
+                'test_date' => 'required',
+                'num_of_days' => 'required',
+                'period_num_from' => 'required',
+                'period_num_to' => 'required',
 
-        ], [], []);
+            ],
+            [],
+            [
+                'la_type' => '検定種別',
+                'test_date' => '検定日',
+                'num_of_days' => '実施回',
+                'period_num_from' => '実施時限From',
+                'period_num_to' => '実施時限To',
+            ]
+        );
         try {
             $schoolId =  $request->session()->get('school_id');
             $laType = (int)$request->query('la_type');
             $numFrom = $request->query('period_num_from');
             $numTo = $request->query('period_num_to');
             $periods = SchoolPeriodM::where('school_id', $schoolId)
-            ->where(function ($query) use ($numFrom, $numTo) {
-                $query->where('period_num', '=', $numFrom)
-                    ->orWhere('period_num', '<=', $numTo);
-            })->get();
+                ->where(function ($query) use ($numFrom, $numTo) {
+                    $query->where('period_num', $numFrom)
+                        ->orWhere('period_num', $numTo);
+                })->get();
 
             $ischeckType = LaType::getDescription($laType);
 
@@ -478,7 +490,7 @@ class ApplicationTestController extends Controller
                 'period_num_to' =>  $numTo,
                 'period_name_to' =>  $periods->filter(function ($value) use ($numTo) {
                     return $value->period_num == $numTo;
-                })->first()->period_name ,
+                })->first()->period_name,
                 'period_num_from' =>   $numFrom,
                 'period_name_from' =>   $periods->filter(function ($value) use ($numFrom) {
                     return $value->period_num == $numFrom;
@@ -495,17 +507,28 @@ class ApplicationTestController extends Controller
      */
     public function createSave(Request $request)
     {
-        $request->validate([
-            'la_type'=> 'required',
-            'test_date' => 'required',
-            'num_of_days' => 'required',
-            'period_num_from' => 'required',
-            'period_num_to' => 'required',
-            'ledger_id' => 'required',
+        $request->validate(
+            [
+                'la_type' => 'required',
+                'test_date' => 'required',
+                'num_of_days' => 'required',
+                'period_num_from' => 'required',
+                'period_num_to' => 'required',
+                'ledger_id' => 'required',
 
-        ], [], []);
+            ],
+            [],
+            [
+                'la_type' => '検定種別',
+                'test_date' => '検定日',
+                'num_of_days' => '実施回',
+                'period_num_from' => '実施時限From',
+                'period_num_to' => '実施時限To',
+                'ledger_id' => '教習原簿ID'
+            ]
+        );
         DB::transaction(function () use ($request) {
-            // check section 
+            // check section
             $schoolStaffId = $request->session()->get('school_staff_id');
             $schoolId = $request->session()->get('school_id');
             $schoolCd = $request->session()->get('school_cd');
@@ -521,7 +544,7 @@ class ApplicationTestController extends Controller
                 return abort(404);
             }
             $laType = (int)$request->la_type;
-            
+
             $testType = $laType == LaType::PL_TEST ? TestType::TEM_LICENSE : TestType::ORTHER_LICENSE;
             $modelTests = Tests::where('school_id', $schoolId)
                 ->where('test_date', $request->test_date)
@@ -534,7 +557,7 @@ class ApplicationTestController extends Controller
             if ($user->schoolStaff->role & SchoolStaffRole::CLERK_ONE == 0) {
                 abort(403);
             }
-           
+
             // 5. 検定の追加・更新
             //  A. 検定の追加
             if (!$modelTests) {
@@ -619,7 +642,7 @@ class ApplicationTestController extends Controller
 
     private function checkPeriodStudent($type, $school_id, $lesson_sts)
     {
-        $data = [];
+
         $data = Ledger::with(['admCheckItem', 'lessonAttend'])
             ->whereHas('admCheckItem', function ($q) {
                 $q->where('status', Status::ENABLED());
@@ -635,9 +658,9 @@ class ApplicationTestController extends Controller
             case LaType::PL_TEST:
                 return $data->orderBy('student_no')->get();
             case LaType::GRADTST:
-                return $data->where(DB::raw("(`target_license_cd` & 1)"), '=', 0)->orderBy('student_no')->get();
+                return $data->where(DB::raw("(`target_license_cd` & " . self::RESTRICTION_RELEASED . ")"), '=', self::LICENSE_NORMAL)->orderBy('student_no')->get();
             case LaType::DRVSKLTST:
-                return $data->where(DB::raw("(`target_license_cd` & 1)"), '!=', 0)->orderBy('student_no')->get();
+                return $data->where(DB::raw("(`target_license_cd` & " . self::RESTRICTION_RELEASED . ")"), '!=', self::LICENSE_NORMAL)->orderBy('student_no')->get();
             default:
                 return null;
         }
