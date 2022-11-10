@@ -53,4 +53,9 @@ class Period extends Model
             throw $th;
         }
     }
+    
+    public function schoolPeriodM() 
+    {
+        return $this->hasOne(SchoolPeriodM::class, 'period_num', 'id');
+    }
 }

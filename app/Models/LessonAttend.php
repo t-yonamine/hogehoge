@@ -129,4 +129,26 @@ class LessonAttend extends Model
             throw $th;
         }
     }
+
+    public function ledger() 
+    {
+        return $this->hasOne(AdmCheckItem::class, 'id', 'curriculum_num');
+    }
+
+    public function admCheckItems() {
+        return $this->hasOne(AdmCheckItem::class, 'ledger_id', 'ledger_id');
+    }
+
+    public function dispatchCars() {
+        return $this->hasOne(DsipatchCar::class, 'lesson_attend_id', 'id');
+    }
+
+    public function lessonItemMastery() {
+        return $this->hasOne(LessonItemMastery::class, 'lesson_item_id', 'id');
+    }
+
+    public function lessonComments() {
+        return $this->hasOne(LessonComment::class, 'ledger_id', 'ledger_id');
+    }
+
 }

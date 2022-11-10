@@ -18,7 +18,7 @@
 
     {{-- Base Stylesheets --}}
     <link href="{{ asset('/tablet/css/common.css') }}" rel="stylesheet" type="text/css">
-    <link href="{{ asset('/tablet/css/index.css') }}" rel="stylesheet" type="text/css">
+    {{-- <link href="{{ asset('/tablet/css/index.css') }}" rel="stylesheet" type="text/css"> --}}
     <link href="{{ asset('/tablet/css/reset.css') }}" rel="stylesheet" type="text/css">
 
     {{-- Custom Stylesheets --}}

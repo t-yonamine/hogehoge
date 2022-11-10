@@ -5,6 +5,7 @@ use App\Http\Controllers\Back\ApplicationTestController;
 use App\Http\Controllers\Back\EffectMeasurementController;
 use App\Http\Controllers\Back\SchoolStaffController;
 use App\Http\Controllers\Back\StudentController;
+use App\Http\Controllers\Front\TodayGinouController;
 use App\Http\Controllers\operation\SchoolDrivingController;
 use App\Http\Controllers\operation\AccountsController;
 use Illuminate\Support\Facades\Route;
@@ -101,4 +102,10 @@ Route::middleware(['auth', 'sys-admin'])->group(
         });
     }
 );
+
+Route::controller(TodayGinouController::class)->prefix('frt')->name('frt.')->group(function () {
+    Route::get('/home/today_ginou', 'index')->name('index');
+    Route::post('/home/today_ginou/{id}', 'post')->name('post');
+});
+
 require __DIR__ . '/auth.php';
