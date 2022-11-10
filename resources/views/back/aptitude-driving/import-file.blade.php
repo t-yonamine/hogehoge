@@ -44,7 +44,7 @@
                                 <th class="w-20">ファイル</th>
                                 <td>
                                     <div class="input-group custom-file-button">
-                                        <label class="input-group-text" for="file-upload">ファイルを選択</label>
+                                        <label class="input-group-text rounded-0" for="file-upload">ファイルを選択</label>
                                         <input type="button" id="inputFile"
                                             class="form-control @error('files') is-invalid @enderror file-show"
                                             style="text-align: left" value="{{ old('files', $fileName) }}">
@@ -65,7 +65,7 @@
                     </div>
                     <div class="card-footer">
                         <div class="col text-center">
-                            <button class="btn btn-sm btn-secondary" type="submit">
+                            <button class="btn btn-sm btn-secondary btn-import" type="submit" @disabled(isset($data))>
                                 取込
                             </button>
                         </div>
@@ -101,9 +101,9 @@
                                                             </td>
                                                         @endforeach
                                                         <td class="text-center align-middle checkitem">
-                                                            <input type="checkbox" name="is_save" class="isCheckbox"
-                                                                id="{{ $key }}" @disabled($item['is_save'])
-                                                                @checked($item['is_save'])>
+                                                            <input type="checkbox" name="disabled" class="isCheckbox"
+                                                                id="{{ $key }}" @disabled($item['disabled'])
+                                                                @checked($item['disabled'])>
                                                         </td>
                                                         <td class="message">
                                                             @if (isset($item['error']))
@@ -128,7 +128,7 @@
                     </div>
                     <div class="card-footer">
                         <div class="col text-center">
-                            <button class="btn btn-sm btn-secondary cursor-pointer" onclick="submitInsert()"
+                            <button class="btn btn-sm btn-primary cursor-pointer" onclick="submitInsert()"
                                 @disabled(!isset($data))>
                                 保存
                             </button>
@@ -159,6 +159,7 @@
                 } else {
                     $(this).removeClass('is-invalid');
                     $('.error-size').attr('hidden', true);
+                    $('.btn-import').attr('disabled', false);
                 }
             } else {
                 $(this).addClass('is-invalid');
@@ -171,7 +172,7 @@
             const data = event.target;
             req.forEach((element, key) => {
                 if (key == data.id) {
-                    req[key].is_save = data.checked;
+                    req[key].disabled = data.checked;
                 }
             });
         })
@@ -193,13 +194,14 @@
                 success: function(response) {
                     if (response.status == 200) {
                         $('.table-import').find('tbody tr').each((index, element) => {
-                            let studentNo = $(element).find('.student_no').text()?.trim();;
-                            let row = response.data.find(rs => rs.student_no == studentNo);
+                            let key = $(element).find('input[type="checkbox"]').attr('id');
+                            let disabled = $(element).find('input[type="checkbox"]').attr('disabled');
+                            let row = response.data.find(rs => rs.id == key);
                             let error = row?.error;
                             let success = row?.success;
-                            if (error) {
+                            if (error && disabled != 'disabled') {
                                 $(element).find('.message').html(`<p class="text-danger mb-0">
-                                                                    ${nl2br(error)}
+                                                                    ${error}
                                                                 </p>`);
                             } else if (success) {
                                 $(element).find('.message').html(`<p class="text-success mb-0">
