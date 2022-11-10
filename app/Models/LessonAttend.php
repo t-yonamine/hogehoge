@@ -60,6 +60,31 @@ class LessonAttend extends Model
         return $this->hasOne(School::class, 'id', 'school_id');
     }
 
+    public function schoolStaff()
+    {
+        return $this->hasOne(SchoolStaff::class, 'id', 'school_staff_id');
+    }
+
+    public function ledger()
+    {
+        return $this->belongsTo(Ledger::class, 'id', 'ledger_id');
+    }
+
+    public function admCheckItem()
+    {
+        return $this->hasOne(AdmCheckItem::class, 'ledger_id', 'ledger_id');
+    }
+
+    public function lessonItemMastery()
+    {
+        return $this->hasMany(LessonItemMastery::class, 'lesson_attend_id', 'id');
+    }
+
+    public function dsipatchCar()
+    {
+        return $this->hasMany(DsipatchCar::class, 'lesson_attend_id', 'id');
+    }
+
     public static function handleSave(array $data, Ledger $ledger, LessonAttend $model = null)
     {
         try {
@@ -87,10 +112,7 @@ class LessonAttend extends Model
         return $model;
     }
 
-    public function schoolStaff()
-    {
-        return $this->hasOne(SchoolStaff::class, 'id', 'school_staff_id');
-    }
+    
 
     public static function handleDelete(LessonAttend $model)
     {
@@ -128,5 +150,14 @@ class LessonAttend extends Model
         } catch (\Throwable $th) {
             throw $th;
         }
+    }
+
+    public static  function countParticipants($testId, $sessSchoolStaffId)
+    {
+        $numberOfParticipants = LessonAttend::select('glesson_attends.la_type', 'gledgers.target_license_cd', DB::raw('count(*) as total'))
+            ->join('gledgers', 'gledgers.id', '=', 'glesson_attends.ledger_id')
+            ->where('school_staff_id', $sessSchoolStaffId)
+            ->groupBy('glesson_attends.la_type', 'gledgers.target_license_cd')->get();
+        return $numberOfParticipants;
     }
 }
