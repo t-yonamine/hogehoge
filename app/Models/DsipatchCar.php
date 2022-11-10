@@ -11,4 +11,9 @@ class DsipatchCar extends Model
 
   protected $table = 'gdsipatch_cars';
 
+  
+  public function lessonCar()
+  {
+      return $this->hasOne(LessonCar::class, 'id', 'lesson_car_id');
+  }
 }

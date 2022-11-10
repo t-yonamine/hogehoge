@@ -2,9 +2,11 @@
 
 namespace App\Models;
 
+use App\Enums\DrlType;
 use App\Enums\PeriodStatus;
 use App\Enums\PeriodType;
 use App\Enums\StageType;
+use App\Enums\WorkType;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\DB;
@@ -19,7 +21,21 @@ class Period extends Model
         'period_type' => PeriodType::class,
         'stage' => StageType::class,
         'status' => PeriodStatus::class,
+        'period_from' => 'datetime',
+        'period_to' => 'datetime',
+        'drl_type' => DrlType::class,
+        'work_type' => WorkType::class,
     ];
+
+    public function lessonAttend()
+    {
+        return $this->hasMany(LessonAttend::class);
+    }
+
+    public function codes()
+    {
+        return $this->hasOne(Code::class, 'cd_value', 'course_type_cd');
+    }
 
     public static function handleInsert($modelTest, $sessSchoolStaffId, $lessonAttend, $schoolPeriodM)
     {

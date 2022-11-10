@@ -5,6 +5,7 @@ use App\Http\Controllers\Back\ApplicationTestController;
 use App\Http\Controllers\Back\EffectMeasurementController;
 use App\Http\Controllers\Back\SchoolStaffController;
 use App\Http\Controllers\Back\StudentController;
+use App\Http\Controllers\Front\HomeController;
 use App\Http\Controllers\operation\SchoolDrivingController;
 use App\Http\Controllers\operation\AccountsController;
 use Illuminate\Support\Facades\Route;
@@ -101,4 +102,13 @@ Route::middleware(['auth', 'sys-admin'])->group(
         });
     }
 );
+Route::middleware('auth')->group(
+    function () {
+        Route::controller(HomeController::class)->prefix('frt')->name('frt.')->group(function () {
+            Route::get('/home', 'index')->name('index');
+            Route::post('/home', 'date')->name('date');
+        });
+    }
+);
+
 require __DIR__ . '/auth.php';
