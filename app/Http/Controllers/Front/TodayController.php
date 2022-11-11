@@ -16,12 +16,14 @@ use App\Enums\PeriodAction;
 use App\Enums\PeriodStatus;
 use App\Enums\PeriodType;
 use App\Enums\SchoolStaffRole;
+use App\Models\LessonItemMastery;
 use App\Enums\Status;
 use App\Http\Controllers\Controller;
 use App\Models\Code;
 use App\Models\ConfirmationRecord;
+use App\Models\Ledger;
 use App\Models\LessonAttend;
-use App\Models\LessonItemMastery;
+use App\Models\LessonComment;
 use App\Models\Period;
 use App\Models\SchoolCode;
 use App\Models\SchoolPeriodM;
@@ -366,5 +368,25 @@ class TodayController extends Controller
                 break;
         }
         return  redirect()->route('frt.today.index', $request->query->all());
+    }
+
+    public function modalCreate(Request $request)
+    {
+        $request->validate([
+            'comment_text' => 'required|max:100',
+        ]);
+        $data = $request->input();
+        //指定教習原簿の存在チェック
+        $existLedgers = Ledger::where('id', $data['ledger_id'])->where('status', Status::ENABLED)->first();
+        //受講の存在チェック
+        $existLessonAttends = LessonAttend::where('id', $data['lesson_attend_id'])->first();
+        if (!$existLedgers || !$existLessonAttends) {
+            abort(404);
+        }
+        //パラメータ.教習コメントIDが null でない場合、教習コメントの存在チェック
+        $existLessonComments = LessonComment::where('id', $data['comment_id']);
+        //教習コメント glesson_comments 登録・更新処理	
+        LessonComment::handleSave($data, $existLedgers, $existLessonAttends, $existLessonComments);
+        return back();
     }
 }

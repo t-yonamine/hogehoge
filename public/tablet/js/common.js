@@ -28,8 +28,19 @@ $(function () {
     ////////////////
     // モーダル
     ////////////////
-    $(".modalOpen").click(function (e) {
-        modalOpen($(this).attr("href"));
+    $('.modalOpen').click(function(e) {
+        const idModel = $(this).attr('id');
+        if(idModel === '#modal_nippou') {
+            const data = JSON.parse($(this).val());
+            $('#nippou').text(data.adm_check_item?.student_no + '　' + data.adm_check_item?.name_kana);
+            $('.ledger_id').attr('value', data.adm_check_item?.ledger_id);
+            $('.lesson_attend_id').attr('value', data?.id);
+            $('.comment_id').attr('value', data.lesson_comment?.id || null);
+            $('.comment_text').attr('value', data.lesson_comment?.comment_text || null);
+            $(idModel).fadeIn(300);
+        } else {
+            modalOpen($(this).attr('href'));
+        }
         return false;
     });
     $(".modal_close").click(function () {

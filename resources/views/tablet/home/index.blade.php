@@ -10,18 +10,8 @@
         $(function() {
             let date = '{{ $datepicker }}';
             if (date) {
-                $('.datepicker').datepicker('setDate', date);
+                $('.datepicker').datepicker('setDate', new Date(date));
             }
-            $('.next').on('click', function() {
-                var date = $('.datepicker').datepicker('getDate')
-                date.setDate(date.getDate() + 1)
-                $('.datepicker').datepicker('setDate', date);
-            })
-            $('.prev').on('click', function() {
-                var date = $('.datepicker').datepicker('getDate')
-                date.setDate(date.getDate() - 1)
-                $('.datepicker').datepicker('setDate', date);
-            })
         })
     </script>
 @endpush
@@ -38,7 +28,7 @@
                 <td class="header fixed" colspan="2">
                     <div class="w-100">
                         <button class="prev">前日</button>
-                        <input type="text" class="datepicker" readonly="readonly" name="datepicker" for="datepicker"
+                        <input type="text" class="datepicker" readonly="readonly" name="datepicker"
                             onchange='this.form.submit()'>
                         <button class="next">翌日</button>
                     </div>
