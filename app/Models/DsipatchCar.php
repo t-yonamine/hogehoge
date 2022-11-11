@@ -9,10 +9,10 @@ class DsipatchCar extends Model
 {
   use HasFactory;
 
-  protected $table = 'gdsipatch_cars';
+  protected $table = 'gdispatch_cars';
 
-  public function lessonCars()
+  public function lessonCar()
   {
-    return $this->belongsTo(LessonCar::class, 'lesson_car_id', 'id');
+    return $this->hasOne(LessonCar::class, 'id', 'lesson_car_id');
   }
 }

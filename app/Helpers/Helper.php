@@ -102,13 +102,12 @@ class Helper
         }
     }
 
-     /* 
+    /* 
         @author ThanhPD-VNEXT
         Description: get string format date
     */
     public static function getStringFormatDate($date, $formatString)
     {
-        return  date($formatString, strtotime($date));
+        return  $date ? date($formatString, strtotime($date)) : '';
     }
-
 }

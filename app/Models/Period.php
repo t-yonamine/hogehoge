@@ -2,9 +2,12 @@
 
 namespace App\Models;
 
+use App\Enums\DrlType;
 use App\Enums\PeriodStatus;
 use App\Enums\PeriodType;
 use App\Enums\StageType;
+use App\Enums\Status;
+use App\Enums\WorkType;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\DB;
@@ -19,8 +22,35 @@ class Period extends Model
         'period_type' => PeriodType::class,
         'stage' => StageType::class,
         'status' => PeriodStatus::class,
+        'period_from' => 'datetime',
+        'period_to' => 'datetime',
+        'drl_type' => DrlType::class,
+        'work_type' => WorkType::class,
+        'work_type' => WorkType::class,
+        'data_sts' => Status::class,
     ];
 
+    protected $fillable = [
+        'remarks',
+        'status',
+        'updated_at',
+        'updated_user_id',
+    ];
+
+    public function lessonAttend()
+    {
+        return $this->hasMany(LessonAttend::class);
+    }
+
+    public function codes()
+    {
+        return $this->hasOne(Code::class, 'cd_value', 'course_type_cd');
+    }
+
+
+    /**
+     * to handle insert period
+     */
     public static function handleInsert($modelTest, $sessSchoolStaffId, $lessonAttend, $schoolPeriodM)
     {
         try {
@@ -53,9 +83,27 @@ class Period extends Model
             throw $th;
         }
     }
-    
-    public function schoolPeriodM() 
+
+    /**
+     * to handle update period
+     */
+    public static function handleSave(array $data, Period $model = null, $currentUserId)
     {
-        return $this->hasOne(SchoolPeriodM::class, 'period_num', 'id');
+        try {
+            $model = $model ?: new static;
+            DB::transaction(function () use ($data, $model, $currentUserId) {
+                $model->updated_at = now();
+                $model->updated_user_id = $currentUserId;
+                $model->fill($data);
+                $model->save();
+            });
+        } catch (\Throwable $th) {
+            throw $th;
+        }
+    }
+
+    public function schoolPeriodM()
+    {
+        return $this->belongsTo(SchoolPeriodM::class, 'period_num', 'period_num');
     }
 }

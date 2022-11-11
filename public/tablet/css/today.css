@@ -52,11 +52,11 @@
 }
 
 #today_tt .header button.prev {
-    background: url(/images/icon_prev.png) left 8px center/6px no-repeat, #21ADC8;
+    background: url(../images/icon_prev.png) left 8px center/6px no-repeat, #21ADC8;
 }
 
 #today_tt .header button.next {
-    background: url(/images/icon_next.png) right 8px center/6px no-repeat, #21ADC8;
+    background: url(../images/icon_next.png) right 8px center/6px no-repeat, #21ADC8;
 }
 
 #today_tt .header input[type=date] {

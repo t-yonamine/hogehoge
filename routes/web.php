@@ -5,7 +5,8 @@ use App\Http\Controllers\Back\ApplicationTestController;
 use App\Http\Controllers\Back\EffectMeasurementController;
 use App\Http\Controllers\Back\SchoolStaffController;
 use App\Http\Controllers\Back\StudentController;
-use App\Http\Controllers\Front\TodayGinouController;
+use App\Http\Controllers\Front\HomeController;
+use App\Http\Controllers\Front\TodayController;
 use App\Http\Controllers\operation\SchoolDrivingController;
 use App\Http\Controllers\operation\AccountsController;
 use Illuminate\Support\Facades\Route;
@@ -70,7 +71,6 @@ Route::group(
             Route::post('error-page', 'errorPage')->name('error-page');
             Route::get('/ledger/create', 'create')->name('create');
             Route::post('/ledger/create', 'createSave')->name('create.save');
-
         });
     }
 );
@@ -102,10 +102,19 @@ Route::middleware(['auth', 'sys-admin'])->group(
         });
     }
 );
+Route::middleware('auth')->group(
+    function () {
+        Route::controller(HomeController::class)->prefix('frt')->name('frt.')->group(function () {
+            Route::get('/home', 'index')->name('index');
+            Route::post('/home', 'date')->name('date');
 
-Route::controller(TodayGinouController::class)->prefix('frt')->name('frt.')->group(function () {
-    Route::get('/home/today_ginou', 'index')->name('index');
-    Route::post('/home/today_ginou/{id}', 'post')->name('post');
-});
+            // 時間詳細 (today)
+            Route::controller(TodayController::class)->prefix('/today')->name('today.')->group(function () {
+                Route::get('/', 'index')->name('index');
+                Route::put('/', 'update')->name('update');
+            });
+        });
+    }
+);
 
 require __DIR__ . '/auth.php';
