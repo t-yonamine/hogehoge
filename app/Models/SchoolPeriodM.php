@@ -12,7 +12,7 @@ class SchoolPeriodM extends Model
 
     protected $table = "gschool_period_m";
 
-    
+
     protected $casts = [
         'period_type' => PeriodType::class,
         'period_from' => 'datetime',

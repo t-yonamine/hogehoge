@@ -1,4 +1,4 @@
-@props(['period' => null, 'codePeriod' => null, 'codeWord' => null, 'route' => ''])
+@props(['period' => null, 'codePeriod' => null, 'codeWord' => null, 'route' => '', 'disabled' => false])
 <form method="POST" action="{{ $route }}" autocomplete="off">
     @csrf
     @method('PUT')
@@ -7,9 +7,10 @@
     <div id="student_comment">
         <div id="student_comment_title">備考</div>
         <div id="student_comment_input">
-            <x-tablet.forms.textarea name="remarks" value="{{ old('remarks', $period->remarks) }}" />
+            <x-tablet.forms.textarea name="remarks" value="{{ old('remarks', $period->remarks) }}"
+                disabled="{{ $disabled }}" />
         </div>
     </div>
 
-    <x-tablet.partials.footer :action="App\Enums\PeriodAction::UPDATE_WORK" />
+    <x-tablet.partials.footer :action="App\Enums\PeriodAction::UPDATE_WORK" :disabled="$disabled" />
 </form>

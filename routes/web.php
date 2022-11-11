@@ -102,17 +102,17 @@ Route::middleware(['auth', 'sys-admin'])->group(
         });
     }
 );
-Route::middleware('auth')->group(
+Route::middleware('auth')->prefix('frt')->name('frt.')->group(
     function () {
-        Route::controller(HomeController::class)->prefix('frt')->name('frt.')->group(function () {
+        Route::controller(HomeController::class)->group(function () {
             Route::get('/home', 'index')->name('index');
             Route::post('/home', 'date')->name('date');
 
             // 時間詳細 (today)
-            Route::controller(TodayController::class)->prefix('/today')->name('today.')->group(function () {
-                Route::get('/', 'index')->name('index');
-                Route::put('/', 'update')->name('update');
-            });
+        });
+        Route::controller(TodayController::class)->prefix('/today')->name('today.')->group(function () {
+            Route::get('/', 'index')->name('index');
+            Route::put('/', 'update')->name('update');
         });
     }
 );

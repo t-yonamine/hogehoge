@@ -50,7 +50,7 @@ class AuthenticatedSessionController extends Controller
             $request->session()->put('school_staff_id', Auth::user()->schoolStaff->id);
         }
 
-        return redirect()->intended(RouteServiceProvider::HOME);
+        return redirect()->intended(session('tablet') ? RouteServiceProvider::FRT_HOME : RouteServiceProvider::HOME);
     }
 
     /**
