@@ -6,6 +6,7 @@ use App\Http\Controllers\Back\EffectMeasurementController;
 use App\Http\Controllers\Back\SchoolStaffController;
 use App\Http\Controllers\Back\StudentController;
 use App\Http\Controllers\Front\HomeController;
+use App\Http\Controllers\Front\TodayController;
 use App\Http\Controllers\operation\SchoolDrivingController;
 use App\Http\Controllers\operation\AccountsController;
 use Illuminate\Support\Facades\Route;
@@ -70,7 +71,6 @@ Route::group(
             Route::post('error-page', 'errorPage')->name('error-page');
             Route::get('/ledger/create', 'create')->name('create');
             Route::post('/ledger/create', 'createSave')->name('create.save');
-
         });
     }
 );
@@ -107,6 +107,12 @@ Route::middleware('auth')->group(
         Route::controller(HomeController::class)->prefix('frt')->name('frt.')->group(function () {
             Route::get('/home', 'index')->name('index');
             Route::post('/home', 'date')->name('date');
+
+            // 時間詳細 (today)
+            Route::controller(TodayController::class)->prefix('/today')->name('today.')->group(function () {
+                Route::get('/', 'index')->name('index');
+                Route::put('/', 'update')->name('update');
+            });
         });
     }
 );

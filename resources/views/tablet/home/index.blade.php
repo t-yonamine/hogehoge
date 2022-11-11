@@ -68,7 +68,8 @@
                             ])>
                                 {{ $periodVal->period_type->description }}</td>
                             <td class="outline">
-                                <a href="#">
+                                <a
+                                    href="{{ route('frt.today.index', ['period_date' => $datepicker, 'period_num' => $periodMItem->period_num]) }}">
                                     @if ($periodVal->period_type->value === App\Enums\PeriodType::WORK)
                                         {{ $periodVal->work_type ? $periodVal->work_type->description : '' }}
                                     @elseif ($periodVal->period_type->value === App\Enums\PeriodType::TEST)
@@ -134,7 +135,7 @@
                                                 {{-- F-5 教習項目 --}}
                                                 {{ count($lessonItemMastery) > 0? $lessonAtt->stage .'‐' .$lessonItemMastery->map(function ($res) {return $res->lesson_item_num;})->implode('、'): '' }}
                                                 {{-- F-6 復習項目 --}}
-                                                {{ $lessonItemMastery->map(function ($res) use($haveLearned) {return $res->re_lesson == $haveLearned ? '(' . $res->lesson_item_num . ')' : '';})->implode('') }}
+                                                {{ $lessonItemMastery->map(function ($res) use ($haveLearned) {return $res->re_lesson == $haveLearned ? '(' . $res->lesson_item_num . ')' : '';})->implode('') }}
                                                 {{-- F-7 コース区分 --}}
                                                 {{ $periodVal->codes?->cd_text }}
                                                 {{-- F-8 教習車名 --}}

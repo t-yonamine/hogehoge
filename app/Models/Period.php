@@ -27,6 +27,13 @@ class Period extends Model
         'work_type' => WorkType::class,
     ];
 
+    protected $fillable = [
+        'remarks',
+        'status',
+        'updated_at',
+        'updated_user_id',
+    ];
+
     public function lessonAttend()
     {
         return $this->hasMany(LessonAttend::class);
@@ -37,6 +44,10 @@ class Period extends Model
         return $this->hasOne(Code::class, 'cd_value', 'course_type_cd');
     }
 
+
+    /**
+     * to handle insert period
+     */
     public static function handleInsert($modelTest, $sessSchoolStaffId, $lessonAttend, $schoolPeriodM)
     {
         try {
@@ -68,5 +79,28 @@ class Period extends Model
         } catch (\Throwable $th) {
             throw $th;
         }
+    }
+
+    /**
+     * to handle update period
+     */
+    public static function handleSave(array $data, Period $model = null, $currentUserId)
+    {
+        try {
+            $model = $model ?: new static;
+            DB::transaction(function () use ($data, $model, $currentUserId) {
+                $model->updated_at = now();
+                $model->updated_user_id = $currentUserId;
+                $model->fill($data);
+                $model->save();
+            });
+        } catch (\Throwable $th) {
+            throw $th;
+        }
+    }
+
+    public function schoolPeriodM()
+    {
+        return $this->belongsTo(SchoolPeriodM::class, 'period_num', 'period_num');
     }
 }
