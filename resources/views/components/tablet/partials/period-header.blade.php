@@ -8,7 +8,7 @@
     <div id="today_detail_title">
         <div id="today_detail_title_outline">{{ $codePeriod->cd_text }}</div>
         <div id="today_detail_title_body">
-            <div id="today_detail_title_body_title">{{ $codeWord->cd_text }}</div>
+            <div id="today_detail_title_body_title">{{ $codeWord?->cd_text }}</div>
             <div id="today_detail_title_body_button"><button type="submit" name="action"
                     value="{{ $action }}">編集</button></div>
         </div>

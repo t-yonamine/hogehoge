@@ -31,7 +31,7 @@
     <script src="{{ asset('/tablet/lib/datepicker-ja.js') }}" type="text/javascript"></script>
     <link href="{{ asset('/tablet/lib/jquery-ui.min.css') }}" rel="stylesheet" type="text/css">
     <script src="{{ asset('/tablet/js/common.js') }}" type="text/javascript"></script>
-    
+
 </head>
 
 <body>
