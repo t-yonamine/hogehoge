@@ -32,7 +32,7 @@
 #time>div {
     display: flex;
     margin-bottom: 10px;
-    border-left: 1px solid #152B48;
+    /* border-left: 1px solid #152B48; */
     box-sizing: border-box;
 }
 
@@ -58,6 +58,7 @@
     border-bottom: 1px solid #152B48;
     box-sizing: border-box;
     border-right: 1px solid #152B48;
+    border-left: 1px solid #152B48;
 }
 
 #time .outline a {

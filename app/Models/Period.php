@@ -6,6 +6,7 @@ use App\Enums\DrlType;
 use App\Enums\PeriodStatus;
 use App\Enums\PeriodType;
 use App\Enums\StageType;
+use App\Enums\Status;
 use App\Enums\WorkType;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -25,6 +26,8 @@ class Period extends Model
         'period_to' => 'datetime',
         'drl_type' => DrlType::class,
         'work_type' => WorkType::class,
+        'work_type' => WorkType::class,
+        'data_sts' => Status::class,
     ];
 
     protected $fillable = [

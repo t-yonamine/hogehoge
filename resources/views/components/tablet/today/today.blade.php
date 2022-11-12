@@ -1,9 +1,5 @@
-@props(['data' => [], 'datepicker' => '', 'schoolStaffId' => '', 'periodNum' => ''])
+@props(['data' => [], 'datepicker' => '', 'schoolStaffId' => '', 'periodNum' => '', 'cdText' => ''])
 
-@push('css-customs')
-    <link href="{{ asset('/tablet/css/today_kentei.css') }}" rel="stylesheet" type="text/css">
-    <link href="{{ asset('/tablet/css/base.css') }}" rel="stylesheet" type="text/css">
-@endpush
 @push('js')
     <script>
         $(function() {
@@ -15,7 +11,7 @@
     </script>
 @endpush
 
-<div id="breadcrumb"><a href="{{ route('frt.index', ['datepicker' => $datepicker]) }}">ホーム</a>　＞　本日の業務（時限詳細）</div>
+<div id="breadcrumb"><a href="{{ route('frt.index', ['datepicker' => $datepicker]) }}">ホーム</a>　＞　{{$cdText}}</div>
 <div id="datetime">
     <form action="{{ route('frt.today.index') }}" method="GET">
         <div id="date">

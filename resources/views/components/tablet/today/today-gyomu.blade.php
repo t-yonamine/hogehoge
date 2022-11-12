@@ -1,8 +1,8 @@
-@props(['period' => null, 'codePeriod' => null, 'codeWord' => null, 'route' => '', 'disabled' => false])
+@props(['period' => null, 'codePeriod' => null, 'cdText' => '', 'route' => '', 'disabled' => false])
 <form method="POST" action="{{ $route }}" autocomplete="off">
     @csrf
     @method('PUT')
-    <x-tablet.partials.period-header :period="$period" :codePeriod="$codePeriod" :codeWord="$codeWord" :action="App\Enums\PeriodAction::REDIRECT_LINK" />
+    <x-tablet.partials.period-header :period="$period" :codePeriod="$codePeriod" :cdText="$cdText" :action="App\Enums\PeriodAction::REDIRECT_LINK" />
 
     <div id="student_comment">
         <div id="student_comment_title">備考</div>

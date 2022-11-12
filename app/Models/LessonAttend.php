@@ -2,6 +2,8 @@
 
 namespace App\Models;
 
+use App\Enums\AbsentType;
+use App\Enums\CancelType;
 use App\Enums\LaType;
 use App\Enums\LessonAttendStatus;
 use App\Enums\PerfectScore;
@@ -48,42 +50,14 @@ class LessonAttend extends Model
         'remarks' => 'string',
         'perfect_score' => PerfectScore::class,
         'status' => LessonAttendStatus::class,
+        'is_absent' => AbsentType::class,
+        'cancel_cd' => CancelType::class,
     ];
 
     protected $attributes = [
         'perfect_score' => PerfectScore::ONE_HUNDRED,
         'status' => LessonAttendStatus::PENDING
     ];
-
-    public function school()
-    {
-        return $this->hasOne(School::class, 'id', 'school_id');
-    }
-
-    public function schoolStaff()
-    {
-        return $this->hasOne(SchoolStaff::class, 'id', 'school_staff_id');
-    }
-
-    public function ledger()
-    {
-        return $this->belongsTo(Ledger::class, 'id', 'ledger_id');
-    }
-
-    public function admCheckItem()
-    {
-        return $this->hasOne(AdmCheckItem::class, 'ledger_id', 'ledger_id');
-    }
-
-    public function lessonItemMastery()
-    {
-        return $this->hasMany(LessonItemMastery::class, 'lesson_attend_id', 'id');
-    }
-
-    public function dsipatchCar()
-    {
-        return $this->hasMany(DsipatchCar::class, 'lesson_attend_id', 'id');
-    }
 
     public static function handleSave(array $data, Ledger $ledger, LessonAttend $model = null)
     {
@@ -112,7 +86,23 @@ class LessonAttend extends Model
         return $model;
     }
 
-    
+    /**
+     * handle update only lesson attend
+     */
+    public static function handleUpdate(array $data,  LessonAttend $model = null)
+    {
+        try {
+            $model = $model ?: new static;
+            DB::transaction(function () use ($data,  $model) {
+                // 3. 受講テーブルに追加する。
+                $model->fill($data);
+                $model->save();
+            });
+        } catch (Exception $e) {
+            throw $e;
+        }
+        return $model;
+    }
 
     public static function handleDelete(LessonAttend $model)
     {
@@ -150,6 +140,46 @@ class LessonAttend extends Model
         } catch (\Throwable $th) {
             throw $th;
         }
+    }
+
+    public function lessonComments()
+    {
+        return $this->hasOne(LessonComment::class, 'ledger_id', 'ledger_id');
+    }
+
+    public function school()
+    {
+        return $this->hasOne(School::class, 'id', 'school_id');
+    }
+
+    public function schoolStaff()
+    {
+        return $this->hasOne(SchoolStaff::class, 'id', 'school_staff_id');
+    }
+
+    public function ledger()
+    {
+        return $this->belongsTo(Ledger::class, 'id', 'ledger_id');
+    }
+
+    public function admCheckItem()
+    {
+        return $this->hasOne(AdmCheckItem::class, 'ledger_id', 'ledger_id');
+    }
+
+    public function lessonItemMastery()
+    {
+        return $this->hasMany(LessonItemMastery::class, 'lesson_attend_id', 'id');
+    }
+
+    public function dispatchCar()
+    {
+        return $this->hasMany(DispatchCar::class, 'ledger_id', 'ledger_id');
+    }
+
+    public function image()
+    {
+        return $this->hasOne(Image::class, 'target_id', 'ledger_id');
     }
 
     public static  function countParticipants($testId, $sessSchoolStaffId)

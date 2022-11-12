@@ -15,4 +15,5 @@ final class CodeName extends Enum
     const LICENSE_TYPE = "license_type";
     const LESSON_STS = "lesson_sts";
     const PERIODS = "gperiods";
+    const LESSON_ATTEND = "glesson_attends";
 }

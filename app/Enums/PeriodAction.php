@@ -12,4 +12,5 @@ final class PeriodAction extends Enum
 {
     const UPDATE_WORK = 'UPDATE_WORK';
     const REDIRECT_LINK = 'REDIRECT_LINK';
+    const UPDATE_LESSON = 'UPDATE_LESSON';
 }
