@@ -9,17 +9,19 @@ use App\Enums\CommentType;
 use App\Enums\ConfgInformationType;
 use App\Enums\ConfirmationRecsStatus;
 use App\Enums\ImageType;
+use App\Enums\IsLatestType;
+use App\Enums\ItemMasteryStatus;
 use App\Enums\LessonAttendStatus;
 use App\Enums\PeriodAction;
 use App\Enums\PeriodStatus;
 use App\Enums\PeriodType;
 use App\Enums\SchoolStaffRole;
 use App\Enums\Status;
-use App\Helpers\Helper;
 use App\Http\Controllers\Controller;
 use App\Models\Code;
 use App\Models\ConfirmationRecord;
 use App\Models\LessonAttend;
+use App\Models\LessonItemMastery;
 use App\Models\Period;
 use App\Models\SchoolCode;
 use App\Models\SchoolPeriodM;
@@ -29,6 +31,8 @@ use Illuminate\Support\Facades\Auth;
 
 class TodayController extends Controller
 {
+
+    const PROC_TYPE_MIKIWA = 2; //みきわめ項目
 
     public function __construct()
     {
@@ -123,7 +127,7 @@ class TodayController extends Controller
             case PeriodType::WORK():
                 # code...
                 $codeWord = Code::where('cd_name', 'work_type')->where('cd_value', $period->work_type)->first();
-                $data['codeWord'] = $codeWord;
+                $data['cdText'] = $codeWord->cd_text;
                 break;
 
             case PeriodType::DRV_LESSON():
@@ -138,7 +142,7 @@ class TodayController extends Controller
                 $lessonAttend = LessonAttend::whereHas('admCheckItem', function ($q) {
                     $q->where('status', Status::ENABLED());
                 })
-                    ->with(['dsipatchCar.lessonCar', 'lessonComments' => function ($q) {
+                    ->with(['dispatchCar.lessonCar', 'lessonComments' => function ($q) {
                         $q->where('comment_type', CommentType::ITEMS_TO_BE_SENT())->where('status',  Status::ENABLED());
                     }, 'image' => function ($q) {
                         $q->where('image_type', ImageType::FOR_ORIGINAL())->where('status',  Status::ENABLED());
@@ -150,8 +154,47 @@ class TodayController extends Controller
                     ->select('*')
                     ->orderBy('id')->get();
 
+                // みきわめ表示判定処理
+                foreach ($lessonAttend as $key => $value) {
+                    // A. 受講、教習項目習熟度、教習項目テーブルで集計する。
+                    $resultA = LessonItemMastery::join('glesson_items as b', 'b.id', 'glesson_item_mastery.lesson_item_id')
+                        ->where('glesson_item_mastery.lesson_attend_id', $value->id)->selectRaw(
+                            'count(*) as total, 
+                            sum(case when b.proc_type = ' . self::PROC_TYPE_MIKIWA . ' then 1 else 0 end) as mikiwame, 
+                            max(case when b.proc_type = ' . self::PROC_TYPE_MIKIWA . ' then glesson_item_mastery.re_lesson else 0 end) as relesson'
+                        )->first();
+
+                    if ($resultA->total > 0) {
+                        if ($resultA->mikiwame > 0 && $resultA->relesson > 0) {
+                            $lessonAttend[$key]['is_show_mikiwame'] = true;
+                            $lessonAttend[$key]['is_show_good'] = false;
+                        } else if ($resultA->mikiwame > 0 && $resultA->relesson <= 0) {
+                            $lessonAttend[$key]['is_show_mikiwame'] = true;
+                            $lessonAttend[$key]['is_show_good'] = true;
+                        } else {
+                            // 2. 先に読んだ受講TBL(glesson_attends)の情報で、現在の段階から教習済みでない項目の数を数えて判定。
+                            $resultA = LessonItemMastery::join('glesson_items as b', 'b.id', 'glesson_item_mastery.lesson_item_id')
+                                ->where('glesson_item_mastery.ledger_id', $value->ledger_id)
+                                ->where('glesson_item_mastery.stage', $value->stage)
+                                ->where('glesson_item_mastery.is_latest', IsLatestType::LATEST)
+                                ->selectRaw(
+                                    'sum(case when b.proc_type =  ' . self::PROC_TYPE_MIKIWA . ' and glesson_item_mastery.status != ' . ItemMasteryStatus::COMPLETED . ' then 1 else 0 end) as mikiwame,
+                                     sum(case when b.proc_type !=  ' . self::PROC_TYPE_MIKIWA . ' and glesson_item_mastery.status != ' . ItemMasteryStatus::COMPLETED . ' then 1 else 0 end) as other'
+                                )->first();
+
+                            if ($resultA->mikiwame > 0 && $resultA->other == 0) {
+                                $lessonAttend[$key]['is_show_mikiwame'] = true;
+                                $lessonAttend[$key]['is_show_good'] = false;
+                            } else {
+                                $lessonAttend[$key]['is_show_mikiwame'] = false;
+                                $lessonAttend[$key]['is_show_good'] = false;
+                            }
+                        }
+                    }
+                }
+
                 $data['lessonAttend'] = $lessonAttend;
-                $data['schoolCode'] = $schoolCode;
+                $data['cdText'] = $schoolCode->cd_text;
                 break;
             default:
                 abort(404);

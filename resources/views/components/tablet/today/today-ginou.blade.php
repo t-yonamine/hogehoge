@@ -1,9 +1,9 @@
-@props(['period' => null, 'codePeriod' => null, 'lessonAttend' => null, 'schoolCode' => null, 'route' => '', 'disabled' => false])
+@props(['period' => null, 'codePeriod' => null, 'lessonAttend' => null, 'cdText' => '', 'route' => '', 'disabled' => false])
 <form method="POST" autocomplete="off">
     @csrf
     @method('PUT')
 
-    <x-tablet.partials.period-header :period="$period" :codePeriod="$codePeriod" :cdText="$schoolCode->cd_text" :action="App\Enums\PeriodAction::REDIRECT_LINK" />
+    <x-tablet.partials.period-header :period="$period" :codePeriod="$codePeriod" :cdText="$cdText" :action="App\Enums\PeriodAction::REDIRECT_LINK" />
     <div id="students">
         @foreach ($lessonAttend as $item)
             <article>
@@ -13,8 +13,15 @@
                     <div class="no"><a href="student.html">{{ $item?->admCheckItem?->student_no }}</a>
                     </div>
                     <div class="name">{{ $item?->admCheckItem?->name_kana }}</div>
-                    <div class="mikiwame active">[みきわめ]</div>
-                    <div class="car">{{ $item?->dsipatchCar->first()?->lessonCar?->name }}</div>
+                    <div class="mikiwame active">
+                        @if ($item?->is_show_mikiwame)
+                            [みきわめ]
+                        @endif
+                        @if ($item?->is_show_good)
+                        良好
+                    @endif
+                    </div>
+                    <div class="car">{{ $item?->dispatchCar->first()?->lessonCar?->name }}</div>
                     <div class="fuzai"><input name="{{ 'is_absent_' . $item->id }}" id="{{ 'is_absent_' . $item->id }}"
                             type="checkbox" @checked($item?->is_absent->value)>
                         <label for="{{ 'is_absent_' . $item->id }}">不在</label>
@@ -36,7 +43,7 @@
                             class="text-truncate width-moushiokuri">{{ $item?->lessonComments?->comment_text }}</em>
                     </div>
                     <div class="nippou"><button>日報</button></div>
-                    <div class="shujuku"><button disabled>習熟</button></div>
+                    <div class="shujuku"><button>習熟</button></div>
                 </div>
             </article>
         @endforeach

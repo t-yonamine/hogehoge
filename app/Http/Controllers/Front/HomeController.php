@@ -53,8 +53,8 @@ class HomeController extends Controller
             'period.codes' => function ($q) {
                 $q->where('cd_name', self::CODETYPE);
             },
-            'period.lessonAttend.dsipatchCar',
-            'period.lessonAttend.dsipatchCar.lessonCar'
+            'period.lessonAttend.dispatchCar',
+            'period.lessonAttend.dispatchCar.lessonCar'
         ])->orderBy('period_num')->get();
 
         return view('tablet.home.index', ['period_m' => $periodM, 'datepicker' => $date, 'sessSchoolStaffId' => $sessSchoolStaffId]);

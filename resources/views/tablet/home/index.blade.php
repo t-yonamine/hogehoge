@@ -139,7 +139,7 @@
                                                 {{-- F-7 コース区分 --}}
                                                 {{ $periodVal->codes?->cd_text }}
                                                 {{-- F-8 教習車名 --}}
-                                                {{ $lessonAtt->dsipatchCar->map(function ($dsip) {return $dsip->lessonCar->name;})->implode('、') }}
+                                                {{ $lessonAtt->dispatchCar->map(function ($dsip) {return $dsip->lessonCar->name;})->implode('、') }}
                                             </div>
                                             @if ($lessonAtt->status->value >= App\Enums\LessonAttendStatus::COMPLETED)
                                                 <div class="detail_status haishazumi">
@@ -147,7 +147,7 @@
                                                 </div>
                                             @elseif ($lessonAtt->status->value < App\Enums\LessonAttendStatus::COMPLETED)
                                                 <div class="detail_status mihaisha">
-                                                    {{ $lessonAtt->dsipatchCar?->count('lesson_attends_id') >= $haveDispatched ? '配車済' : '未配車' }}
+                                                    {{ $lessonAtt->dispatchCar?->count('lesson_attends_id') >= $haveDispatched ? '配車済' : '未配車' }}
                                                 </div>
                                             @endif
                                         </div>

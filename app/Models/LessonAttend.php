@@ -172,9 +172,9 @@ class LessonAttend extends Model
         return $this->hasMany(LessonItemMastery::class, 'lesson_attend_id', 'id');
     }
 
-    public function dsipatchCar()
+    public function dispatchCar()
     {
-        return $this->hasMany(DsipatchCar::class, 'ledger_id', 'ledger_id');
+        return $this->hasMany(DispatchCar::class, 'ledger_id', 'ledger_id');
     }
 
     public function image()
