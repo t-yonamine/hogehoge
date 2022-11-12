@@ -13,6 +13,7 @@ use App\Enums\LessonAttendStatus;
 use App\Enums\PeriodAction;
 use App\Enums\PeriodStatus;
 use App\Enums\PeriodType;
+use App\Enums\SchoolStaffRole;
 use App\Enums\Status;
 use App\Helpers\Helper;
 use App\Http\Controllers\Controller;
@@ -21,8 +22,10 @@ use App\Models\ConfirmationRecord;
 use App\Models\LessonAttend;
 use App\Models\Period;
 use App\Models\SchoolCode;
+use App\Models\SchoolPeriodM;
 use Closure;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 class TodayController extends Controller
 {
@@ -30,31 +33,46 @@ class TodayController extends Controller
     public function __construct()
     {
         $this->middleware(function (Request $request, Closure $next) {
-
+            $user = Auth::user();
+            $role = $user->schoolStaff->role;
             //1. 入力パラメータ																										
             //   A. セッション情報 共通ロジック/セッション情報  
             $schoolStaffId = session('school_staff_id');
             $schoolId = session('school_id');
-            if (!$request->period_date || !$request->period_num) {
-                abort(404);
-            }
 
-            // B. 時限ID … 遷移元の画面で選択したID。
-            $period = Period::whereHas('schoolPeriodM')->where('period_date', Helper::getStringFormatDate($request->period_date, 'Y-m-d'))
+            // B. 指定された時限が存在するか確認。
+            // a. 時限データの存在確認。ある場合は、「権限チェック」へ。
+            $existPeriod = Period::with('schoolPeriodM')->where('school_staff_id', $schoolStaffId)
+                ->where('period_date', $request->period_date)
+                ->where('period_num', $request->period_num)->first();
+
+            // b. 教習所別時限マスタに存在するか確認。
+            $existTimePeriod = SchoolPeriodM::where('school_id', $schoolId)
                 ->where('period_num', $request->period_num)->first();
 
             // 2. 存在チェック																										
             //   A. 職員IDの存在チェック 共通ロジック/存在チェック#1  セッションの職員IDの情報を読む。																										
             //   B. 時限IDの存在チェック																										
-            if (!$schoolStaffId || !$schoolId || !$period) {
+            if (
+                !$schoolStaffId
+                || !$schoolId
+                || !$existPeriod
+                || !$existTimePeriod
+            ) {
                 abort(404);
             }
 
             // 4. 権限チェック																										
             //   A. 同一教習所チェック																										
-            if ($period->school_id != $schoolId) {
+
+            if (
+                $existPeriod->school_id != $schoolId
+                || ($role & (SchoolStaffRole::INSTRUCTOR + SchoolStaffRole::EXAMINER)) == 0
+            ) {
                 abort(403);
             }
+
+            $request['period'] = $existPeriod;
 
             return $next($request)
                 ->header('Cache-Control', 'no-store, must-revalidate');
@@ -66,36 +84,57 @@ class TodayController extends Controller
      */
     public function index(Request $request)
     {
+        $user = Auth::user();
+        $schoolStaffId = session('school_staff_id');
+        $date = $request->input('period_date') ?? date('Y-m-d');
+
+        $periodNum = $request->period_num;
+
+        $request->validate([
+            'period_date' => 'nullable|max:10|date',
+        ]);
 
         // 時限IDの存在チェック
-        $period = Period::whereHas('schoolPeriodM')->where('period_date', Helper::getStringFormatDate($request->period_date, 'Y-m-d'))
-            ->where('period_num', $request->period_num)->first();
+        $period =  $request->period;
 
-        //   B. 変更できるか確認。入力項目のenable判定。
-        // 
-        // 
+        $periodM = SchoolPeriodM::with([
+            'period' => function ($q) use ($user, $date) {
+                $q->where('school_id', $user->schoolStaff->school_id)
+                    ->where('period_date', $date)->where('school_staff_id', $user->schoolStaff->id);
+            }, 'period.drlType', 'period.workType'
+        ])->orderBy('period_num')->get();
+
+        // B. 変更できるか確認。入力項目のenable判定。																										
+        $disabled = !($period->status != PeriodStatus::APPROVED() && $period->data_sts == Status::ENABLED());
 
         $codePeriod = Code::where('cd_name', 'period_type')->where('cd_value', $period->period_type)->first();
 
+        //data response 
+        $data = [
+            'period' => $period,
+            'codePeriod' => $codePeriod,
+            'period_date' => $date,
+            'periodM' => $periodM,
+            'schoolStaffId' => $schoolStaffId,
+            'periodNum' => $periodNum,
+            'disabled' => $disabled
+        ];
         switch ($period->period_type) {
             case PeriodType::WORK():
                 # code...
                 $codeWord = Code::where('cd_name', 'work_type')->where('cd_value', $period->work_type)->first();
-                return  view('tablet.today.index', ['period' => $period, 'codePeriod' => $codePeriod, 'codeWord' => $codeWord]);
+                $data['codeWord'] = $codeWord;
+                break;
 
             case PeriodType::DRV_LESSON():
 
-                // 4. 権限チェック
-                //   B. 変更できるか確認。入力項目のenable判定。
-                $isEnableForm = $period->status != PeriodStatus::APPROVED() && $period->data_sts == Status::ENABLED();
-
                 $schoolCode = SchoolCode::where('school_id', $period->school_id)->where('cd_name', 'drl_type')->where('cd_value', $period->drl_type)->first();
+
                 /**
                  *  5. 受講データの取得	
                  *      本時限に結びついた受講データを検索する。
                  *  6. 受講単位の教習項目習熟度を取得する。					
                  */
-
                 $lessonAttend = LessonAttend::whereHas('admCheckItem', function ($q) {
                     $q->where('status', Status::ENABLED());
                 })
@@ -111,11 +150,13 @@ class TodayController extends Controller
                     ->select('*')
                     ->orderBy('id')->get();
 
-                return  view('tablet.today.index', ['period' => $period, 'codePeriod' => $codePeriod, 'lessonAttend' => $lessonAttend,  'schoolCode' => $schoolCode, 'isEnableForm' => $isEnableForm]);
-
+                $data['lessonAttend'] = $lessonAttend;
+                $data['schoolCode'] = $schoolCode;
+                break;
             default:
                 abort(404);
         }
+        return  view('tablet.today.index', $data);
     }
 
     /**
@@ -135,6 +176,11 @@ class TodayController extends Controller
         $period = Period::find($request->period_id);
         if (!$period) {
             abort(404);
+        }
+
+        // B. 変更できない場合はエラー。																										
+        if ($period->status == PeriodStatus::IMPLEMENTED() || $period->data_sts  == Status::DISABLED()) {
+            abort(403);
         }
 
         switch ($request->action) {

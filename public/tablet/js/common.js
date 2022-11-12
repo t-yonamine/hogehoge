@@ -22,36 +22,41 @@ document.addEventListener('touchmove', function listener(e) {
 }, passiveSupported ? { passive: false } : false);
 */
 
-
-$(function() {
-
-
-    $(".datepicker").datepicker().datepicker('setDate', 'today');
+$(function () {
+    $(".datepicker").datepicker().datepicker("setDate", "today");
 
     ////////////////
     // モーダル
     ////////////////
-    $('.modalOpen').click(function(e) {
-        modalOpen($(this).attr('href'));
+    $(".modalOpen").click(function (e) {
+        modalOpen($(this).attr("href"));
         return false;
     });
-    $('.modal_close').click(function() {
+    $(".modal_close").click(function () {
         //$(this).parent().parent().fadeOut(300);
         modalClose();
         return false;
     });
 
     //function modalOpen(id) {
-    window.modalOpen = function(id) {
-        $('.modal').fadeOut(300);
+    window.modalOpen = function (id) {
+        $(".modal").fadeOut(300);
         $(id).fadeIn(300);
-    }
+    };
 
     //function modalClose() {
-    window.modalClose = function() {
-        $('.modal').fadeOut(300);
-    }
+    window.modalClose = function () {
+        $(".modal").fadeOut(300);
+    };
 
-
-
+    $(".next").on("click", function () {
+        var date = $(".datepicker").datepicker("getDate");
+        date.setDate(date.getDate() + 1);
+        $(".datepicker").datepicker("setDate", date);
+    });
+    $(".prev").on("click", function () {
+        var date = $(".datepicker").datepicker("getDate");
+        date.setDate(date.getDate() - 1);
+        $(".datepicker").datepicker("setDate", date);
+    });
 });

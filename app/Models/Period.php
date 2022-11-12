@@ -37,6 +37,7 @@ class Period extends Model
         'updated_user_id',
     ];
 
+
     public function lessonAttend()
     {
         return $this->hasMany(LessonAttend::class);
@@ -47,6 +48,15 @@ class Period extends Model
         return $this->hasOne(Code::class, 'cd_value', 'course_type_cd');
     }
 
+    public function drlType()
+    {
+        return $this->hasOne(SchoolCode::class, 'cd_value', 'drl_type');
+    }
+
+    public function workType()
+    {
+        return $this->hasOne(Code::class, 'cd_value', 'work_type');
+    }
 
     /**
      * to handle insert period
