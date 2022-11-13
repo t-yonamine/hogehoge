@@ -61,7 +61,7 @@ class LessonAttend extends Model
 
     public function lessonComments()
     {
-        return $this->hasOne(LessonComment::class, 'ledger_id', 'ledger_id');
+        return $this->hasOne(LessonComment::class, 'lesson_attend_id', 'id');
     }
 
     public function school()

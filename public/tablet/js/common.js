@@ -29,15 +29,24 @@ $(function () {
     // モーダル
     ////////////////
     $('.modalOpen').click(function(e) {
-        const idModel = $(this).attr('id');
-        if(idModel === '#modal_nippou') {
-            const data = JSON.parse($(this).val());
-            $('#nippou').text(data.adm_check_item?.student_no + '　' + data.adm_check_item?.name_kana);
-            $('.ledger_id').attr('value', data.adm_check_item?.ledger_id);
-            $('.lesson_attend_id').attr('value', data?.id);
-            $('.comment_id').attr('value', data.lesson_comment?.id || null);
-            $('.comment_text').attr('value', data.lesson_comment?.comment_text || null);
-            $(idModel).fadeIn(300);
+        const idModal = $(this).attr('id');
+        if (idModal === '#modal_nippou') {
+            let ledgerId = $(this).parents('article').find('input[name="ledger_id"]').val();
+            let lessonAttendId = $(this).parents('article').find('input[name="lesson_attend_id"]').val();
+            let commentId = $(this).parents('article').find('input[name="comment_id"]').val();
+            let commentText = $(this).parents('article').find('.comment-text').text()?.trim();
+            let studentNo = $(this).parents('article').find('.no').text()?.trim();
+            let name = $(this).parents('article').find('.name').text()?.trim();
+            let stuText = studentNo + '　' + name;
+
+            $('#nippou').text(stuText);
+            $(idModal + ' input[name="name"]').attr('value', stuText);
+            $(idModal + ' input[name="ledger_id"]').attr('value', ledgerId);
+            $(idModal + ' input[name="lesson_attend_id"]').attr('value', lessonAttendId);
+            $(idModal + ' input[name="comment_id"]').attr('value', commentId);
+            $(idModal + ' input[name="comment_text"]').removeClass('is-invalid').next().remove();
+            $(idModal + ' input[name="comment_text"]').attr('value', commentText);
+            $(idModal).fadeIn(300);
         } else {
             modalOpen($(this).attr('href'));
         }
@@ -65,9 +74,11 @@ $(function () {
         date.setDate(date.getDate() + 1);
         $(".datepicker").datepicker("setDate", date);
     });
+
     $(".prev").on("click", function () {
         var date = $(".datepicker").datepicker("getDate");
         date.setDate(date.getDate() - 1);
         $(".datepicker").datepicker("setDate", date);
     });
+
 });

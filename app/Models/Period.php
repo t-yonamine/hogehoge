@@ -26,7 +26,6 @@ class Period extends Model
         'period_to' => 'datetime',
         'drl_type' => DrlType::class,
         'work_type' => WorkType::class,
-        'work_type' => WorkType::class,
         'data_sts' => Status::class,
     ];
 
@@ -36,7 +35,6 @@ class Period extends Model
         'updated_at',
         'updated_user_id',
     ];
-
 
     public function lessonAttend()
     {
