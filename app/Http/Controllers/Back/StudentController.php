@@ -8,6 +8,7 @@ use App\Enums\Status;
 use App\Http\Controllers\Controller;
 use App\Models\AdmCheckItem;
 use App\Models\Code;
+use App\Models\Ledger;
 use App\Models\SchoolCode;
 use Closure;
 use Illuminate\Http\Request;
@@ -94,5 +95,28 @@ class StudentController extends Controller
         $codes = Code::where('cd_name', CodeName::LESSON_STS)->where('status', Status::ENABLED)->get();
 
         return  view('back.student.index', ['codeOptions' => $schoolCodes, 'data' => $models, 'lessonSts' => $params['lesson_sts'], 'codes' => $codes]);
+    }
+    /**
+     * @Route('/{id}', method: 'GET', name: 'student.detail')
+     */
+    public function detail(Request $request)
+    {
+        $schoolId =  $request->session()->get('school_id');
+        $ledgerId = $request->id;
+        $checkIsLedgerId = Ledger::where('id', $ledgerId)->first();
+        if (!$checkIsLedgerId) {
+            return abort(404);
+        }
+        $student = Ledger::where('school_id', $schoolId)->where('id', $ledgerId)->first();
+        if (!$student) {
+            return abort(401);
+        }
+
+        $personalInfor = AdmCheckItem::with(['certificates'])->where('ledger_id', $ledgerId)->where('school_id', $schoolId)->first();
+        $infor = (object)[
+            'student_no' => $student->student_no,
+            'adm_check_item' => $personalInfor,
+        ];
+        return  view('back.student.detail', ['infor' => $infor]);
     }
 }
