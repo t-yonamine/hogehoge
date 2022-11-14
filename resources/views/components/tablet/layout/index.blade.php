@@ -25,12 +25,7 @@
     @stack('css-customs')
 
     {{-- Custom Stylesheets --}}
-    <script src="{{ asset('/tablet/js/jquery-3.4.1.min.js') }}" type="text/javascript"></script>
-    <script src="{{ asset('/tablet/js/jquery.easing.1.3.js') }}" type="text/javascript"></script>
-    <script src="{{ asset('/tablet/lib/jquery-ui.min.js') }}" type="text/javascript"></script>
-    <script src="{{ asset('/tablet/lib/datepicker-ja.js') }}" type="text/javascript"></script>
     <link href="{{ asset('/tablet/lib/jquery-ui.min.css') }}" rel="stylesheet" type="text/css">
-    <script src="{{ asset('/tablet/js/common.js') }}" type="text/javascript"></script>
 </head>
 
 <body>
@@ -45,6 +40,10 @@
             {{ $slot }}
         @endif
     </div>
+    <script src="{{ asset('/tablet/js/jquery-3.4.1.min.js') }}" type="text/javascript"></script>
+    <script src="{{ asset('/tablet/js/jquery.easing.1.3.js') }}" type="text/javascript"></script>
+    <script src="{{ asset('/tablet/lib/jquery-ui.min.js') }}" type="text/javascript"></script>
+    <script src="{{ asset('/tablet/lib/datepicker-ja.js') }}" type="text/javascript"></script>
     <script src="{{ asset('/tablet/js/common.js') }}" type="text/javascript"></script>
     @stack('js')
 </body>
