@@ -16,12 +16,14 @@ use App\Enums\PeriodAction;
 use App\Enums\PeriodStatus;
 use App\Enums\PeriodType;
 use App\Enums\SchoolStaffRole;
+use App\Models\LessonItemMastery;
 use App\Enums\Status;
 use App\Http\Controllers\Controller;
 use App\Models\Code;
 use App\Models\ConfirmationRecord;
+use App\Models\Ledger;
 use App\Models\LessonAttend;
-use App\Models\LessonItemMastery;
+use App\Models\LessonComment;
 use App\Models\Period;
 use App\Models\SchoolCode;
 use App\Models\SchoolPeriodM;
@@ -84,7 +86,7 @@ class TodayController extends Controller
     }
 
     /**
-     * @Route('/', method: 'GET', name: 'tablet.font.today-detail')
+     * @Route('/', method: 'GET', name: 'frt.today.index')
      */
     public function index(Request $request)
     {
@@ -139,16 +141,16 @@ class TodayController extends Controller
                  *      本時限に結びついた受講データを検索する。
                  *  6. 受講単位の教習項目習熟度を取得する。					
                  */
-                $lessonAttend = LessonAttend::whereHas('admCheckItem', function ($q) {
-                    $q->where('status', Status::ENABLED());
-                })
-                    ->with(['dispatchCar.lessonCar', 'lessonComments' => function ($q) {
+                $lessonAttend = LessonAttend::with(['admCheckItem', 'dispatchCar.lessonCar', 'lessonComments' => function ($q) {
                         $q->where('comment_type', CommentType::ITEMS_TO_BE_SENT())->where('status',  Status::ENABLED());
                     }, 'image' => function ($q) {
                         $q->where('image_type', ImageType::FOR_ORIGINAL())->where('status',  Status::ENABLED());
                     }, 'lessonItemMastery' => function ($q) {
                         $q->orderBy('stage')->orderBy('lesson_item_num');
                     }])
+                    ->whereHas('admCheckItem', function ($q) {
+                        $q->where('status', Status::ENABLED());
+                    })
                     ->where('period_id', $period->id)
                     ->where('data_sts', Status::ENABLED())
                     ->select('*')
@@ -203,7 +205,7 @@ class TodayController extends Controller
     }
 
     /**
-     * @Route('/', method: 'PUT', name: 'today.index')
+     * @Route('/', method: 'PUT', name: 'frt.today.index')
      */
     public function update(Request $request)
     {
@@ -366,5 +368,30 @@ class TodayController extends Controller
                 break;
         }
         return  redirect()->route('frt.today.index', $request->query->all());
+    }
+
+    /**
+     * @Route('/comment', method: 'POST', name: 'frt.today.comment')
+     */
+    public function commentSave(Request $request)
+    {
+        $request->validate([
+            'comment_text' => 'required|max:100',
+        ],[], [
+            'comment_text' => '申し送り事項',
+        ]);
+        $data = $request->input();
+        //指定教習原簿の存在チェック
+        $existLedgers = Ledger::where('id', $data['ledger_id'])->where('status', Status::ENABLED)->first();
+        //受講の存在チェック
+        $existLessonAttends = LessonAttend::where('id', $data['lesson_attend_id'])->first();
+        if (!$existLedgers || !$existLessonAttends) {
+            abort(404);
+        }
+        //パラメータ.教習コメントIDが null でない場合、教習コメントの存在チェック
+        $existLessonComments = LessonComment::where('id', $data['comment_id'])->first();
+        //教習コメント glesson_comments 登録・更新処理	
+        LessonComment::handleSave($data, $existLedgers, $existLessonAttends, $existLessonComments);
+        return redirect()->route('frt.today.index', $request->only(['period_date', 'period_num']));
     }
 }

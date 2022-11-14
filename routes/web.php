@@ -113,6 +113,7 @@ Route::middleware('auth')->prefix('frt')->name('frt.')->group(
         Route::controller(TodayController::class)->prefix('/today')->name('today.')->group(function () {
             Route::get('/', 'index')->name('index');
             Route::put('/', 'update')->name('update');
+            Route::post('/comment', 'commentSave')->name('comment');
         });
     }
 );

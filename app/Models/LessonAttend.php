@@ -59,6 +59,46 @@ class LessonAttend extends Model
         'status' => LessonAttendStatus::PENDING
     ];
 
+    public function lessonComments()
+    {
+        return $this->hasOne(LessonComment::class, 'lesson_attend_id', 'id');
+    }
+
+    public function school()
+    {
+        return $this->hasOne(School::class, 'id', 'school_id');
+    }
+
+    public function schoolStaff()
+    {
+        return $this->hasOne(SchoolStaff::class, 'id', 'school_staff_id');
+    }
+
+    public function ledger()
+    {
+        return $this->belongsTo(Ledger::class, 'id', 'ledger_id');
+    }
+
+    public function admCheckItem()
+    {
+        return $this->hasOne(AdmCheckItem::class, 'ledger_id', 'ledger_id');
+    }
+
+    public function lessonItemMastery()
+    {
+        return $this->hasMany(LessonItemMastery::class, 'lesson_attend_id', 'id');
+    }
+
+    public function dispatchCar()
+    {
+        return $this->hasMany(DispatchCar::class, 'ledger_id', 'ledger_id');
+    }
+
+    public function image()
+    {
+        return $this->hasOne(Image::class, 'target_id', 'ledger_id');
+    }
+
     public static function handleSave(array $data, Ledger $ledger, LessonAttend $model = null)
     {
         try {
@@ -140,46 +180,6 @@ class LessonAttend extends Model
         } catch (\Throwable $th) {
             throw $th;
         }
-    }
-
-    public function lessonComments()
-    {
-        return $this->hasOne(LessonComment::class, 'ledger_id', 'ledger_id');
-    }
-
-    public function school()
-    {
-        return $this->hasOne(School::class, 'id', 'school_id');
-    }
-
-    public function schoolStaff()
-    {
-        return $this->hasOne(SchoolStaff::class, 'id', 'school_staff_id');
-    }
-
-    public function ledger()
-    {
-        return $this->belongsTo(Ledger::class, 'id', 'ledger_id');
-    }
-
-    public function admCheckItem()
-    {
-        return $this->hasOne(AdmCheckItem::class, 'ledger_id', 'ledger_id');
-    }
-
-    public function lessonItemMastery()
-    {
-        return $this->hasMany(LessonItemMastery::class, 'lesson_attend_id', 'id');
-    }
-
-    public function dispatchCar()
-    {
-        return $this->hasMany(DispatchCar::class, 'ledger_id', 'ledger_id');
-    }
-
-    public function image()
-    {
-        return $this->hasOne(Image::class, 'target_id', 'ledger_id');
     }
 
     public static  function countParticipants($testId, $sessSchoolStaffId)
