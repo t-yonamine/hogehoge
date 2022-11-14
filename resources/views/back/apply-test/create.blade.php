@@ -17,7 +17,7 @@
                         @endforeach
                     </div>
                 @endif
-                <x-forms.apply-test.register-form :data="$data" route="{{ route('apply-test.create.save') }}"
+                <x-forms.apply-test.register-form :data="$data" route="{{ route('apply-test.store') }}"
                     method='POST' />
             </div>
         </div>

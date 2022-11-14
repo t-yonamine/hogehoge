@@ -503,9 +503,9 @@ class ApplicationTestController extends Controller
         return view('back.apply-test.create', ['data' =>  (object)$data]);
     }
     /**
-     * @Route('/apply-test/create, method: 'POST', name: 'apply-test.create-save')
+     * @Route('/apply-test/create, method: 'POST', name: 'apply-test.store')
      */
-    public function createSave(Request $request)
+    public function store(Request $request)
     {
         $request->validate(
             [

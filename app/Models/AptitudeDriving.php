@@ -196,16 +196,31 @@ class AptitudeDriving extends Model
         return $dataOutput;
     }
 
-    public static function handleSave(array $aptitudeDrvs, AptitudeDriving $mode = null)
+    public static function handleSave(array $aptitudeDrvs, AptitudeDriving $model = null)
     {
         try {
-            $mode = new AptitudeDriving();
-            DB::transaction(function () use ($aptitudeDrvs, $mode) {
+            $model = $model ?: new static();
+            DB::transaction(function () use ($aptitudeDrvs, $model) {
                 $userId = Auth::id();
                 $aptitudeDrvs['created_user_id'] = $userId;
                 $aptitudeDrvs['updated_user_id'] = $userId;
-                $mode->fill($aptitudeDrvs);
-                $mode->save();
+                $model->fill($aptitudeDrvs);
+                $model->save();
+            });
+        } catch (Exception $e) {
+            throw $e;
+        }
+    }
+
+    public static function handleDelete(AptitudeDriving $model)
+    {
+        try {
+            DB::transaction(function () use ($model) {
+                $userId = Auth::id();
+                $model->status = Status::DISABLED;
+                $model->deleted_at = now();
+                $model->deleted_user_id = $userId;
+                $model->save();
             });
         } catch (Exception $e) {
             throw $e;
