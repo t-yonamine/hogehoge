@@ -59,6 +59,8 @@ Route::group(
 
         Route::controller(StudentController::class)->prefix('student')->name('student.')->group(function () {
             Route::get('/', 'index')->name('index');
+            Route::get('/{id}', 'detail')->name('detail');
+
         });
 
         // 検定申込結果 
