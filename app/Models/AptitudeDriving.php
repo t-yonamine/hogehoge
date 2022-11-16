@@ -16,6 +16,8 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Lang;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Validator;
+use Rabianr\Validation\Japanese\Rules\Hiragana;
+use Rabianr\Validation\Japanese\Rules\Kanji;
 
 class AptitudeDriving extends Model
 {
@@ -127,8 +129,10 @@ class AptitudeDriving extends Model
                 //各項目のサイズ、形式、文字種などをチェックする
                 $validators = static::csvValidator($attributes);
                 if ($validators->fails()) {
-                    $errorDate = $validators->errors()->first('date');
-                    $msgError[] = Lang::get('messages.MSE00008');
+                    $errors = $validators->errors();
+                    $errorDate = $errors->first('date');
+                    $failedField = join('、', $errors->all());
+                    $msgError[] = Lang::get('messages.MSE00008', ['item' => $failedField]);
                 }
                 // 整理番号に一致する教習生の存在をチェック
                 $studentNo = $attributes['student_no'];
@@ -165,7 +169,8 @@ class AptitudeDriving extends Model
                     $validators = static::csvValidator($attributes);
                     $checkIdLedger = Ledger::where('student_no', $attributes['student_no'])->where('status', Status::ENABLED)->first();
                     if ($validators->fails()) {
-                        $dataTemp['error'] = Lang::get('messages.MSE00008');
+                        $failedField = join('、',  $validators->errors()->all());
+                        $dataTemp['error'] = Lang::get('messages.MSE00008', ['item' => $failedField]);
                     } else if ($checkIdLedger) {
                         //不要なアイテムの追加と削除
                         $attributes['ledger_id'] = $checkIdLedger->id;
@@ -241,9 +246,9 @@ class AptitudeDriving extends Model
         $rule = [
             'date' => 'required|max:8|date_format:"Ymd"',
             'student_no' => 'required|string|max:8|min:1',
-            'name' => 'nullable|string|max:128',
-            'od_persty_pattern_1' => 'required|int|max:2',
-            'od_persty_pattern_2' => 'required|int|min:0|max:2',
+            'name' => ['nullable',new Hiragana([' ', new Kanji('', true)])],
+            'od_persty_pattern_1' => 'required|regex:/^[0-9]+$/|max:2',
+            'od_persty_pattern_2' => 'required|regex:/^[0-9]+$/|max:2',
             'od_drv_aptitude' => 'required|int|min:1|max:5',
             'od_safe_aptitude' => 'required|max:1|in:' . $validAtoE,
             'od_specific_rxn' => 'required|int|min:1|max:3',
@@ -264,33 +269,35 @@ class AptitudeDriving extends Model
             'od_o' => 'required|string|max:1|in:' . $validAtoC,
             'od_p' => 'required|string|max:1|in:' . $validAtoC,
         ];
-        $attributes = [
-            'date' => '実施日',
-            'student_no' => '整理番号',
-            'name' => '氏名',
-            'od_persty_pattern_1' => '性格パターン1',
-            'od_persty_pattern_2' => '性格パターン2',
-            'od_drv_aptitude' => '運転適性度',
-            'od_safe_aptitude' => '安全運転度',
-            'od_specific_rxn' => '特異反応',
-            'od_a' => '注意力',
-            'od_b' => '判断力',
-            'od_c' => '柔軟性',
-            'od_d' => '決断力',
-            'od_e' => '緻密性',
-            'od_f' => '動作の安定性',
-            'od_g' => '適応性',
-            'od_h' => '身体的健康度',
-            'od_i' => '精神的健康度',
-            'od_j' => '社会的成熟度',
-            'od_k' => '情緒不安定性',
-            'od_l' => '衝迫性・暴発性',
-            'od_m' => '自己中心性',
-            'od_n' => '神経質・過敏性',
-            'od_o' => '虚飾性',
-            'od_p' => '運転マナー',
+
+        // 項目番号は、CSVの項目位置。
+        $messages = [
+            'date' => '1',
+            'student_no' => '2',
+            'name' => '3',
+            'od_persty_pattern_1' => '6',
+            'od_persty_pattern_2' => '7',
+            'od_drv_aptitude' => '8',
+            'od_safe_aptitude' => '9',
+            'od_specific_rxn' => '10',
+            'od_a' => '11',
+            'od_b' => '12',
+            'od_c' => '13',
+            'od_d' => '14',
+            'od_e' => '15',
+            'od_f' => '16',
+            'od_g' => '17',
+            'od_h' => '18',
+            'od_i' => '19',
+            'od_j' => '20',
+            'od_k' => '21',
+            'od_l' => '22',
+            'od_m' => '23',
+            'od_n' => '24',
+            'od_o' => '25',
+            'od_p' => '26',
         ];
-        return Validator::make($line, $rule, [], $attributes);
+        return Validator::make($line, $rule, $messages, []);
     }
 
     /**
