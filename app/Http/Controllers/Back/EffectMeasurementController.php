@@ -112,7 +112,7 @@ class EffectMeasurementController extends Controller
             throw $th;
         }
 
-        return redirect()->route('effect-measurement.index', ['ledger_id' => $ledger->id])->with(['success' => Lang::get('messages.MSI00002')]);
+        return redirect()->route('effect-measurement.index', ['ledger_id' => $ledger->id])->with(['success' => Lang::get('messages.MSI00004')]);
     }
 
     /**
