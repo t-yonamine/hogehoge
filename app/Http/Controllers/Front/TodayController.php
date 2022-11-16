@@ -266,10 +266,6 @@ class TodayController extends Controller
             abort(404);
         }
 
-        // B. 変更できない場合はエラー。																										
-        if ($period->status == PeriodStatus::IMPLEMENTED() || $period->data_sts  == Status::DISABLED()) {
-            abort(403);
-        }
 
         switch ($request->action) {
             case PeriodAction::UPDATE_WORK:
@@ -305,15 +301,6 @@ class TodayController extends Controller
                     ];
                     ConfirmationRecord::handleSave($dataConfirmationFill, $confirmationRecord);
                 }
-                break;
-            case PeriodAction::REDIRECT_LINK:
-                // B. 変更できない場合はエラー。																										
-                // 承認済の場合、無効の場合は権限エラー。 403 Error. Forbidden.																										
-                // where gperiods.status = 2:承認済																										
-                // or gperiods.data_sts = 0:無効																										
-                // pending waiting for Q&A #24
-
-                // 4. 教習所フロント_新規時限.xlsx へ更新モードで遷移する。
                 break;
 
             case PeriodAction::UPDATE_LESSON:
@@ -469,7 +456,7 @@ class TodayController extends Controller
         // D. 業務種別変更可不可判定。
         $existBusiness = LessonAttend::where('period_id', $request->period_id)->where('data_sts', Status::ENABLED)->first();
 
-        if (!$periodSchoolStaff || !$existBusiness) {
+        if (!$periodSchoolStaff || $existBusiness) {
             abort(403);
         }
         $periodType = $request->period_type_l;
