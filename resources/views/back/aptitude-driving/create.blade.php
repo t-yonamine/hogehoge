@@ -10,8 +10,8 @@
     <div class="row">
         <div class="col-12">
             <div class="card">
-                <x-forms.aptitude-driving.form :testtype="$test_type" :data="$data" : method="POST" :seq="$seq"
-                    route="{{ route('aptitude-driving.new', [$data->id]) }}" />
+                <x-forms.aptitude-driving.form :isCreate="true" :testtype="$test_type" :model="$data" method="POST" :seq="$seq"
+                    route="{{ route('aptitude-driving.store', ['ledger_id' => $data->ledger_id]) }}" />
             </div>
         </div>
     </div>
