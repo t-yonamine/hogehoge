@@ -43,6 +43,9 @@ Route::group(
         });
 
         Route::controller(EffectMeasurementController::class)->prefix('effect-measurement')->name('effect-measurement.')->group(function () {
+            Route::get('/import', 'import')->name('import');
+            Route::post('/import', 'upload')->name('import.upload');
+            Route::post('/insert', 'insert')->name('import.insert');
             Route::get('/{ledger_id}', 'index')->name('index');
             Route::delete('{ledger_id}', 'delete')->name('delete');
             Route::get('/create/{ledger_id}', 'create')->name('create');
