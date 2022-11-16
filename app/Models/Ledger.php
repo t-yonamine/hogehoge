@@ -62,4 +62,19 @@ class Ledger extends Model
     {
         return $this->hasMany(LessonAttend::class);
     }
+
+    public function certificates()
+    {
+        return $this->hasMany(Certificate::class);
+    }
+
+    public function curLicTypes()
+    {
+        return $this->hasMany(CurrentLicenseType::class);
+    }
+    
+    public function aptitudePhysical()
+    {
+        return $this->hasMany(AptitudePhysical::class);
+    }
 }
