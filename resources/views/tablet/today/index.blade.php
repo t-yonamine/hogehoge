@@ -3,7 +3,7 @@
     @push('css-customs')
         <link href="{{ asset('/tablet/css/today_ginou.css') }}" rel="stylesheet" type="text/css">
     @endpush
-    <x-tablet.today.today :data="$periodM" :datepicker="$period_date" :schoolStaffId="$schoolStaffId" :periodNum="$periodNum" :cdText="$cdText"/>
+    <x-tablet.today.today :data="$periodM" :datepicker="$period_date" :schoolStaffId="$schoolStaffId" :periodNum="$periodNum" :cdText="$cdText" />
 
     @switch($period->period_type)
         @case(App\Enums\PeriodType::WORK())
@@ -18,5 +18,8 @@
             </x-tablet.today.today-ginou>
         @break
     @endswitch
+    {{-- modal add  --}}
+    <x-tablet.modal.modal-add :period="$period" :optionCode="$optionCode" :optionSchoolCode="$optionSchoolCode" :optionCarModel="$optionCarModel"
+        :optionNumberCar="$optionNumberCar" :selectDisabled="$selectDisabled" />
 
 </x-tablet.layout>

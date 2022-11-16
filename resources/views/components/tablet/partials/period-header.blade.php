@@ -9,8 +9,9 @@
         <div id="today_detail_title_outline">{{ $codePeriod->cd_text }}</div>
         <div id="today_detail_title_body">
             <div id="today_detail_title_body_title">{{ $cdText }}</div>
-            <div id="today_detail_title_body_button"><button type="submit" name="action"
-                    value="{{ $action }}">編集</button></div>
+            <div id="today_detail_title_body_button"><button type="button" id="#modal_add"
+                    class="modalOpen">編集</button>
+            </div>
         </div>
     </div>
 </div>

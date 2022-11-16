@@ -18,11 +18,14 @@ use App\Enums\PeriodType;
 use App\Enums\SchoolStaffRole;
 use App\Models\LessonItemMastery;
 use App\Enums\Status;
+use App\Enums\TargetType;
 use App\Http\Controllers\Controller;
 use App\Models\Code;
 use App\Models\ConfirmationRecord;
+use App\Models\DispatchCar;
 use App\Models\Ledger;
 use App\Models\LessonAttend;
+use App\Models\LessonCar;
 use App\Models\LessonComment;
 use App\Models\Period;
 use App\Models\SchoolCode;
@@ -30,6 +33,7 @@ use App\Models\SchoolPeriodM;
 use Closure;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 
 class TodayController extends Controller
 {
@@ -48,9 +52,11 @@ class TodayController extends Controller
 
             // B. 指定された時限が存在するか確認。
             // a. 時限データの存在確認。ある場合は、「権限チェック」へ。
-            $existPeriod = Period::with('schoolPeriodM')->where('school_staff_id', $schoolStaffId)
+            $existPeriod = Period::with('schoolPeriodM',)->where('school_staff_id', $schoolStaffId)
                 ->where('period_date', $request->period_date)
-                ->where('period_num', $request->period_num)->first();
+                ->where('period_num', $request->period_num)->with('dispatchCars', function ($query) {
+                    $query->where('target_type', TargetType::PERIOD)->with('lessonCar');
+                })->first();
 
             // b. 教習所別時限マスタに存在するか確認。
             $existTimePeriod = SchoolPeriodM::where('school_id', $schoolId)
@@ -113,6 +119,8 @@ class TodayController extends Controller
         // B. 変更できるか確認。入力項目のenable判定。																										
         $disabled = !($period->status != PeriodStatus::APPROVED() && $period->data_sts == Status::ENABLED());
 
+        $selectDisabled =  $period->status->value == PeriodStatus::APPROVED;
+
         $codePeriod = Code::where('cd_name', 'period_type')->where('cd_value', $period->period_type)->first();
 
         //data response 
@@ -123,13 +131,14 @@ class TodayController extends Controller
             'periodM' => $periodM,
             'schoolStaffId' => $schoolStaffId,
             'periodNum' => $periodNum,
-            'disabled' => $disabled
+            'disabled' => $disabled,
+            'selectDisabled' =>  $selectDisabled
         ];
         switch ($period->period_type) {
             case PeriodType::WORK():
                 # code...
                 $codeWord = Code::where('cd_name', 'work_type')->where('cd_value', $period->work_type)->first();
-                $data['cdText'] = $codeWord->cd_text;
+                $data['cdText'] = $codeWord?->cd_text;
                 break;
 
             case PeriodType::DRV_LESSON():
@@ -142,12 +151,12 @@ class TodayController extends Controller
                  *  6. 受講単位の教習項目習熟度を取得する。					
                  */
                 $lessonAttend = LessonAttend::with(['admCheckItem', 'dispatchCar.lessonCar', 'lessonComments' => function ($q) {
-                        $q->where('comment_type', CommentType::ITEMS_TO_BE_SENT())->where('status',  Status::ENABLED());
-                    }, 'image' => function ($q) {
-                        $q->where('image_type', ImageType::FOR_ORIGINAL())->where('status',  Status::ENABLED());
-                    }, 'lessonItemMastery' => function ($q) {
-                        $q->orderBy('stage')->orderBy('lesson_item_num');
-                    }])
+                    $q->where('comment_type', CommentType::ITEMS_TO_BE_SENT())->where('status',  Status::ENABLED());
+                }, 'image' => function ($q) {
+                    $q->where('image_type', ImageType::FOR_ORIGINAL())->where('status',  Status::ENABLED());
+                }, 'lessonItemMastery' => function ($q) {
+                    $q->orderBy('stage')->orderBy('lesson_item_num');
+                }])
                     ->whereHas('admCheckItem', function ($q) {
                         $q->where('status', Status::ENABLED());
                     })
@@ -196,11 +205,45 @@ class TodayController extends Controller
                 }
 
                 $data['lessonAttend'] = $lessonAttend;
-                $data['cdText'] = $schoolCode->cd_text;
+                $data['cdText'] = $schoolCode?->cd_text;
                 break;
             default:
                 abort(404);
         }
+
+        // 6. 選択肢用データ読み込み
+
+        $schoolId = session('school_id');
+        $optionSchoolCode = SchoolCode::where('school_id', $schoolId)
+            // ->where('cd_name', 'drl_type')
+            ->where('status', Status::ENABLED)
+            ->orderBy('display_order')
+            ->orderBy('cd_value')
+            ->get();
+
+        $optionCode = Code::where('status', Status::ENABLED)
+            ->orderBy('display_order')
+            ->orderBy('cd_value')
+            ->get();
+
+
+        $optionCarModel = DB::select(DB::raw("SELECT *FROM gcodes AS a INNER JOIN 
+        (SELECT car_type_cd FROM glesson_cars WHERE school_id = ? AND status = ? GROUP BY car_type_cd)
+         AS b ON (b.car_type_cd = a.cd_value)
+        WHERE a.cd_name = 'car_type' AND a.status = ?"), [$schoolId, Status::ENABLED, Status::ENABLED]);
+
+        $optionNumberCar = LessonCar::where('school_id', $schoolId)
+            ->where('status', Status::ENABLED)
+            ->orderBy('car_type_cd')
+            ->orderBy('lesson_car_num')
+            ->get();
+
+
+        $data['optionCode'] = $optionCode;
+        $data['optionSchoolCode'] = $optionSchoolCode;
+        $data['optionCarModel'] = $optionCarModel;
+        $data['optionNumberCar'] = $optionNumberCar;
+
         return  view('tablet.today.index', $data);
     }
 
@@ -223,10 +266,6 @@ class TodayController extends Controller
             abort(404);
         }
 
-        // B. 変更できない場合はエラー。																										
-        if ($period->status == PeriodStatus::IMPLEMENTED() || $period->data_sts  == Status::DISABLED()) {
-            abort(403);
-        }
 
         switch ($request->action) {
             case PeriodAction::UPDATE_WORK:
@@ -262,15 +301,6 @@ class TodayController extends Controller
                     ];
                     ConfirmationRecord::handleSave($dataConfirmationFill, $confirmationRecord);
                 }
-                break;
-            case PeriodAction::REDIRECT_LINK:
-                // B. 変更できない場合はエラー。																										
-                // 承認済の場合、無効の場合は権限エラー。 403 Error. Forbidden.																										
-                // where gperiods.status = 2:承認済																										
-                // or gperiods.data_sts = 0:無効																										
-                // pending waiting for Q&A #24
-
-                // 4. 教習所フロント_新規時限.xlsx へ更新モードで遷移する。
                 break;
 
             case PeriodAction::UPDATE_LESSON:
@@ -377,7 +407,7 @@ class TodayController extends Controller
     {
         $request->validate([
             'comment_text' => 'required|max:100',
-        ],[], [
+        ], [], [
             'comment_text' => '申し送り事項',
         ]);
         $data = $request->input();
@@ -392,6 +422,81 @@ class TodayController extends Controller
         $existLessonComments = LessonComment::where('id', $data['comment_id'])->first();
         //教習コメント glesson_comments 登録・更新処理	
         LessonComment::handleSave($data, $existLedgers, $existLessonAttends, $existLessonComments);
+        return redirect()->route('frt.today.index', $request->only(['period_date', 'period_num']));
+    }
+
+    /**
+     * @Route('/comment', method: 'POST', name: 'frt.today.newPeriod')
+     */
+    public function newPeriod(Request $request)
+    {
+        $request->validate([
+            'period_type_l' => 'required|max:1',
+            'sub_task' => 'max:8',
+            'room_cd' => 'max:4',
+            'car_model' => 'max:2',
+            'number_car' => 'max:10',
+
+        ], [], [
+            'period_type_l' => '業務内容',
+            'sub_task' => '業務内容',
+            'room_cd' => '教室名・場所',
+            'car_model' => '車種と号車',
+            'number_car' => '車種と号車',
+        ]);
+
+        $schoolStaffId = session('school_staff_id');
+        $schoolId = session('school_id');
+        // A. 存在チェック
+        //   a. 時限が存在しない場合はエラー。
+
+        // B. 権限チェック
+        $periodSchoolStaff = Period::where('id', $request->period_id)->where('school_staff_id', $schoolStaffId)->first();;
+
+        // D. 業務種別変更可不可判定。
+        $existBusiness = LessonAttend::where('period_id', $request->period_id)->where('data_sts', Status::ENABLED)->first();
+
+        if (!$periodSchoolStaff || $existBusiness) {
+            abort(403);
+        }
+        $periodType = $request->period_type_l;
+        $schoolStaffId = session('school_staff_id');
+        $dataPeriodFill = [
+            'period_type' => $periodType,
+            'work_type' =>  $periodType == PeriodType::WORK ? $request->sub_task : null,
+            'drl_type' => $periodType == PeriodType::DRV_LESSON ? $request->sub_task : null,
+            'room_cd' => $periodType == PeriodType::LECTURE ? $request->room_cd : null,
+            'course_type_cd' => $periodType == PeriodType::DRV_LESSON || $periodType == PeriodType::TEST ? $request->room_cd : null,
+            'updated_user_id' => $schoolStaffId,
+        ];
+
+        if ($request->period_id) {
+            // A. 現在、時限にリンクしている配車(gdispatch_cars)テーブルを削除する。
+            $period = Period::find($request->period_id);
+            if (!$period) {
+                abort(404);
+            }
+
+            //  B. 号車が未選択でない場合、配車(gdispatch_cars)を追加する。
+            $model = DispatchCar::where('period_id', $period->id)->where('target_type', TargetType::PERIOD)->first();
+            $dataDispatchCarsFill = [
+                'lesson_car_id' => $request->number_car,
+                'school_id' => $schoolId,
+                'use_date' => $period->period_date,
+                'use_period_num' => $period->period_num,
+                'target_type' => TargetType::PERIOD,
+                'period_id' => $period->id,
+                'school_staff_id' => $schoolStaffId,
+            ];
+            DB::transaction(function () use ($dataPeriodFill, $request, $schoolStaffId, $model, $dataDispatchCarsFill) {
+                Period::handleUpdate($dataPeriodFill, $request->period_id, $schoolStaffId);
+                if ($model) {
+                    DispatchCar::handleDelete($model);
+                }
+                DispatchCar::handleSave($dataDispatchCarsFill, null);
+            });
+        }
+
         return redirect()->route('frt.today.index', $request->only(['period_date', 'period_num']));
     }
 }

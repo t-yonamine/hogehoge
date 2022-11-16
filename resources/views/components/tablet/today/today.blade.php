@@ -11,7 +11,7 @@
     </script>
 @endpush
 
-<div id="breadcrumb"><a href="{{ route('frt.index', ['datepicker' => $datepicker]) }}">ホーム</a>　＞　{{$cdText}}</div>
+<div id="breadcrumb"><a href="{{ route('frt.index', ['datepicker' => $datepicker]) }}">ホーム</a>　＞　{{ $cdText }}</div>
 <div id="datetime">
     <form action="{{ route('frt.today.index') }}" method="GET">
         <div id="date">
@@ -39,7 +39,7 @@
                                     @endphp
                                     {{ $numOfParPeriods->map(function ($rs) {return $rs[0]->la_type->description;})->implode('、') }}
                                 @elseif($period?->period_type?->value == App\Enums\PeriodType::WORK)
-                                    {{ $period?->workType->cd_text }}
+                                    {{ $period?->workType?->cd_text }}
                                 @endif
                             </a>
                         </div>
