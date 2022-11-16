@@ -19,7 +19,7 @@
             $(subTaskEle).html("");
             $(roomCdEle).html("");
 
-            if (value == {{ App\Enums\PeriodType::DRV_LESSON }}) {
+            if (value == {{ App\Enums\PeriodTypeL::DRV_LESSON }}) {
                 optionSchoolCode.forEach(item => {
                     if (item.cd_name == "drl_type") {
                         $(subTaskEle).append(
@@ -32,21 +32,21 @@
                             `<option value = "${item.cd_value}">${item.cd_text}</option>`);
                     }
                 });
-            } else if (value == {{ App\Enums\PeriodType::LECTURE }}) {
+            } else if (value == {{ App\Enums\PeriodTypeL::LECTURE }}) {
                 optionSchoolCode.forEach(item => {
                     if (item.cd_name == "room_cd") {
                         $(roomCdEle).append(
                             `<option value = "${item.cd_value}">${item.cd_text}</option>`);
                     }
                 });
-            } else if (value == {{ App\Enums\PeriodType::TEST }}) {
+            } else if (value == {{ App\Enums\PeriodTypeL::TEST }}) {
                 optionCode.forEach(item => {
                     if (item.cd_name == "course_type") {
                         $(roomCdEle).append(
                             `<option value = "${item.cd_value}">${item.cd_text}</option>`);
                     }
                 });
-            } else if (value == {{ App\Enums\PeriodType::WORK }}) {
+            } else if (value == {{ App\Enums\PeriodTypeL::WORK }}) {
                 optionCode.forEach(item => {
                     if (item.cd_name == "work_type") {
                         $(subTaskEle).append(
@@ -105,14 +105,26 @@
                                         @endforeach
                                     </select>
                                     <select name="sub_task" @disabled($selectDisabled)>
-                                        @foreach ($optionSchoolCode as $key => $item)
-                                            @if ($item->cd_name == 'drl_type' && $period->drl_type)
-                                                <option value="{{ $item->cd_value }}"
-                                                    @if (old('drl_type', $period?->drl_type) == $item->cd_value) selected @endif>
-                                                    {{ $item->cd_text }}
-                                                </option>
-                                            @endif
-                                        @endforeach
+                                        @if ($period->drl_type)
+                                            @foreach ($optionSchoolCode as $key => $item)
+                                                @if ($item->cd_name == 'drl_type')
+                                                    <option value="{{ $item->cd_value }}"
+                                                        @if (old('sub_task', $period?->drl_type) == $item->cd_value) selected @endif>
+                                                        {{ $item->cd_text }}
+                                                    </option>
+                                                @endif
+                                            @endforeach
+                                        @elseif($period->work_type)
+                                            @foreach ($optionCode as $key => $item)
+                                                @if ($item->cd_name == 'work_type')
+                                                    <option value="{{ $item->cd_value }}"
+                                                        @if (old('sub_task', $period?->work_type) == $item->cd_value) selected @endif>
+                                                        {{ $item->cd_text }}
+                                                    </option>
+                                                @endif
+                                            @endforeach
+                                        @endif
+
                                     </select>
                                 </div>
                                 <div class="form-input">
@@ -133,14 +145,25 @@
                             <th>教室名・場所</th>
                             <td>
                                 <select id="room_cd" name="room_cd" @disabled($selectDisabled)>
-                                    @foreach ($optionCode as $key => $item)
-                                        @if ($item->cd_name == 'course_type' && $period->room_cd)
-                                            <option value="{{ $item->cd_value }}"
-                                                @if (old('room_cd', $period->room_cd) == $item->cd_value) selected @endif>
-                                                {{ $item->cd_text }}
-                                            </option>
-                                        @endif
-                                    @endforeach
+                                    @if ($period->room_cd)
+                                        @foreach ($optionSchoolCode as $key => $item)
+                                            @if ($item->cd_name == 'room_cd')
+                                                <option value="{{ $item->cd_value }}"
+                                                    @if (old('room_cd', $period->room_cd) == $item->cd_value) selected @endif>
+                                                    {{ $item->cd_text }}
+                                                </option>
+                                            @endif
+                                        @endforeach
+                                    @else
+                                        @foreach ($optionCode as $key => $item)
+                                            @if ($item->cd_name == 'course_type' && $period->course_type_cd)
+                                                <option value="{{ $item->cd_value }}"
+                                                    @if (old('room_cd', $period->course_type_cd) == $item->cd_value) selected @endif>
+                                                    {{ $item->cd_text }}
+                                                </option>
+                                            @endif
+                                        @endforeach
+                                    @endif
                                 </select>
                                 @error('room_cd')
                                     <span class="invalid-feedback error-message" role="alert">
@@ -156,16 +179,16 @@
                                     <select id="car_model" name="car_model" @disabled($selectDisabled)>
                                         @foreach ($optionCarModel as $key => $item)
                                             <option value="{{ $item->car_type_cd }}"
-                                                @if (old('car_model', $period->dispatchCars->lessonCar->car_type_cd) == $item->cd_value) selected @endif>
+                                                @if (old('car_model', $period?->dispatchCars?->lessonCar->car_type_cd) == $item->cd_value) selected @endif>
                                                 {{ $item->cd_text }}
                                             </option>
                                         @endforeach
                                     </select>
                                     <select name="number_car" @disabled($selectDisabled)>
                                         @foreach ($optionNumberCar as $key => $item)
-                                            @if ($item->car_type_cd == $period->dispatchCars->lessonCar->car_type_cd)
+                                            @if ($item->car_type_cd == $period->dispatchCars?->lessonCar?->car_type_cd)
                                                 <option value="{{ $item->id }}"
-                                                    @if (old('car_model', $period->dispatchCars->lessonCar->lesson_car_num) == $item->lesson_car_num) selected @endif>
+                                                    @if (old('car_model', $period?->dispatchCars?->lessonCar?->lesson_car_num) == $item->lesson_car_num) selected @endif>
                                                     {{ $item->lesson_car_num }}
                                                 </option>
                                             @endif

@@ -28,15 +28,28 @@ class AptitudeDrivingController extends Controller
             $user = Auth::user();
             $role = $user->schoolStaff?->role;
 
-            if ($request->routeIs('aptitude-driving.new', 'aptitude-driving.create')) {
+            if ($request->routeIs('aptitude-driving.store', 'aptitude-driving.create')) {
                 // A. 教習原簿IDの存在チェック 共通ロジック/存在チェック#3
                 $ledger = Ledger::where('id', $request->ledger_id)->first();
                 if (!$ledger) {
                     abort(404);
                 }
-            }
-            if ($user->school_id !== session('school_id')) {
-                abort(403);
+                // 教習原簿とログインユーザーの教習所一致確認 共通ロジック#2
+                if ($ledger->school_id !== session('school_id')) {
+                    abort(403);
+                }
+            } else if ($request->routeIs('aptitude-driving.detail', 'aptitude-driving.edit', 'aptitude-driving.delete')) {
+                //存在チェック
+                $existsAptitude = AptitudeDriving::where('id', $request->aptitude_drv_id)->where('status', Status::ENABLED)->first();
+                if (!$existsAptitude) {
+                    abort(404);
+                }
+                //権限チェック
+                if ($existsAptitude->school_id !== Auth::user()->school_id) {
+                    abort(403);
+                }
+
+                $request['aptitudeModel'] = $existsAptitude;
             }
             // システム管理者 || 事務員1
             if (($role & (SchoolStaffRole::CLERK_TWO + SchoolStaffRole::APTITUDE_TESTER + SchoolStaffRole::INSTRUCTOR + SchoolStaffRole::EXAMINER + SchoolStaffRole::SUB_ADMINISTRATOR + SchoolStaffRole::ADMINISTRATOR)) == 0) {
@@ -51,10 +64,10 @@ class AptitudeDrivingController extends Controller
     /**
      * @Route('/aptitude-driving/create', method: 'GET', name: 'aptitude-driving.create')
      */
-    public function create($ledger_id)
+    public function create(Request $request)
     {
         //4.教習生番号、氏名を取得
-        $admCheckItem = AdmCheckItem::where('ledger_id', $ledger_id)->where('status', Status::ENABLED)->first();
+        $admCheckItem = AdmCheckItem::where('ledger_id', $request->ledger_id)->where('status', Status::ENABLED)->first();
         if (!isset($admCheckItem)) {
             return abort(404);
         }
@@ -62,12 +75,12 @@ class AptitudeDrivingController extends Controller
     }
 
     /**
-     * @Route('/aptitude-driving/new', method: 'POST', name: 'aptitude-driving.new')
+     * @Route('/aptitude-driving/store', method: 'POST', name: 'aptitude-driving.store')
      */
-    public function new(AptitudeDrivingRequest $request, $id)
+    public function store(AptitudeDrivingRequest $request)
     {
         //4.教習生番号、氏名を取得
-        $admCheckItem = AdmCheckItem::where('ledger_id', $id)->where('status', Status::ENABLED)->first();
+        $admCheckItem = AdmCheckItem::where('ledger_id', $request->ledger_id)->where('status', Status::ENABLED)->first();
         if (!isset($admCheckItem)) {
             return abort(404);
         }
@@ -82,7 +95,7 @@ class AptitudeDrivingController extends Controller
         } catch (\Throwable $th) {
             throw $th;
         }
-        return redirect()->route('aptitude-driving.create', $id)->with(['success' => Lang::get('messages.MSI00004')]);
+        return back()->with(['success' => Lang::get('messages.MSI00004')]);
     }
 
     /**
@@ -115,7 +128,7 @@ class AptitudeDrivingController extends Controller
         );
 
         try {
-             // read csv file
+            // read csv file
             $data = AptitudeDriving::readCsv($files);
         } catch (\Throwable $th) {
             return back()->withErrors(['files' => Lang::get('messages.MSE00010', ['label' => 'File'])]);
@@ -138,5 +151,55 @@ class AptitudeDrivingController extends Controller
             throw  $th;
         }
         return response()->json(['status' => 200, 'data' => $data]);
+    }
+
+    /**
+     * 入力パラメータ param/aptitude_drv_id 遷移元から渡された運転適性ID
+     * @Route('/aptitude-driving/edit/{$aptitude_drv_id}', method: 'GET', name: 'aptitude-driving.detail')
+     */
+    public function detail(Request $request)
+    {
+        //存在チェック
+        $dataAptitude = $request->aptitudeModel;
+        //教習生番号、氏名を取得
+        $admCheckItem = AdmCheckItem::where('id', $dataAptitude->ledger_id)->where('status', Status::ENABLED)->first();
+        if (!$admCheckItem) {
+            abort(404);
+        }
+        return view('back.aptitude-driving.edit', ['data' => $dataAptitude, 'model' => $admCheckItem]);
+    }
+
+    /**
+     * @Route('/aptitude-driving/edit/{$aptitude_drv_id}', method: 'POST', name: 'aptitude-driving.edit')
+     */
+    public function edit(AptitudeDrivingRequest $request, $id)
+    {
+        $modelAptitude = $request->aptitudeModel;
+        // A. 教習原簿IDの存在チェック 共通ロジック/存在チェック#3
+        $ledger = Ledger::where('id', $modelAptitude->ledger_id)->first();
+        if (!$ledger) {
+            return abort(404);
+        }
+        try {
+            $aptitudeDrvs = $request->input();
+            // 選択されている運転適性検査を更新する
+            $aptitudeDrvs['score'] = $request->od_drv_aptitude . $request->od_safe_aptitude;
+            $aptitudeDrvs['status'] =  Status::ENABLED();
+            AptitudeDriving::handleSave($aptitudeDrvs, $modelAptitude);
+        } catch (\Throwable $th) {
+            throw $th;
+        }
+        return redirect()->route('aptitude-driving.detail', [$id])->with('success', Lang::get('messages.MSI00002'));
+    }
+    /**
+     * @Route('/aptitude-driving/edit/{$aptitude_drv_id}', method: 'DELETE', name: 'aptitude-driving.delete')
+     */
+    public function delete(Request $request)
+    {
+        $model = $request->aptitudeModel;
+        //選択された運転適性検査を無効にする
+        AptitudeDriving::handleDelete($model);
+        // return redirect()->route('aptitude-driving.index')->with('success', Lang::get('messages.MSI00002'));
+        return back();
     }
 }

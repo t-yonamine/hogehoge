@@ -10,7 +10,7 @@ use BenSampo\Enum\Enum;
  * @method static static TEST()
  * @method static static WORK()
  */
-final class PeriodType extends Enum
+final class PeriodTypeL extends Enum
 {
     const DRV_LESSON = 1;
     const LECTURE = 2;

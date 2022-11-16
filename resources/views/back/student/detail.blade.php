@@ -1,9 +1,9 @@
 @extends('adminlte::page')
 
-@section('title', '検定教習生登録')
+@section('title', '教習生詳細')
 
 @section('content_header')
-    <h1>検定教習生登録</h1>
+    <h1>教習生詳細</h1>
 @stop
 @section('content')
     <div class="row">
@@ -17,8 +17,9 @@
                         @endforeach
                     </div>
                 @endif
-                <x-forms.apply-test.register-form :data="$data" route="{{ route('apply-test.store') }}"
-                    method='POST' />
+                <div class="m-2"><a class="btn btn-secondary float-right">編集</a></div>
+                <x-forms.student.forms :infor="$infor" route="#"
+                    method='GET' />
             </div>
         </div>
     </div>

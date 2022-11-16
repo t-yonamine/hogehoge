@@ -82,4 +82,8 @@ class AdmCheckItem extends Model
     {
         return $this->HasOne(LicenseType::class, 'license_cd', 'target_license_cd');
     }
+    public function certificates()
+    {
+        return $this->HasMany(Certificate::class, 'adm_check_items_id', 'id');
+    }
 }

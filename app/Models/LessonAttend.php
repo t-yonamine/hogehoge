@@ -187,6 +187,7 @@ class LessonAttend extends Model
         $numberOfParticipants = LessonAttend::select('glesson_attends.la_type', 'gledgers.target_license_cd', DB::raw('count(*) as total'))
             ->join('gledgers', 'gledgers.id', '=', 'glesson_attends.ledger_id')
             ->where('school_staff_id', $sessSchoolStaffId)
+            ->where('test_id', $testId)
             ->groupBy('glesson_attends.la_type', 'gledgers.target_license_cd')->get();
         return $numberOfParticipants;
     }

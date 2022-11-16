@@ -50,8 +50,11 @@ Route::group(
         });
 
         Route::controller(AptitudeDrivingController::class)->prefix('aptitude-driving')->name('aptitude-driving.')->group(function () {
-            Route::get('/create/{ledger_id}', 'create')->name('create');
-            Route::post('/create/{ledger_id}', 'new')->name('new');
+            Route::get('/edit/{aptitude_drv_id}', 'detail')->name('detail');
+            Route::post('/edit/{aptitude_drv_id}', 'edit')->name('edit');
+            Route::delete('/edit/{aptitude_drv_id}', 'delete')->name('delete');
+            Route::get('/create', 'create')->name('create');
+            Route::post('/create', 'store')->name('store');
             Route::get('/import', 'importFile')->name('importFile');
             Route::post('/import', 'upload')->name('import.upload');
             Route::post('/insert', 'insert')->name('import.insert');
@@ -59,6 +62,8 @@ Route::group(
 
         Route::controller(StudentController::class)->prefix('student')->name('student.')->group(function () {
             Route::get('/', 'index')->name('index');
+            Route::get('/{id}', 'detail')->name('detail');
+
         });
 
         // 検定申込結果 
@@ -70,7 +75,7 @@ Route::group(
             Route::post('examiner-allocation-regis/ajax-save', 'examinerAllocationRegisAjaxSave')->name('examiner-allocation-regis.ajax-save')->withoutMiddleware(\App\Http\Middleware\VerifyCsrfToken::class);
             Route::post('error-page', 'errorPage')->name('error-page');
             Route::get('/ledger/create', 'create')->name('create');
-            Route::post('/ledger/create', 'createSave')->name('create.save');
+            Route::post('/ledger/create', 'store')->name('store');
         });
     }
 );

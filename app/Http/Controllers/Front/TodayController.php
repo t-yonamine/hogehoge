@@ -138,7 +138,7 @@ class TodayController extends Controller
             case PeriodType::WORK():
                 # code...
                 $codeWord = Code::where('cd_name', 'work_type')->where('cd_value', $period->work_type)->first();
-                $data['cdText'] = $codeWord->cd_text;
+                $data['cdText'] = $codeWord?->cd_text;
                 break;
 
             case PeriodType::DRV_LESSON():
@@ -205,7 +205,7 @@ class TodayController extends Controller
                 }
 
                 $data['lessonAttend'] = $lessonAttend;
-                $data['cdText'] = $schoolCode->cd_text;
+                $data['cdText'] = $schoolCode?->cd_text;
                 break;
             default:
                 abort(404);
@@ -228,9 +228,9 @@ class TodayController extends Controller
 
 
         $optionCarModel = DB::select(DB::raw("SELECT *FROM gcodes AS a INNER JOIN 
-        (SELECT car_type_cd FROM glesson_cars WHERE school_id = 1 AND status = 1 GROUP BY car_type_cd)
+        (SELECT car_type_cd FROM glesson_cars WHERE school_id = ? AND status = ? GROUP BY car_type_cd)
          AS b ON (b.car_type_cd = a.cd_value)
-        WHERE a.cd_name = 'car_type' AND a.status = 1"));
+        WHERE a.cd_name = 'car_type' AND a.status = ?"), [$schoolId, Status::ENABLED, Status::ENABLED]);
 
         $optionNumberCar = LessonCar::where('school_id', $schoolId)
             ->where('status', Status::ENABLED)
@@ -466,9 +466,6 @@ class TodayController extends Controller
         // B. 権限チェック
         $periodSchoolStaff = Period::where('id', $request->period_id)->where('school_staff_id', $schoolStaffId)->first();;
 
-        // C. 編集可不可判定。
-        $selectDisabled =  $periodSchoolStaff->status->value == PeriodStatus::APPROVED;
-
         // D. 業務種別変更可不可判定。
         $existBusiness = LessonAttend::where('period_id', $request->period_id)->where('data_sts', Status::ENABLED)->first();
 
@@ -480,6 +477,7 @@ class TodayController extends Controller
         $dataPeriodFill = [
             'period_type' => $periodType,
             'work_type' =>  $periodType == PeriodType::WORK ? $request->sub_task : null,
+            'drl_type' => $periodType == PeriodType::DRV_LESSON ? $request->sub_task : null,
             'room_cd' => $periodType == PeriodType::LECTURE ? $request->room_cd : null,
             'course_type_cd' => $periodType == PeriodType::DRV_LESSON || $periodType == PeriodType::TEST ? $request->room_cd : null,
             'updated_user_id' => $schoolStaffId,
@@ -491,7 +489,6 @@ class TodayController extends Controller
             if (!$period) {
                 abort(404);
             }
-            Period::handleUpdate($dataPeriodFill, $request->period_id, $schoolStaffId);
 
             //  B. 号車が未選択でない場合、配車(gdispatch_cars)を追加する。
             $model = DispatchCar::where('period_id', $period->id)->where('target_type', TargetType::PERIOD)->first();
@@ -504,8 +501,13 @@ class TodayController extends Controller
                 'period_id' => $period->id,
                 'school_staff_id' => $schoolStaffId,
             ];
-            DispatchCar::handleDelete($model);
-            DispatchCar::handleSave($dataDispatchCarsFill, null);
+            DB::transaction(function () use ($dataPeriodFill, $request, $schoolStaffId, $model, $dataDispatchCarsFill) {
+                Period::handleUpdate($dataPeriodFill, $request->period_id, $schoolStaffId);
+                if ($model) {
+                    DispatchCar::handleDelete($model);
+                }
+                DispatchCar::handleSave($dataDispatchCarsFill, null);
+            });
         }
 
         return redirect()->route('frt.today.index', $request->only(['period_date', 'period_num']));

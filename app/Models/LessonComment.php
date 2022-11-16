@@ -47,6 +47,7 @@ class LessonComment extends Model
         $model->lesson_attend_id = $lessonAttends->id;
         $model->public_level = PublicLevelStatus::INTERNAL();
         $model->status = Status::ENABLED();
+        $model->comment_type = CommentType::ITEMS_TO_BE_SENT();
         $model->updated_user_id = $loginId;
         if (!$model->id) {
           $model->created_user_id = $loginId;
