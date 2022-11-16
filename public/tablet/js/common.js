@@ -28,27 +28,55 @@ $(function () {
     ////////////////
     // モーダル
     ////////////////
-    $('.modalOpen').click(function(e) {
-        const idModal = $(this).attr('id');
-        if (idModal === '#modal_nippou') {
-            let ledgerId = $(this).parents('article').find('input[name="ledger_id"]').val();
-            let lessonAttendId = $(this).parents('article').find('input[name="lesson_attend_id"]').val();
-            let commentId = $(this).parents('article').find('input[name="comment_id"]').val();
-            let commentText = $(this).parents('article').find('.comment-text').text()?.trim();
-            let studentNo = $(this).parents('article').find('.no').text()?.trim();
-            let name = $(this).parents('article').find('.name').text()?.trim();
-            let stuText = studentNo + '　' + name;
+    $(".modalOpen").click(function (e) {
+        const idModal = $(this).attr("id");
+        if (idModal === "#modal_nippou") {
+            let ledgerId = $(this)
+                .parents("article")
+                .find('input[name="ledger_id"]')
+                .val();
+            let lessonAttendId = $(this)
+                .parents("article")
+                .find('input[name="lesson_attend_id"]')
+                .val();
+            let commentId = $(this)
+                .parents("article")
+                .find('input[name="comment_id"]')
+                .val();
+            let commentText = $(this)
+                .parents("article")
+                .find(".comment-text")
+                .text()
+                ?.trim();
+            let studentNo = $(this)
+                .parents("article")
+                .find(".no")
+                .text()
+                ?.trim();
+            let name = $(this).parents("article").find(".name").text()?.trim();
+            let stuText = studentNo + "　" + name;
 
-            $('#nippou').text(stuText);
-            $(idModal + ' input[name="name"]').attr('value', stuText);
-            $(idModal + ' input[name="ledger_id"]').attr('value', ledgerId);
-            $(idModal + ' input[name="lesson_attend_id"]').attr('value', lessonAttendId);
-            $(idModal + ' input[name="comment_id"]').attr('value', commentId);
-            $(idModal + ' input[name="comment_text"]').removeClass('is-invalid').next().remove();
-            $(idModal + ' input[name="comment_text"]').attr('value', commentText);
+            $("#nippou").text(stuText);
+            $(idModal + ' input[name="name"]').attr("value", stuText);
+            $(idModal + ' input[name="ledger_id"]').attr("value", ledgerId);
+            $(idModal + ' input[name="lesson_attend_id"]').attr(
+                "value",
+                lessonAttendId
+            );
+            $(idModal + ' input[name="comment_id"]').attr("value", commentId);
+            $(idModal + ' input[name="comment_text"]')
+                .removeClass("is-invalid")
+                .next()
+                .remove();
+            $(idModal + ' input[name="comment_text"]').attr(
+                "value",
+                commentText
+            );
+            $(idModal).fadeIn(300);
+        } else if (idModal === "#modal_add") {
             $(idModal).fadeIn(300);
         } else {
-            modalOpen($(this).attr('href'));
+            modalOpen($(this).attr("href"));
         }
         return false;
     });
@@ -80,5 +108,4 @@ $(function () {
         date.setDate(date.getDate() - 1);
         $(".datepicker").datepicker("setDate", date);
     });
-
 });

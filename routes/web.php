@@ -114,6 +114,7 @@ Route::middleware('auth')->prefix('frt')->name('frt.')->group(
             Route::get('/', 'index')->name('index');
             Route::put('/', 'update')->name('update');
             Route::post('/comment', 'commentSave')->name('comment');
+            Route::post('/new-period', 'newPeriod')->name('newPeriod');
         });
     }
 );

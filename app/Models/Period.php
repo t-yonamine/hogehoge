@@ -56,6 +56,11 @@ class Period extends Model
         return $this->hasOne(Code::class, 'cd_value', 'work_type');
     }
 
+    public function dispatchCars()
+    {
+        return $this->hasOne(DispatchCar::class, 'period_id', 'id');
+    }
+
     /**
      * to handle insert period
      */
@@ -104,6 +109,17 @@ class Period extends Model
                 $model->updated_user_id = $currentUserId;
                 $model->fill($data);
                 $model->save();
+            });
+        } catch (\Throwable $th) {
+            throw $th;
+        }
+    }
+
+    public static function handleUpdate(array $data, int $id, $currentUserId)
+    {
+        try {
+            DB::transaction(function () use ($data, $id) {
+                Period::where('id', $id)->update($data);
             });
         } catch (\Throwable $th) {
             throw $th;
