@@ -9,15 +9,36 @@ use App\Enums\StageType;
 use App\Enums\Status;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\EffectMeasurements\EffectMeasurementRequest;
+use App\Http\Requests\ImportCsvRequest;
 use App\Models\Ledger;
 use App\Models\LessonAttend;
 use App\Models\SchoolStaff;
+use Closure;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Lang;
+use SplFileObject;
 
 class EffectMeasurementController extends Controller
 {
+    protected const MAX_FILE_SIZE = 100 * 1024; // 100kb
+    protected const MIN_FILE_SIZE = 0; // 0kb
+
+    public function __construct()
+    {
+        $this->middleware(function (Request $request, Closure $next) {
+            if ($request->routeIs('effect-measurement.import', 'effect-measurement.import.upload', 'effect-measurement.import.insert')) {
+                $user = Auth::user();
+                // 効果測定の登録には、事務員2以上の権限が必要
+                if (($user->schoolStaff->role & (SchoolStaffRole::CLERK_TWO + SchoolStaffRole::APTITUDE_TESTER + SchoolStaffRole::INSTRUCTOR + SchoolStaffRole::EXAMINER + SchoolStaffRole::SUB_ADMINISTRATOR + SchoolStaffRole::ADMINISTRATOR)) == 0) {
+                    abort(403);
+                }
+            }
+            return $next($request)
+                ->header('Cache-Control', 'no-store, must-revalidate');
+        });
+    }
+
     /**
      * Handle the incoming request.
      *
@@ -103,7 +124,6 @@ class EffectMeasurementController extends Controller
             $data['stage'] = $request->la_type > LaType::EFF_MEAS_1N ? StageType::STAGE_2() : StageType::STAGE_1();
             $data['school_staff_id'] = $schoolStaff->id;
             $data['period_to'] = $request->period_from;
-            $data['school_id'] = $school_id;
             $data['created_user_id'] = $schoolStaff->id;
             $data['updated_user_id'] = $schoolStaff->id;
 
@@ -166,5 +186,62 @@ class EffectMeasurementController extends Controller
             throw $th;
         }
         return back()->with('success', Lang::get('messages.MSI00002'));
+    }
+
+    /**
+     * @Route('/effect-measurement/import', method: 'GET', name: 'effect-measurement.import')
+     */
+    // 削除ボタン処理
+    public function import($data = null, $fileName = '')
+    {
+
+        return view('back.effect-measurement.import', ['data' => $data, 'fileName' => $fileName]);
+    }
+
+    /**
+     * @Route('/effect-measurement/upload', method: 'POST', name: 'effect-measurement.import.upload')
+     */
+    public function upload(ImportCsvRequest $request)
+    {
+        //CSVを読み込み入力チェックをする
+        $file = $request->file('files');
+        //取込の上限は、100kbとする。サイズは要相談
+        if (filesize($file) >= self::MAX_FILE_SIZE || filesize($file) == self::MIN_FILE_SIZE) {
+            return back()->withErrors(['files' => Lang::get('messages.MSE00005', ['label' => '100'])]);
+        }
+
+        $files = new SplFileObject($file->getPathName());
+        $files->setFlags(
+            SplFileObject::DROP_NEW_LINE |
+                SplFileObject::READ_AHEAD |
+                SplFileObject::SKIP_EMPTY |
+                SplFileObject::READ_CSV
+        );
+
+        try {
+            // read csv file
+            $data = LessonAttend::readCsv($files);
+        } catch (\Throwable $th) {
+            return back()->withErrors(['files' => Lang::get('messages.MSE00010', ['label' => 'File'])]);
+        }
+        return view('back.effect-measurement.import', ['data' => $data, 'fileName' => $file->getClientOriginalName()]);
+    }
+
+    /**
+     * @Route('/effect-measurement/insert', method: 'POST', name: 'effect-measurement.import.insert')
+     * 保存処理
+     */
+    public function insert(Request $request)
+    {
+        try {
+            if (!$request->req || !$request->fileName) {
+                return abort(404);
+            }
+
+            $data = LessonAttend::insertFromTable($request->req, $request->fileName);
+        } catch (\Throwable $th) {
+            throw  $th;
+        }
+        return response()->json(['status' => 200, 'data' => $data]);
     }
 }

@@ -302,13 +302,13 @@ class TodayController extends Controller
                         $data['is_absent'] = AbsentType::ABSENT();
                         $data['status'] = LessonAttendStatus::PENDING();
                         $data['cancel_cd'] = CancelType::CANCELED_DUE_TO_PRE_CHECK();
-                        LessonAttend::handleUpdate($data, $lessonAttend);
+                        LessonAttend::handleUpdateOrInsert($data, $lessonAttend);
                     } else if (!$isAbsent && $lessonAttend->is_absent == AbsentType::ABSENT()) {
                         // B. 入力の不在フラグ = 0:存在 の場合、以下を行う。
                         $data['is_absent'] = AbsentType::PRESENT();
                         $data['status'] = LessonAttendStatus::PENDING();
                         $data['cancel_cd'] = CancelType::IMPLEMENTED();
-                        LessonAttend::handleUpdate($data, $lessonAttend);
+                        LessonAttend::handleUpdateOrInsert($data, $lessonAttend);
                     }
                 }
                 // 7. 実施済み判定																										

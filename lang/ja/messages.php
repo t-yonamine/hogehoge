@@ -18,4 +18,9 @@ return [
     'MSE00008' => '値に不備があります。 項目::item', //msg specific task 3490
     'MSE00009' => '教習生不在', //msg specific task 3490
     'MSE00010' => ':labelの形式が正しくありません。',
+    'MSE00011' => 'CSV形式、項目数エラー', //msg specific task 3577
+    'MSE00012' => 'エラー。教習生番号に対応する教習原簿がありません。',  //msg specific task 3577
+    'MSE00013' => 'エラー。対象の教習原簿は仮免前効果測定を登録できる段階でない。',  //msg specific task 3577
+    'MSE00014' => 'エラー。対象の教習原簿は卒検前効果測定を登録できる段階でない。',  //msg specific task 3577
+    'MSE00015' => '入力チェックエラー。 項目::label',  //msg specific task 3577
 ];
