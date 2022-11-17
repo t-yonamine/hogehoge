@@ -5,7 +5,7 @@
     <nav>
         <ul>
             <li>
-                <a href="#"><img src="{{ asset('/tablet/images/menu_gyoumu.png') }}" alt="">本日の業務</a>
+                <a href="{{ route('frt.index') }}"><img src="{{ asset('/tablet/images/menu_gyoumu.png') }}" alt="">本日の業務</a>
             </li>
             <li>
                 <a href=""><img src="{{ asset('/tablet/images/menu_haisha.png') }}" alt="">配車表</a>

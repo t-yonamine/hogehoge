@@ -6,6 +6,7 @@ use App\Http\Controllers\Back\EffectMeasurementController;
 use App\Http\Controllers\Back\SchoolStaffController;
 use App\Http\Controllers\Back\StudentController;
 use App\Http\Controllers\Front\HomeController;
+use App\Http\Controllers\Front\StudentController as FrontStudentController;
 use App\Http\Controllers\Front\TodayController;
 use App\Http\Controllers\operation\SchoolDrivingController;
 use App\Http\Controllers\operation\AccountsController;
@@ -123,6 +124,9 @@ Route::middleware('auth')->prefix('frt')->name('frt.')->group(
             Route::put('/', 'update')->name('update');
             Route::post('/comment', 'commentSave')->name('comment');
             Route::post('/new-period', 'newPeriod')->name('newPeriod');
+        });
+        Route::controller(FrontStudentController::class)->prefix('/student')->name('student.')->group(function () {
+            Route::get('/{ledger_id}', 'detail')->name('detail');
         });
     }
 );

@@ -99,6 +99,11 @@ class AptitudeDriving extends Model
         'updated_user_id'
     ];
 
+    public function schoolStaffs()
+    {
+        return $this->belongsTo(SchoolStaff::class, 'created_user_id', 'id');
+    }
+
     public static function readCsv($files)
     {
         $responses = [];

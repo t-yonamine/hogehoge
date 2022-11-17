@@ -30,6 +30,7 @@
 
 <body>
     <div id="cantainer">
+        @stack('breadcrumb')
         @if (Auth::check())
             <x-tablet.partials.navleft />
             <x-tablet.partials.header />
