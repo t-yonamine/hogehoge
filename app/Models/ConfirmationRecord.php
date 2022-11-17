@@ -25,6 +25,7 @@ class ConfirmationRecord extends Model
   protected $casts = [
     'conf_type' => ConfgInformationType::class,
     'status' => ConfirmationRecsStatus::class,
+    'confirm_date' => 'datetime'
   ];
 
   protected $fillable = [

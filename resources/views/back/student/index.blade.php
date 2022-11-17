@@ -171,9 +171,7 @@
                                                         <td>
                                                             <div
                                                                 class="d-flex justify-content-center flex-wrap cell-action">
-                                                                <button class="btn btn-sm btn-secondary" type="button">
-                                                                    詳細
-                                                                </button>
+                                                                <a href="{{ route('student.detail', ['id' => $item->id]) }}" class="btn btn-sm btn-secondary">詳細</a>
                                                                 <button class="btn btn-sm btn-secondary" type="button">
                                                                     効果測定
                                                                 </button>

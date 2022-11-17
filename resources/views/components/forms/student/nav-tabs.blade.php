@@ -1,6 +1,7 @@
 @props([
 'data' => [],
-'infor'
+'infor',
+'disabled' => false
 ])
 <ul class="nav nav-tabs" role="tablist">
     @if (!empty($data))
@@ -12,7 +13,7 @@
     @endif
 </ul>
 <div class="tab-content">
-    <x-forms.student.tabs.infor-st :infor="$infor"></x-forms.student.tabs.infor-st>
+    <x-forms.student.tabs.infor-st disabled="{{$disabled}}" :infor="$infor"></x-forms.student.tabs.infor-st>
     <x-forms.student.tabs.driving-aptitude :infor="$infor"></x-forms.student.tabs.driving-aptitude>
     <x-forms.student.tabs.effect-measurement></x-forms.student.tabs.effect-measurement>
     <x-forms.student.tabs.test-tab></x-forms.student.tabs.test-tab>

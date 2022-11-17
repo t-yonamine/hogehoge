@@ -17,8 +17,7 @@
                         @endforeach
                     </div>
                 @endif
-                <div class="m-2"><a href="{{ route('student.update', ['id' => $infor->id]) }}" class="btn btn-secondary float-right">編集</a></div>
-                <x-forms.student.forms :infor="$infor" route="#"
+                <x-forms.student.forms action="edit" :infor="$infor" route="{{route('student.update', $infor->admCheckItem->ledger_id)}}"
                     method='POST' />
             </div>
         </div>
